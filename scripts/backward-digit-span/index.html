@@ -1,145 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
-<link rel="shortcut icon" href="favicon.ico">
-<title>Van Hedger | jsPsych</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
+<head>
+<title>Digit Span</title>
+<script src="jspsych-6.0.2/jquery-3.3.1.min.js"></script>
+<script src="jspsych-6.0.2/jspsych.js"></script>	
+<script src="jspsych-6.0.2/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-call-function.js"></script>
+<script src="bds_adaptive.js"></script>
 
+<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+<link href="jspsych-6.0.2/css/bds-style.css" rel="stylesheet" type="text/css">
 
-<style>
-body,h1,h2,h3,h4,h5,h6,p {font-family: "Arial", sans-serif}
-.w3-navbar,h1,button {font-family: "Arial", sans-serif}
-.fa-anchor,.fa-coffee {font-size:150px}
- ul {background-color: #e31838;}
- a:hover {color: black}
- 
- hr.rounded {
-  border-top: 10px solid #bbb;
-  border-radius: 0px;
-  width:100%;
-  display: inline-block;
-  vertical-align:center;
-}
-
-button {
-	background-color: #fff;
-	border: 2px solid #e31838;
-	border-radius: 5px;
-	margin:5px;
-}
-
-button:hover,
-button:focus {
-	background-color: #e31838;
-	color: white;
-	border: 2px solid #e31838;
-	transition: 0.1s;
-}
-
-
-</style>
+</head>
 <body>
-
-
-<!-- Navbar -->
-<div class="w3-top">
-  <ul class="w3-navbar w3-card-2 w3-left-align w3-large">
-    <li class="w3-hide-medium w3-hide-large w3-opennav w3-right">
-      <a class="w3-padding-large w3-hover-white w3-large w3-grey" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    </li>
-    <li><a href="https://svanhedger.github.io" class="w3-padding-large w3-hover-white" style=color:white>Home</a></li>
-    <li class="w3-hide-small"><a href="https://publish.uwo.ca/~svanhedg/Experiments/experiments.html" class="w3-padding-large w3-hover-white" style=color:white>Participate</a></li>
-	<li class="w3-hide-small"><a href="https://svanhedger.gitlab.io/jspsych" class="w3-padding-large w3-white">jsPsych Scripts</a></li>
-	<li class="w3-hide-small"><a href="https://publish.uwo.ca/~svanhedg/OSF/materials.html" class="w3-padding-large w3-hover-white" style=color:white>Matlab Scripts</a></li>
-  </ul>
-
-  <!-- Navbar on small screens -->
-  <div id="navDemo" class="w3-hide w3-hide-large w3-hide-medium">
-    <ul class="w3-navbar w3-left-align w3-large w3-indigo">
-	  <li><a class="w3-padding-large" style=color:white href="https://svanhedger.github.io">Home</a></li>	
-      <li><a class="w3-padding-large" style=color:white href="https://publish.uwo.ca/~svanhedg/Experiments/experiments.html">Participate</a></li>
-	  <li><a class="w3-padding-large" style=color:white href="https://publish.uwo.ca/~svanhedg/OSF/materials.html">jsPsych Scripts</a></li>
-	  <li><a class="w3-padding-large" style=color:white href="https://publish.uwo.ca/~svanhedg/OSF/materials.html">Matlab Scripts</a></li>
-    </ul>
-  </div>
-</div>
-
-<!-- Header -->
-<header class="w3-container w3-white w3-center w3-padding-64">
-  <h1 class="w3-margin w3-xxlarge"><b>jsPsych Scripts</b></h1>
-</header>
-
-<!-- First Grid -->
-<div class="w3-row-padding w3-padding-16 w3-container">
-  <div class="w3-content">
-    <div class="w3-threequarter">
-      <h2 class "w3-medium w3-large"><b>Overview</b></h2>
-      <h5 class="w3-padding-16" style="text-align:justify;"><a href="https://www.jspsych.org" style="color:#e31838;"><p><b>jsPsych</b></a> is an excellent JavaScript library, created by Josh de Leeuw, for designing behavioral experiments that run in a web browser. 
-	  jsPsych provides a framework for defining experiments using a set of flexible plugins that create different kinds of tasks a subject could complete during an experiment. 
-	  By assembling these different plugins together it is possible to create many different types of experiments.</p>
-	  <p>You are welcome to use any of the jsPsych scripts on this page. Most of the scripts reflect my research background and assess cognitive and perceptual processes.</p></h5>
-
-    </div>
-
-    <div class="w3-quarter w3-right">
-      <figure><img src="img/jspsych-logo.jpg" alt="" style="width:480px;height:270px;"></figure>
-    </div>
-  </div>
-  <hr class="rounded"></hr>
-</div>
-
-
-<div class="w3-row-padding w3-padding-16 w3-container">
-  <div class="w3-content">
-    <div class="w3-threequarter">
-      <h2 class "w3-medium w3-large"><b>Scripts</b></h2>
-	  
-      <h3 class="w3-padding-16"><b style="color:#e31838;">Backward Digit Span</b><div style="float:right;"><button>Demo</button><button>Repo</button></div></h3>
-	  <h5 style="text-align:justify;">Backward digit span is a classic assessment of working memory. Participants are given a string of digits and must recall them in reverse order.
-	  This script is quite flexible. Users are easily able to modify the modality (spoken or printed digits), the number of trials, the starting digit 
-	  span etc. The script is also adaptive, using a 1:2 staircase procedure. This means that the span increases by one whenever a participant is correct,
-	  and the span decreases by one whenever a participant is incorrect two trials in a row. Typical administration takes 8-10 minutes.</h5>
-	  
-	  <h3 class="w3-padding-16"><b style="color:#e31838;">Forward Digit Span</b><div style="float:right;"><button>Demo</button><button>Repo</button></div></h3>
-	  <h5 style="text-align:justify;">Forward digit span (often just called digit span) is a common assessment of short-term memory. Participants are given a string of digits 
-	  and must recall them in the same order in which they were presented. This script is quite flexible. Users are easily able to modify the modality (spoken or printed digits), 
-	  the number of trials, the starting digit span etc. The script is also adaptive, using a 1:2 staircase procedure. This means that the span increases by one whenever a participant is correct,
-	  and the span decreases by one whenever a participant is incorrect two trials in a row. Typical administration takes 8-10 minutes.</h5>
-	  
-
-    </div>
-
-
-  </div>
-</div>
-
-
-
-
-<div class="w3-container w3-grey w3-center w3-opacity w3-padding-16">
-    <h1 class="w3-margin w3-large"></h1>
-</div>
-<h5 class="w3-padding-large w3-left-align">
-<a href="https://osf.io/h3x8g/" target="_blank" id="osf"><center><img src="img/cos.png" name="cos" id="cos" alt="cos" style="width:100px;height:63px;border:1px solid black"/></center></a>
-<a href="https://scholar.google.com/citations?user=n2T5t1cAAAAJ&hl=en&oi=ao" target="_blank" id="scholar"><center><img src="img/google-scholar.png"  name="google-scholar" id="google-scholar" alt="google-scholar" style="width:50px;height:50px;border:1px solid black"/></center></a>
-<a href="https://www.researchgate.net/profile/Stephen_Van_Hedger" target="_blank" id="RG"><center><img src="img/research-gate.png" name="RG" id="RG" alt="RG" style="width:50px;height:50px;border:1px solid black"/></center></a>
-
-<p style="font-size:15px"><center>&#169; Stephen Van Hedger. Website template adapted from from W3Schools.com. Updated April 2020.</center></p>
-</h5>
 <script>
-// Used to toggle the menu on small screens when clicking on the menu button
-function myFunction() {
-    var x = document.getElementById("navDemo");
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-    } else {
-        x.className = x.className.replace(" w3-show", "");
-    }
-}
-</script>
 
+//Define Timeline
+var timeline = [];
+
+//Array to store the spoken digits
+var bds_sounds = return_bds_adaptive_folder();
+
+//Function to load sounds only if useAudio is set to true in bds_adaptive.js
+function loadSounds(){
+if(useAudio){
+	return bds_sounds;
+	} else {
+	return null;
+  }}; 
+
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'BDS_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+//Push components to experiment timeline
+timeline.push(bds_adaptive); //from bds_adaptive.js
+timeline.push(save_data); //final screen asking about data
+
+//Initialize the Experiment
+jsPsych.init({
+	timeline: timeline,
+	preload_audio: loadSounds(),
+	on_finish: saveData
+});
+
+</script>
 </body>
 </html>
