@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"> 
+    <title>Pitch Adjustment</title>
+    <script src="jspsych-6.0.1/jquery-3.3.1.min.js"></script>
+    <script src="jspsych-6.0.1/jspsych.js"></script>
+    <script src="jspsych-6.0.1/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.0.1/plugins/jspsych-html-button-response.js"></script>
+	<script src="pitchadjust.js"></script>
+	
+    <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3.css">
+	<link href="jspsych-6.0.1/css/jbuttons.css" rel="stylesheet" type="text/css">	
+
+  </head>
+  <body>
+    <script>
+
+
+//Define Timeline
+var timeline = [];
+
+//Array to store the spoken digits
+var pitchadjust_sounds = return_pitchadjust_folder();
+
+
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'PA_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+//Push components to experiment timeline
+timeline.push(pitchadjust); //from bds_adaptive.js
+timeline.push(save_data); //final screen asking about data
+
+//Initialize the Experiment
+jsPsych.init({
+	timeline: timeline,
+	preload_audio: pitchadjust_sounds,
+	on_finish: saveData
+});
+    </script>
+  </body>
+</html>

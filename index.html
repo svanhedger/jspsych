@@ -39,6 +39,15 @@ button:focus {
 	transition: 0.1s;
 }
 
+hr {
+  border: 0;
+  clear:both;
+  display:block;
+  width: 96%;               
+  background-color:#000;
+  height: 1px;
+}
+
 
 </style>
 <body>
@@ -102,20 +111,25 @@ button:focus {
 	  This script is quite flexible. Users are easily able to modify the modality (spoken or printed digits), the number of trials, the starting digit 
 	  span etc. The script is also adaptive, using a 1:2 staircase procedure. This means that the span increases by one whenever a participant is correct,
 	  and the span decreases by one whenever a participant is incorrect two trials in a row. Typical administration takes 8-10 minutes.</h5>
-	  
+	  <hr>
 	  <h3 class="w3-padding-16"><b style="color:#e31838;">Forward Digit Span</b><div style="float:right;"><button><a style="text-decoration: none;" href="https://svanhedger.github.io/jspsych/scripts/forward-digit-span/">Demo</a></button><button><a style="text-decoration: none;" href="https://github.com/svanhedger/jspsych/tree/master/scripts/forward-digit-span/">Repo</a></button></div></h3>
 	  <h5 style="text-align:justify;">Forward digit span (often just called digit span) is a common assessment of short-term memory. Participants are given a string of digits 
 	  and must recall them in the same order in which they were presented. This script is quite flexible. Users are easily able to modify the modality (spoken or printed digits), 
 	  the number of trials, the starting digit span etc. The script is also adaptive, using a 1:2 staircase procedure. This means that the span increases by one whenever a participant is correct,
 	  and the span decreases by one whenever a participant is incorrect two trials in a row. Typical administration takes 8-10 minutes.</h5>
-	  
-	  <h3 class="w3-padding-16"><b style="color:#e31838;">Auditory N-Back</b><div style="float:right;"><button><a style="text-decoration: none;" href="https://svanhedger.github.io/jspsych/scripts/nback/">Demo</a></button><button><a style="text-decoration: none;" href="https://github.com/svanhedger/jspsych/tree/master/scripts/nback/">Repo</a></button></div></h3>
+	  <hr>
+	  <h3 class="w3-padding-16"><b style="color:#e31838;">Auditory N-Back</b><div style="float:right;"><button><a style="text-decoration: none;" href="https://svanhedger.github.io/jspsych/scripts/n-back/">Demo</a></button><button><a style="text-decoration: none;" href="https://github.com/svanhedger/jspsych/tree/master/scripts/n-back/">Repo</a></button></div></h3>
 	  <h5 style="text-align:justify;">In the Auditory N-Back, participants are presented a sequence of auditory stimuli one-by-one. For each stimulus, they need to decide if 
 	  the current stimulus is the same as the one presented N trials ago. The N can be 1 trials, 2 trials, 3 trials, etc. The higher the number, the more difficult the task. 
 	  The factors that seem to influence the performance are not only the N, but also the speed of presentation and the size of the set of stimuli. This script is highly customizable;
 	  you can change the levels of N, the types of sounds used, the number of trials, the relative ratio of target and non targets etc. Typical administration takes 10-15 minutes.</h5>
-	  
-
+	  <hr>
+	  <h3 class="w3-padding-16"><b style="color:#e31838;">Pitch Adjustment</b><div style="float:right;"><button><a style="text-decoration: none;" href="https://svanhedger.github.io/jspsych/scripts/pitch-adjustment/">Demo</a></button><button><a style="text-decoration: none;" href="https://github.com/svanhedger/jspsych/tree/master/scripts/pitch-adjustment/">Repo</a></button></div></h3>
+	  <h5 style="text-align:justify;"> The pitch adjustment task is a sound reproduction task that has been used as an assessment of auditory working memory precision. 
+	  On each trial, participants hear a brief target tone, which is immediately masked by noise. Participant are then given a starting tone - higher or lower than the initial
+	  target tone. Participants must adjust this starting tone, using arrows provided on the screen, to try and recreate the initial targert tone to the best of their ability.
+	  Full administration takes 20-30 minutes. The quick assessment (simply swtich quickAssessment in pitchadjust.js to 1) takes 10-20 minutes.</h5>
+	  <hr>
     </div>
 
 
