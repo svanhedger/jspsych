@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reading Span</title>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<script src="jspsych-6.0.2/jspsych.js"></script>
+
+    <script src="jspsych-6.0.2/plugins/jspsych-audio-keyboard-response.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-audio-button-response.js"></script>
+    <script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.0.2/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-fullscreen.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-external-html.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-survey-text.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-survey-likert.js"></script>
+	<script src="rspan.js"></script>
+	
+		
+	<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+	<link href="rspanstyle.css" rel="stylesheet" type="text/css">
+	
+
+  </head>
+  <body>
+  
+  <script>
+
+
+
+//Define Timeline
+var timeline = []; 
+
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'RSPAN_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+timeline.push(rspan_final);
+timeline.push(save_data);
+
+
+jsPsych.init({
+    timeline: timeline
+    });
+	  
+    </script>
+  </body>
+</html>

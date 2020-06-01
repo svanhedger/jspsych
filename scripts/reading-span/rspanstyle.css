@@ -1,0 +1,70 @@
+	
+	.jspsych-survey-text-rspan-question {border-style: solid; background-color: #E8E8E8; width:10%; padding: 5px; text-align: center;  position: relative; top: 50%; left: 45%;}
+	.jspsych-survey-text-rspan-question textarea { font-size: 30px; width: 35px; height: 35px; text-align: center; font-family: arial; font-style: bold;  resize: none; overflow: hidden;}
+	.jspsych-survey-text-rspan {margin: 0em 0em;}
+	
+	.solid {
+	border-style: solid;
+	border-color: #000000;
+	border-width: 2px;
+	padding-top: 10px;
+	background-color: #E8E8E8;
+	font-size: 40px;
+	width: 42px;
+	height: 42px;
+	text-align: center;
+	position: relative;
+	top: 50%; 
+	left: 40%;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	}
+	
+	.senFB {
+	border-style: solid;
+	border-color: #000000;
+	border-width: 2px;
+	padding-top: 10px;
+	background-color: #E8E8E8;
+	font-size: 25px;
+	width: 300px;
+	height: 65px;
+	text-align: center;
+	position: absolute;
+	top: 5%; 
+	left: 80%;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	}
+	
+	.buttonStyle {
+	background-color: #555555; 
+	border: 2px solid black;
+	color: white;
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+	cursor: pointer;
+	}
+	
+	.buttonStyle:hover,
+	.buttonStyle:focus {
+	background-color: #808080; 
+	color: white;	
+	}
+	
+	.fullscreenStyle {
+	display: block;
+    height: 90vh; 
+    width:  90vw; 
+	cursor: pointer;
+	text-align: center;
+	background-color: #E8E8E8;
+    background-repeat:no-repeat;
+    border: 2px solid black;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+	}
