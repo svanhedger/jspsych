@@ -1,0 +1,24 @@
+
+	
+/* RELEVANT FOR MATRICES */	
+
+div.btn-matrix input {
+    cursor:pointer;
+    width: 85%;
+    height: auto;
+	max-width: 400px;
+    border: none;
+}
+
+.responsive {
+  width: 90%;
+  max-width: 275px;
+  height: auto;
+  border: 2px solid black;
+}
+
+
+.btn-matrix {
+  margin: 5px;
+}
+

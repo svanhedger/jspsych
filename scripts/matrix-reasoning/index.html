@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+    <title>Matrix Reasoning</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="jspsych-6.0.2/jspsych.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-ravens-matrix.js"></script>
+	<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>	
+	<script src="matrices.js"></script>
+	
+    <link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+	<link href="jspsych-6.0.2/css/matrix.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    
+	
+  </head>
+    <body>
+      <script>
+
+
+/**************/
+/** TIMELINE **/
+/**************/
+
+var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+
+/************/
+/** SET-UP **/
+/************/
+
+//participant id
+var participantCode = jsPsych.randomization.randomID(8); //random alpha-numeric string
+jsPsych.data.addProperties({subject: participantCode}); // add participant code to data
+
+//preload images
+var matrix_preload = return_matrices_folder(); //img preload folder, from matrices.js
+
+/**********/
+/** MAIN **/
+/**********/
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'MAT_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+
+//final feedback screen
+var goodbye = {
+    type: "html-button-response",
+    stimulus: function(){return "<p>This concludes the task.</p><p>Thank you for your participation!</p>" +	  
+				  "<p><b>Total correct:</b> "+totalScore+"<br>"+
+				  "<p><b>Total matrices seen:</b> "+totalSeen+"<br>"+
+				  "<p><b>Total matrices in the set:</b> "+matrixList.length+"<br>";},
+    choices: ['Exit']
+    };
+
+timeline.push(matrices); //from matrices.js
+timeline.push(save_data); //user option to save data     
+timeline.push(goodbye); //feedback
+      
+
+//initialize the experiment
+     jsPsych.init({
+        timeline: timeline,
+		preload_images: matrix_preload,
+		on_finish: saveData;
+      });
+	  
+	  
+    </script>
+  </body>
+</html>
