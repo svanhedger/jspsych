@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Categorization and Cognition</title>
+<script src="jspsych-6.0.2/jquery-3.3.1.min.js"></script>
+<script src="jspsych-6.0.2/jspsych.js"></script>	
+<script src="jspsych-6.0.2/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-call-function.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-external-html.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-image-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-survey-text-q.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-survey-multi-choice.js"></script>
+<script src="bds_adaptive.js"></script>
+
+<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+<link href="jspsych-6.0.2/css/bds-style.css" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+<script>
+
+//Define Timeline
+var timeline = [];
+var identifier = Math.random().toString(36).substr(2, 15); //randomly generate alpha-numeric string for subject number
+jsPsych.data.addProperties({participant: identifier}); //add participant id to data output
+
+//Array to store the spoken digits
+var bds_sounds = return_bds_adaptive_folder();
+
+//Function to load sounds only if useAudio is set to true in bds_adaptive.js
+function loadSounds(){
+if(useAudio){
+	return bds_sounds;
+	} else {
+	return null;
+  }}; 
+
+/////////////
+// Consent //
+/////////////
+/*
+Displays an external html consent screen;
+looks for a check mark next to the 
+'I agree to participate in the study.'
+and does not advance until this is 
+selected
+*/
+
+//function to make sure consent box is clicked before proceeding
+var check_consent = function(elem) {
+	if ($('#consent_checkbox').is(':checked')) {
+		return true;
+	}
+	else {
+		alert("If you wish to participate, you must check the box next to the statement 'I agree to participate in the study.'");
+		return false;
+	}
+	return false;
+};
+
+//consent html should be in subfolder labeled 'consent'
+var consent_trial = {
+type:"external-html",
+url: "consent/consent_4880E.html", 
+	cont_btn: "start",
+	check_fn: check_consent
+};
+
+/////////////////////////
+// Categorization Task //
+/////////////////////////
+/*
+Participants are assigned to one of 
+two conditions: a cute condition versus
+a standard condition. Cute condition 
+involves seeing extremely cute photos 
+of animals; standard condition involves
+basic animals. Participants have to decide
+whether the image they are presented with 
+is of an animal or not. They press A for 
+animal and L for non-animal. 40 trials
+*/
+
+//trial counter
+var trialNum = 1;
+
+//main array to store stimuli
+var cute_array = [
+{img: 'img/cu/A_01.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_02.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_03.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_04.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_05.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_06.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_07.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_08.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_09.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_10.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_11.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_12.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_13.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_14.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_15.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_16.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_17.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_18.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_19.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/cu/A_20.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/non/N_01.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_02.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_03.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_04.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_05.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_06.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_07.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_08.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_09.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_10.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_11.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_12.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_13.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_14.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_15.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_16.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_17.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_18.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_19.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_20.jpg', type: 'non-animal', cor_resp: 76},
+]
+
+var control_array = [
+{img: 'img/co/A_01.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_02.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_03.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_04.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_05.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_06.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_07.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_08.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_09.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_10.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_11.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_12.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_13.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_14.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_15.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_16.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_17.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_18.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_19.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/co/A_20.jpg', type: 'animal', cor_resp: 65},
+{img: 'img/non/N_01.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_02.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_03.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_04.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_05.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_06.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_07.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_08.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_09.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_10.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_11.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_12.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_13.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_14.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_15.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_16.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_17.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_18.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_19.jpg', type: 'non-animal', cor_resp: 76},
+{img: 'img/non/N_20.jpg', type: 'non-animal', cor_resp: 76},
+]
+
+//random selection of condition
+var mainCondition = (Math.random()>0.5)? 'cute' : 'control' //randomize whether participants are assigned to the cute or control condition
+jsPsych.data.addProperties({condition: mainCondition}); //add condition to data output
+
+if(mainCondition == 'cute'){
+	var cat_array = cute_array;
+	} else {
+	var cat_array = control_array
+	}
+
+//push images to array for preloading
+function loadImages(){
+var images = [];
+for(var i=0; i<cat_array.length; i++){
+	images[i] = cat_array[i].img;
+	}
+	return images;
+}
+
+//cat instructions
+
+var cat_instruct = {
+	type: 'html-button-response',
+	stimulus: '<p style=color:blue;><b>Categorization Task</b></p>'+
+			  '<p>You will be presented with pictures on the computer screen.</br>Your job is to look at each picture and determine whether it contains an <em>animal</em>.</p>'+
+			  '<p>If the picture contains an animal, press the "A" key. If the picture does not contain an animal, press the "L" key.</p>' +
+			  '<p>Please try to make your decisions as quickly as possible without making errors. There are 40 pictures in total.</p>',
+	choices: ['Begin']		  
+}
+
+//trial reminder
+var trial_counter = {
+	type: 'html-keyboard-response',
+	stimulus: function(){return '<p>Trial '+trialNum+' of '+cat_array.length+'';},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1500,
+	on_finish: function(){trialNum += 1;}
+}	
+
+//fixation
+var fixation = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 60px;">+</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1500
+}
+
+//presentation of image
+var cat_main = {
+	type: 'image-keyboard-response',
+	stimulus: jsPsych.timelineVariable('img'),
+	data: {designation: 'category', correct: jsPsych.timelineVariable('cor_resp')},
+	choices: [65,76],
+	post_trial_gap: 1500,
+	on_finish: function(data){
+		var curresp = jsPsych.data.get().last(1).values()[0].key_press; //this is what the participant said
+		if(curresp == data.correct){
+			var gotitright = 1
+			} else{
+			gotitright = 0
+			}			
+			jsPsych.data.addDataToLastTrial({cat_acc: gotitright}) //add correct/incorrect to data
+		}
+}
+
+//main procedure for the categorization task
+var cat_proc = {
+	timeline: [trial_counter, fixation, cat_main],
+	timeline_variables: cat_array,
+	randomize_order: true
+}	
+
+
+//PANAS
+/*
+Positive affect negative affect schedule.
+*/
+
+var posArray = []; //for storing pos affect items
+var negArray = []; //for storing neg affect items
+
+var pindex = 0; //index for posArray location
+var nindex = 0; //index for negArray location
+
+var panas_array = [
+{term: 'Interested', affect: 'pos'},
+{term: 'Distressed', affect: 'neg'},
+{term: 'Excited', affect: 'pos'},
+{term: 'Upset', affect: 'neg'},
+{term: 'Strong', affect: 'pos'},
+{term: 'Guilty', affect: 'neg'},
+{term: 'Scared', affect: 'neg'},
+{term: 'Hostile', affect: 'neg'},
+{term: 'Enthusiastic', affect: 'pos'},
+{term: 'Proud', affect: 'pos'},
+{term: 'Irritable', affect: 'neg'},
+{term: 'Alert', affect: 'pos'},
+{term: 'Ashamed', affect: 'neg'},
+{term: 'Inspired', affect: 'pos'},
+{term: 'Nervous', affect: 'neg'},
+{term: 'Determined', affect: 'pos'},
+{term: 'Attentive', affect: 'pos'},
+{term: 'Jittery', affect: 'neg'},
+{term: 'Active', affect: 'pos'},
+{term: 'Afraid', affect: 'neg'}
+];
+
+var panas_instruct = {
+	type: 'html-button-response',
+	stimulus: '<p style=color:blue;><b>Affect Measure<b></p><p>You will now answer some questions about how you currently feel.</p>',
+	choices: ['Begin']
+}
+
+var panas_main = {
+	type: 'html-button-response',
+	stimulus: jsPsych.timelineVariable('term'),
+	data: {designation: 'PANAS', affect: jsPsych.timelineVariable('affect')},
+	prompt: '<p>(indicate the extent you currently feel this way)</p>',
+	choices: ['Not at all', 'A little', 'Moderately', 'Quite a bit', 'Extremely'],
+	post_trial_gap: 500,
+	on_finish: function(data){
+		var panas_ans = jsPsych.data.get().last(1).values()[0].button_pressed;
+		panas_ans = Number(panas_ans) + 1;
+		if(data.affect == 'pos'){
+			posArray[pindex] = panas_ans;
+			pindex += 1;
+			console.log(posArray); //for testing
+			} else {
+			negArray[nindex] = panas_ans;
+			nindex += 1;
+			console.log(negArray); //for testing
+			}
+		}
+}
+
+panas_proc = {
+	timeline: [panas_main],
+	timeline_variables: panas_array
+}
+
+///////////////////
+// Questionnaire //
+///////////////////
+
+/*
+Simple questionnaire assessing age, gender, 
+level of education, and guesses as to the 
+purposes of the study
+*/
+
+var scale_gender = ["Female", "Male", "You do not have an option that describes me."];
+var scale_education = ["Elementary school", "Less than Grade 12", "High school", "Some university undergraduate schooling", "College Degree (2 years)", "Bachelor's Degree", "Postgraduate Degree", "Other"];
+
+
+var questionnaire_age = {
+  type: 'survey-text-q',
+  post_trial_gap: 250,
+  questions: [{prompt: "How old are you (in years)?",rows:1, columns:5, name:'AGE', placeholder:""}],
+  preamble: [''],
+  data: {designation: 'survey', surveyQuestion: 'age'},
+  on_finish: function(data){
+	AGE = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).AGE; 
+	jsPsych.data.addDataToLastTrial({QRESP: AGE});	 
+  }
+};
+
+var questionnaire_gender = {
+  type: 'survey-multi-choice',
+  preamble: [''],
+  data: {designation: 'survey', surveyQuestion: 'gender'},
+  post_trial_gap: 250,
+  questions: [{prompt: "In terms of gender, I identify as...", options: scale_gender}],
+  on_finish: function(data){
+	GENDER = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).Q0; 
+	if (GENDER == "You do not have an option that describes me.") {
+		gender_clarify = 1;
+	} else {
+		gender_clarify = 0;
+	}
+	jsPsych.data.addDataToLastTrial({QRESP: GENDER});	 	
+  }
+};
+
+var questionnaire_gender_followup = {
+  type: 'survey-text-q',
+  data: {designation: 'survey', surveyQuestion: 'gender-clarify'},
+  post_trial_gap: 250,
+  questions: [{prompt: "Please briefly describe your gender identity if you wish.", rows:5, columns:40, placeholder:"", name:'GEN2'}],
+  preamble: [''],
+  on_finish: function(data){
+	GEN2 = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).GEN2; 
+	jsPsych.data.addDataToLastTrial({QRESP: GEN2});	 
+  }
+};
+
+
+var if_gender_clarify_node = {
+    timeline: [questionnaire_gender_followup],
+    conditional_function: function(){
+        if(gender_clarify == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var questionnaire_education = {
+	type: 'survey-multi-choice',
+	preamble: [''],
+	data: {designation: 'survey', surveyQuestion: 'education'},
+	post_trial_gap: 250,
+	questions: [{prompt: "My highest level of education is...", options: scale_education}],
+	on_finish: function(data) {
+		EDUCATION = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).Q0; 
+		if (EDUCATION == "Other") {
+		education_clarify = 1;
+	} else {
+		education_clarify = 0;
+		}
+		jsPsych.data.addDataToLastTrial({QRESP: EDUCATION});	 
+	}
+};
+
+var questionnaire_education_followup = {
+  type: 'survey-text-q',
+  data: {designation: 'survey', surveyQuestion: 'education-clarify'},
+  post_trial_gap: 250,
+  questions: [{prompt: "Please briefly describe your highest education level.", rows:5, columns:40, name:'EDU2', placeholder:""}],
+  preamble: [''],
+  on_finish: function(data){
+	EDU2 = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).EDU2; 
+	jsPsych.data.addDataToLastTrial({QRESP: EDU2});	 
+  } 
+};
+
+
+var if_education_clarify_node = {
+    timeline: [questionnaire_education_followup],
+    conditional_function: function(){
+        if(education_clarify == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var guess_purpose = {
+  type: 'survey-text-q',
+  post_trial_gap: 250,
+  questions: [{prompt: "In a few words, please make your best guess as to the purpose of the study.",rows:10, columns:30, name:'GUESS', placeholder:""}],
+  preamble: [''],
+  data: {designation: 'survey', surveyQuestion: 'guess'},
+}
+
+var all_done = {
+	type: 'html-button-response',
+	stimulus: '<p>Thank you for your responses. Press the button below to save your data and read more about the purpose of the study.</p>',
+	choices: ['Finish Study']
+}
+
+var Q_demographic = {
+	timeline: [questionnaire_age, questionnaire_gender, if_gender_clarify_node, questionnaire_education, if_education_clarify_node, guess_purpose, all_done]
+};
+
+/////////////
+// Debrief //
+/////////////
+
+/*
+Shows a debrief script 
+detailing the study
+*/
+
+var debrief_trial = {
+type:"external-html",
+url: "debrief/Debrief.htm", 
+	cont_btn: "finish"
+};
+
+
+
+//backup data to python anywhere server
+var backup_data = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Saving your results...</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000,
+	on_finish: function() {
+          var csvData = jsPsych.data.get().csv(); //this is the csv data
+          console.log(csvData);
+          var formData = {
+            exp: "4880E", 
+            subj: identifier,
+            results: csvData
+          };
+          $.post(
+            "https://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+    }
+};
+
+
+
+//Push components to experiment timeline
+timeline.push(consent_trial); //ensure informed consent
+timeline.push(cat_instruct); //categorization instructions
+timeline.push(cat_proc); //main category task
+timeline.push(panas_instruct); // panas measure
+timeline.push(panas_proc); // panas procedure
+timeline.push(bds_adaptive); //from bds_adaptive.js - backward digit span
+timeline.push(Q_demographic); //simple demographic questionnaire
+timeline.push(backup_data); //data to server
+timeline.push(debrief_trial); //debriefing
+
+
+//Initialize the Experiment
+jsPsych.init({
+	timeline: timeline,
+	preload_audio: loadSounds(),
+	preload_images: loadImages()
+});
+
+</script>
+</body>
+</html>
