@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PSY2115A-2</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="jspsych-6.1.0/jspsych.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-audio-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+
+
+<link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+
+
+///////////////////////////////////////////////////
+// Just Noticeable Difference for Auditory Pitch //
+///////////////////////////////////////////////////
+
+Stephen Van Hedger, 2020
+
+This experiment uses a 3AFC staircase (two-up, one-down)
+to determine a participant's just noticeable difference 
+for pitch. Participants are tested on piano tones as well
+as reserved piano tones (referred to as computer-generated
+tones to participants).
+
+*/
+
+//Timeline and other Variables
+var timeline = []; //this is the timeline to which all trials are pushed
+var totalTrials = 40; //this is how many trials participants will experience for each subtest
+
+//Participant ID
+var subjID = jsPsych.randomization.randomID(15); //random alphanumeric identifier
+var pianoFirst = Math.floor(Math.random()*2) //randomly determine ordering
+
+//Tones
+var piano_standard = 'tones/piano/00.wav'; //standard piano tone (G5)
+var complex_standard = 'tones/complex/00.wav'; //standard complex tone (G5)
+
+var piano_array = ['tones/piano/100.wav', 'tones/piano/75.wav', 'tones/piano/50.wav', 'tones/piano/40.wav', 'tones/piano/30.wav', 'tones/piano/25.wav', 'tones/piano/20.wav', 'tones/piano/18.wav', 'tones/piano/16.wav', 'tones/piano/14.wav', 'tones/piano/12.wav', 'tones/piano/10.wav', 'tones/piano/08.wav', 'tones/piano/06.wav', 'tones/piano/04.wav', 'tones/piano/02.wav'];
+var complex_array = ['tones/complex/100.wav', 'tones/complex/75.wav', 'tones/complex/50.wav', 'tones/complex/40.wav', 'tones/complex/30.wav', 'tones/complex/25.wav', 'tones/complex/20.wav', 'tones/complex/18.wav', 'tones/complex/16.wav', 'tones/complex/14.wav', 'tones/complex/12.wav', 'tones/complex/10.wav', 'tones/complex/08.wav', 'tones/complex/06.wav', 'tones/complex/04.wav', 'tones/complex/02.wav'];
+
+//Preload Sounds
+var audio = [...[piano_standard], ...[complex_standard], ...piano_array, ...complex_array];
+//console.log(audio);
+
+var cent_lookup = [100, 75, 50, 40, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2]; //for looking up current cent difference
+var pianoIndex = 0; //start at the beginning of the piano array (i.e., at 100 cents)
+var complexIndex = 0; //start at the beginning of the complex array (i.e., at 100 cents)
+
+var twoDownTicker = 0; //for counting wrong responses
+
+var p_array_current = []; //this is what will hold the actual piano tones for each trial
+var c_array_current = []; //this is what will hold the actual complex tones for each trial
+
+var curCorrect; //for storing the current correct location of the different tone
+
+var pianoNum = 0; //for counting trials 
+var complexNum = 0; //for counting trials
+var gotItRight; //for logging correct/incorrect
+
+//Introduction Screens
+var intro_general = {
+	type: 'html-button-response',
+	stimulus: '<p style="color:#e31838;"><b>Portfolio 2 Study</b></p>' +
+			  '<p>Welcome to the second porfolio study!</br>In this study, you will get a first-hand feel of <b>difference thresholds</b><p>' +
+			  '<p>On each trial, you will hear <em>three</em> tones.</br>You must determine whether the first, second, or third tone sounds different compared to the other two.</p>' +
+			  '<p>You will complete this task twice - once while listening to piano sounds, and once while listening to computer tones.</br>Each time, you will complete 40 trials.</p>',
+	choices: ['Continue'],
+	post_trial_gap: 200
+};
+
+var intro_piano = {
+	type: 'html-button-response',
+	stimulus: '<p>You will now complete the task while listening to <b>piano tones</b></p>',
+	choices: ['Begin'],
+	post_trial_gap: 200
+};
+
+var intro_complex = {
+	type: 'html-button-response',
+	stimulus: '<p>You will now complete the task while listening to <b>computer tones</b></p>',
+	choices: ['Begin'], 
+	post_trial_gap: 200
+};
+
+
+//PIANO EXPT
+var piano_setup = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 40px;">+</p>',
+	trial_duration: 1000,
+	choices: jsPsych.NO_KEYS,
+	on_finish: function(){
+		p_array_current = [{tone: piano_standard, deviant: 0}, {tone: piano_standard, deviant: 0}, {tone: piano_array[pianoIndex], deviant: 1}];
+		p_array_current = jsPsych.randomization.shuffle(p_array_current);
+	}
+};
+
+var piano_01 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return p_array_current[0].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(p_array_current[0].deviant == 1){
+			curCorrect = "1";
+			return curCorrect;
+			}
+	}
+};
+
+var piano_02 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return p_array_current[1].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(p_array_current[1].deviant == 1){
+			curCorrect = "2";
+			return curCorrect;
+			}
+		}	
+};
+
+var piano_03 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return p_array_current[2].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(p_array_current[2].deviant == 1){
+			curCorrect = "3";
+			return curCorrect;
+			}
+		}	
+};
+
+
+var P_RESP_3AFC = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Which tone sounded different?</p>' +
+			  '<p><b>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</b></p>' +
+			  '<p>(press the corresponding number on the keyboard)</p>',
+	choices: ['1','2','3'],
+	on_finish: function(data){
+		var curResp = jsPsych.data.get().last(1).values()[0].key_press; //ascii response by participant
+		var curCorASCII = curCorrect.charCodeAt(); //convert correct answer to ascii
+		var curCent = cent_lookup[pianoIndex];
+		if(curResp == curCorASCII){
+			gotItRight = 1;
+			twoDownTicker += 1; //increase the two-down ticker
+			if(twoDownTicker == 2){
+				if(pianoIndex+1 == piano_array.length){
+					pianoIndex += 0; //this doesn't change the difference if people are at the limit
+				} else if (pianoIndex < piano_array.length) {
+					pianoIndex += 1; //this makes the difference smaller for a correct answer
+				}
+				twoDownTicker = 0; //reset the two-down counter
+			}			
+			} else {
+			gotItRight = 0;
+			twoDownTicker = 0; // reset the two-down ticker
+				if(pianoIndex == 0) {
+					pianoIndex = 0;
+					} else {
+					pianoIndex -= 1;
+					}
+		}
+		pianoNum += 1; //for data output
+		console.log(curCent, gotItRight, pianoIndex, twoDownTicker)
+		
+		jsPsych.data.addDataToLastTrial({
+			designation: 'piano-resp',
+			current_cents: curCent,
+			correct: gotItRight,
+			trial_num: pianoNum
+			})	
+	}		
+};
+
+var piano_proc = {
+	timeline: [piano_setup, piano_01, piano_02, piano_03, P_RESP_3AFC]
+}
+
+//COMPLEX EXPT
+var complex_setup = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 40px;">+</p>',
+	trial_duration: 1000,
+	choices: jsPsych.NO_KEYS,
+	on_finish: function(){
+		c_array_current = [{tone: complex_standard, deviant: 0}, {tone: complex_standard, deviant: 0}, {tone: complex_array[complexIndex], deviant: 1}];
+		c_array_current = jsPsych.randomization.shuffle(c_array_current);
+		
+	}
+};
+
+var complex_01 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return c_array_current[0].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(c_array_current[0].deviant == 1){
+			curCorrect = "1";
+			return curCorrect;
+			}
+	}
+};
+
+var complex_02 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return c_array_current[1].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(c_array_current[1].deviant == 1){
+			curCorrect = "2";
+			return curCorrect;
+			}
+		}	
+};
+
+var complex_03 = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return c_array_current[2].tone;},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 500,
+	on_finish: function(){
+		if(c_array_current[2].deviant == 1){
+			curCorrect = "3";
+			return curCorrect;
+			}
+		}	
+};
+
+
+var C_RESP_3AFC = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Which tone sounded different?</p>' +
+			  '<p><b>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</b></p>' +
+			  '<p>(press the corresponding number on the keyboard)</p>',
+	choices: ['1','2','3'],
+	on_finish: function(data){
+		var curResp = jsPsych.data.get().last(1).values()[0].key_press; //ascii response by participant
+		var curCorASCII = curCorrect.charCodeAt(); //convert correct answer to ascii
+		var curCent = cent_lookup[complexIndex];
+		if(curResp == curCorASCII){
+			gotItRight = 1;
+			twoDownTicker += 1; //increase the two-down ticker
+			if(twoDownTicker == 2){
+				if(complexIndex+1 == complex_array.length){
+					complexIndex += 0; //this doesn't change the difference if people are at the limit
+				} else if (pianoIndex < piano_array.length) {
+					complexIndex += 1; //this makes the difference smaller for a correct answer
+				}
+				twoDownTicker = 0; //reset the two-down counter
+			}			
+			} else {
+			gotItRight = 0;
+			twoDownTicker = 0; // reset the two-down ticker
+				if(complexIndex == 0) {
+					complexIndex = 0;
+					} else {
+					complexIndex -= 1;
+					}
+		}
+		complexNum += 1; //for data output
+		console.log(curCent, gotItRight, twoDownTicker)
+		
+		jsPsych.data.addDataToLastTrial({
+			designation: 'complex-resp',
+			current_cents: curCent,
+			correct: gotItRight,
+			trial_num: complexNum
+			})	
+	}		
+};
+
+var complex_proc = {
+	timeline: [complex_setup, complex_01, complex_02, complex_03, C_RESP_3AFC]
+};
+
+
+
+//WRAPUP
+var shortbreak = {
+	type: 'html-button-response',
+	stimulus: '<p>Thank you for your responses!</p>',
+	choices: ['Show Results']
+};
+
+var backup_data = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Saving your results...</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000,
+	on_finish: function() {
+          var csvData = jsPsych.data.get().csv(); //this is the csv data
+          console.log(csvData);
+          var formData = {
+            exp: "P2115A_02", 
+            subj: subjID,
+            results: csvData
+          };
+          $.post(
+            "https://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+    }
+};
+
+var exptend = {
+	type: 'html-keyboard-response',
+	stimulus: function(){return '<p><em>Please copy the JND values and your participation code. You will need to reference them for your reflection!</em></p><p style="color:green"><b>Piano Tones</b></p><p style="color:green">Your JND is <b>'+cent_lookup[pianoIndex]+'</b> cents.</p>'+
+			  '<p style="color:purple"><b>Complex Tones</b></p><p style="color:purple">Your JND is <b>'+cent_lookup[complexIndex]+'</b> cents.</p>'+
+			  '<p><em>(for reference 1 cent corresponds to approximately a 0.06% change in frequency)</em></p>' +
+			  '<p>Your unique participation code is </p><p>'+subjID+'</p>'+
+			  '<p>(when you are done and have copied the information on this page, simply exit your browser window)</p>';},
+	choices: jsPsych.NO_KEYS
+};
+
+
+//PUSH THE EXPERIMENT TO THE TIMELINE
+
+//introduction
+timeline.push(intro_general);
+
+//adaptive presentation of blocks based on 'pianoFirst'
+
+if(pianoFirst == 1){
+timeline.push(intro_piano);
+for (var i=0; i<totalTrials; i++){
+	timeline.push(piano_proc);
+}
+timeline.push(intro_complex);
+for (var i=0; i<totalTrials; i++){
+	timeline.push(complex_proc);
+}
+} else {
+timeline.push(intro_complex);
+for (var i=0; i<totalTrials; i++){
+	timeline.push(complex_proc);
+}
+timeline.push(intro_piano);
+for (var i=0; i<totalTrials; i++){
+	timeline.push(piano_proc);
+}
+}
+
+
+//wrap-up
+timeline.push(shortbreak);
+timeline.push(backup_data);
+timeline.push(exptend);
+
+
+jsPsych.init({
+timeline: timeline,
+preload_audio: audio
+});
+
+</script>
