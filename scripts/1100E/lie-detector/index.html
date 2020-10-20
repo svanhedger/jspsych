@@ -44,6 +44,8 @@ var goodDetector; //whether the test-taker thinks they are generally a good lie 
 var detector_class; //description of being a good or bad lie detector
 var correctTally = 0; //for tallying the correct answers
 var subjID = Math.random().toString(36).substr(2, 15); //randomly generate alpha-numeric string for identifier
+var WESTERN_ID; //for logging student number
+
 jsPsych.data.addProperties({subject: subjID}); //add subject id to data output
 
 //statement array
@@ -78,9 +80,22 @@ var intro = {
 	choices: ['Continue']
 };
 
+var ID = {
+	type:'survey-text',
+	questions: [
+    {prompt: "Please enter your Western ID number.", name:'ID'}
+	],
+	choices: ['Continue'],
+	post_trial_gap: 250,
+	on_finish: function(data){
+		WESTERN_ID = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).ID; 
+		jsPsych.data.addProperties({Stable_ID: STABLE_ID}); //add id to data output
+	}
+};
+
 var lie_ability = {
 	type: 'html-button-response',
-	stimulus: '<p>Before you begin, please which of the following statements is most true of you (click one)</p>',
+	stimulus: '<p>Before you begin, please select which of the following statements is most true of you (click one)</p>',
 	post_trial_gap: 500,
 	choices: ['<b>I am a bad lie detector</b></br>(i.e., I have no idea when someone is lying to me)', '<b>I am a good lie detector</b></br>(i.e., I am a good judge of when someone is telling the truth or lying)'],
 	on_finish: function(data){
@@ -95,7 +110,7 @@ var lie_ability = {
 
 var interim = {
 	type: 'html-button-response',
-	stimulus: '<p>Thank you. You will now be presented with the 20 statements about Dr.Van Hedger</p>',
+	stimulus: '<p>Thank you. You will now be presented with the 20 statements about Dr. Van Hedger</p>',
 	choices: ['Begin!'],
 	post_trial_gap: 500,
 	on_finish: function(){console.log(goodDetector);}
@@ -174,6 +189,7 @@ var final_screen = {
 
 //push to timeline
 timeline.push(intro);
+timeline.push(ID);
 timeline.push(lie_ability);
 timeline.push(interim);
 timeline.push(fact_proc);
