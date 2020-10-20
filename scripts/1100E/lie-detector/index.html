@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>1100E-Lab-04</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="jspsych-6.0.2/jspsych.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-survey-multi-choice.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-survey-text.js"></script>
+
+
+<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+Who's a Good Lie Detector?
+--------------------------
+In this study you will read 20 statements about 
+Dr. Van Hedger and have to determine whether or
+not you think each statement is true or false.
+
+Prior to performing this 'lie detector task' you
+will be asked to identify as either a good or 
+bad lie detector (forced-choice)
+
+October 2020
+*/
+
+
+//Timeline and other Variables
+var timeline = []; //this is the timeline to which all trials are pushed
+
+var goodDetector; //whether the test-taker thinks they are generally a good lie detector
+var detector_class; //description of being a good or bad lie detector
+var correctTally = 0; //for tallying the correct answers
+var subjID = Math.random().toString(36).substr(2, 15); //randomly generate alpha-numeric string for identifier
+jsPsych.data.addProperties({subject: subjID}); //add subject id to data output
+
+//statement array
+var statements = [
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...was once a member (in good standing) of the Hermit Crab Association (HCA)</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...loves cheese</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has a cat named Tiffany</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...used to play the trombone</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...is a fraternal twin</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...once ran a marathon dressed as Waldo from "Where’s Waldo"</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has a favourite Great Lake (Lake Ontario)</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has visited all 50 United States</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...is afraid of Roombas</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...owns a Roomba</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...is a lapsed member of the Thames Valley Metal Detecting Association (TVMDA)</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has been to more Taylor Swift concerts than he can count on one hand</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...enjoys painting</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has four sisters-in-law</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...played third base for his high school baseball team</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has a stamp collection</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...accidentally stalked the Jonas Brothers in 2008</p>', truth: 1},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...plays the accordion</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...has read the <em>Twilight</em> series by Stephanie Meyers</p>', truth: 0},
+{statement: '<p style="color:red">Dr. Van Hedger...</p><p>...is a fourth-generation vegetarian</p>', truth: 1}
+];
+
+//trials
+var intro = {
+	type: 'html-button-response',
+	stimulus: '<p style="color: red"><b>Who Is A Good Lie Detector?</b></p>'+
+			  '<p>In this study, you will be presented with 20 statements about Dr. Van Hedger.</br>Your task is to read each statement carefully and determine whether it is TRUE or FALSE.</p>',
+	choices: ['Continue']
+};
+
+var lie_ability = {
+	type: 'html-button-response',
+	stimulus: '<p>Before you begin, please which of the following statements is most true of you (click one)</p>',
+	post_trial_gap: 500,
+	choices: ['<b>I am a bad lie detector</b></br>(i.e., I have no idea when someone is lying to me)', '<b>I am a good lie detector</b></br>(i.e., I am a good judge of when someone is telling the truth or lying)'],
+	on_finish: function(data){
+		goodDetector = jsPsych.data.get().last(1).values()[0].button_pressed; //0=bad detector, 1=good detector
+		if(goodDetector == 1){
+			detector_class = 'good';
+			} else {
+			detector_class = 'bad';
+		}
+	}	
+};
+
+var interim = {
+	type: 'html-button-response',
+	stimulus: '<p>Thank you. You will now be presented with the 20 statements about Dr.Van Hedger</p>',
+	choices: ['Begin!'],
+	post_trial_gap: 500,
+	on_finish: function(){console.log(goodDetector);}
+};
+
+//main procedure
+var fact = {
+	type: 'html-button-response',
+	stimulus: jsPsych.timelineVariable('statement'),
+	choices: ['FALSE', 'TRUE'],
+	post_trial_gap: 500,
+	data: {truth: jsPsych.timelineVariable('truth')},
+	on_finish: function(data){
+		var curAns = jsPsych.data.get().last(1).values()[0].button_pressed; //current response
+		if(curAns == data.truth){
+			var curCorrect = 1;
+			correctTally += 1;
+			} else {
+				var curCorrect = 0;
+			}
+		console.log(correctTally);	
+		jsPsych.data.addDataToLastTrial({
+			designation: "statement",
+			Correct: curCorrect
+		});	
+	}	
+};
+
+var fact_proc = {
+	timeline: [fact],
+	timeline_variables: statements,
+	randomize_order: true
+};
+
+//wrap up
+var summary_screen = {
+	type: 'html-keyboard-response',
+	stimulus: '************',
+	trial_duration: 1000,
+	choices: jsPsych.NO_KEYS,
+	on_finish: function(data){
+		jsPsych.data.addDataToLastTrial({
+			designation: "SUMMARY",
+			TotalCorrect: correctTally,
+			GoodDetector: goodDetector
+		});	
+	}
+};
+
+var backup_data = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Calculating your results...</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000,
+	on_finish: function() {
+          var csvData = jsPsych.data.get().csv(); //this is the csv data
+          console.log(csvData);
+          var formData = {
+            exp: "1100E_LIE", 
+            subj: subjID,
+            results: csvData
+          };
+          $.post(
+            "https://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+    }
+};
+
+var final_screen = {
+	type: 'html-keyboard-response',
+	stimulus: function(){return '<p>Thank you for your responses!</p><p>You correctly identified '+correctTally+' of 20 statements.</p><p>At the beginning of the study, you identified as a<b> '+detector_class+' </b>lie detector.</p><p>Please write this information down and be prepared to discuss the activity during the lab section. Thanks again!<p><p>(You may exit out of the browser window when you are ready.)</p>';},
+	choices: jsPsych.NO_KEYS
+}
+
+
+//push to timeline
+timeline.push(intro);
+timeline.push(lie_ability);
+timeline.push(interim);
+timeline.push(fact_proc);
+timeline.push(summary_screen);
+timeline.push(backup_data);
+timeline.push(final_screen);
+
+
+jsPsych.init({
+timeline: timeline
+});
+
+</script>
