@@ -89,7 +89,7 @@ var ID = {
 	post_trial_gap: 250,
 	on_finish: function(data){
 		WESTERN_ID = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).ID; 
-		jsPsych.data.addProperties({Stable_ID: STABLE_ID}); //add id to data output
+		jsPsych.data.addProperties({WID: WESTERN_ID}); //add id to data output
 	}
 };
 
