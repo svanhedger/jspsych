@@ -100,11 +100,13 @@ var lie_ability = {
 	choices: ['<b>I am a bad lie detector</b></br>(i.e., I have no idea when someone is lying to me)', '<b>I am a good lie detector</b></br>(i.e., I am a good judge of when someone is telling the truth or lying)'],
 	on_finish: function(data){
 		goodDetector = jsPsych.data.get().last(1).values()[0].button_pressed; //0=bad detector, 1=good detector
+		console.log(goodDetector);
 		if(goodDetector == 1){
 			detector_class = 'good';
 			} else {
 			detector_class = 'bad';
 		}
+		jsPsych.data.addProperties({LIE_ABILITY: detector_class}); //add id to data output
 	}	
 };
 
