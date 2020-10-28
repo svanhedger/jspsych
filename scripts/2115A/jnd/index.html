@@ -58,7 +58,7 @@ var complex_array = ['tones/complex/100.wav', 'tones/complex/75.wav', 'tones/com
 
 //Preload Sounds
 var audio = [...[piano_standard], ...[complex_standard], ...piano_array, ...complex_array];
-//console.log(audio);
+console.log(audio);
 
 var cent_lookup = [100, 75, 50, 40, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2]; //for looking up current cent difference
 var pianoIndex = 0; //start at the beginning of the piano array (i.e., at 100 cents)
@@ -107,6 +107,7 @@ var piano_setup = {
 	stimulus: '<p style="font-size: 40px;">+</p>',
 	trial_duration: 1000,
 	choices: jsPsych.NO_KEYS,
+	post_trial_gap: 1000,
 	on_finish: function(){
 		p_array_current = [{tone: piano_standard, deviant: 0}, {tone: piano_standard, deviant: 0}, {tone: piano_array[pianoIndex], deviant: 1}];
 		p_array_current = jsPsych.randomization.shuffle(p_array_current);
@@ -204,6 +205,7 @@ var complex_setup = {
 	type: 'html-keyboard-response',
 	stimulus: '<p style="font-size: 40px;">+</p>',
 	trial_duration: 1000,
+	post_trial_gap: 1000,
 	choices: jsPsych.NO_KEYS,
 	on_finish: function(){
 		c_array_current = [{tone: complex_standard, deviant: 0}, {tone: complex_standard, deviant: 0}, {tone: complex_array[complexIndex], deviant: 1}];
