@@ -13,7 +13,7 @@
 <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
 <script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
 <script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
-
+<script src="audcheck.js"></script>
 
 <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
 
@@ -56,9 +56,13 @@ var complex_standard = 'tones/complex/00.wav'; //standard complex tone (G5)
 var piano_array = ['tones/piano/100.wav', 'tones/piano/75.wav', 'tones/piano/50.wav', 'tones/piano/40.wav', 'tones/piano/30.wav', 'tones/piano/25.wav', 'tones/piano/20.wav', 'tones/piano/18.wav', 'tones/piano/16.wav', 'tones/piano/14.wav', 'tones/piano/12.wav', 'tones/piano/10.wav', 'tones/piano/08.wav', 'tones/piano/06.wav', 'tones/piano/04.wav', 'tones/piano/02.wav'];
 var complex_array = ['tones/complex/100.wav', 'tones/complex/75.wav', 'tones/complex/50.wav', 'tones/complex/40.wav', 'tones/complex/30.wav', 'tones/complex/25.wav', 'tones/complex/20.wav', 'tones/complex/18.wav', 'tones/complex/16.wav', 'tones/complex/14.wav', 'tones/complex/12.wav', 'tones/complex/10.wav', 'tones/complex/08.wav', 'tones/complex/06.wav', 'tones/complex/04.wav', 'tones/complex/02.wav'];
 
+//Noise adjustment
+var audcalibsound = return_audcheck_folder();
+
+
 //Preload Sounds
-var audio = [...[piano_standard], ...[complex_standard], ...piano_array, ...complex_array];
-console.log(audio);
+var audioload = [...[piano_standard], ...[complex_standard], ...piano_array, ...complex_array, ...audcalibsound];
+console.log(audioload);
 
 var cent_lookup = [100, 75, 50, 40, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2]; //for looking up current cent difference
 var pianoIndex = 0; //start at the beginning of the piano array (i.e., at 100 cents)
@@ -107,7 +111,7 @@ var piano_setup = {
 	stimulus: '<p style="font-size: 40px;">+</p>',
 	trial_duration: 1000,
 	choices: jsPsych.NO_KEYS,
-	post_trial_gap: 1000,
+	post_trial_gap: 500,
 	on_finish: function(){
 		p_array_current = [{tone: piano_standard, deviant: 0}, {tone: piano_standard, deviant: 0}, {tone: piano_array[pianoIndex], deviant: 1}];
 		p_array_current = jsPsych.randomization.shuffle(p_array_current);
@@ -205,7 +209,7 @@ var complex_setup = {
 	type: 'html-keyboard-response',
 	stimulus: '<p style="font-size: 40px;">+</p>',
 	trial_duration: 1000,
-	post_trial_gap: 1000,
+	post_trial_gap: 500,
 	choices: jsPsych.NO_KEYS,
 	on_finish: function(){
 		c_array_current = [{tone: complex_standard, deviant: 0}, {tone: complex_standard, deviant: 0}, {tone: complex_array[complexIndex], deviant: 1}];
@@ -343,6 +347,7 @@ var exptend = {
 //PUSH THE EXPERIMENT TO THE TIMELINE
 
 //introduction
+timeline.push(audcheck);
 timeline.push(intro_general);
 
 //adaptive presentation of blocks based on 'pianoFirst'
@@ -376,7 +381,7 @@ timeline.push(exptend);
 
 jsPsych.init({
 timeline: timeline,
-preload_audio: audio
+preload_audio: audioload
 });
 
 </script>
