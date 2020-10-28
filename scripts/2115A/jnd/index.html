@@ -109,13 +109,20 @@ var intro_complex = {
 var piano_setup = {
 	type: 'html-keyboard-response',
 	stimulus: '<p style="font-size: 40px;">+</p>',
-	trial_duration: 1000,
+	trial_duration: 750,
 	choices: jsPsych.NO_KEYS,
-	post_trial_gap: 500,
+	post_trial_gap: 250,
 	on_finish: function(){
 		p_array_current = [{tone: piano_standard, deviant: 0}, {tone: piano_standard, deviant: 0}, {tone: piano_array[pianoIndex], deviant: 1}];
 		p_array_current = jsPsych.randomization.shuffle(p_array_current);
 	}
+};
+
+var buffer_screen = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 40px;">+</p>',
+	trial_duration: 500,
+	choices: jsPsych.NO_KEYS
 };
 
 var piano_01 = {
@@ -201,15 +208,15 @@ var P_RESP_3AFC = {
 };
 
 var piano_proc = {
-	timeline: [piano_setup, piano_01, piano_02, piano_03, P_RESP_3AFC]
+	timeline: [piano_setup, buffer_screen, piano_01, piano_02, piano_03, P_RESP_3AFC]
 }
 
 //COMPLEX EXPT
 var complex_setup = {
 	type: 'html-keyboard-response',
 	stimulus: '<p style="font-size: 40px;">+</p>',
-	trial_duration: 1000,
-	post_trial_gap: 500,
+	trial_duration: 750,
+	post_trial_gap: 250,
 	choices: jsPsych.NO_KEYS,
 	on_finish: function(){
 		c_array_current = [{tone: complex_standard, deviant: 0}, {tone: complex_standard, deviant: 0}, {tone: complex_array[complexIndex], deviant: 1}];
@@ -301,7 +308,7 @@ var C_RESP_3AFC = {
 };
 
 var complex_proc = {
-	timeline: [complex_setup, complex_01, complex_02, complex_03, C_RESP_3AFC]
+	timeline: [complex_setup, buffer_screen, complex_01, complex_02, complex_03, C_RESP_3AFC]
 };
 
 
