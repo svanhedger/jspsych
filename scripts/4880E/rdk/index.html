@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sample Stimuli</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-6.1.0/jspsych.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-rdk.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-audio-keyboard-response.js"></script>
+	
+    <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+  </head>
+    <body>
+      <script>
+
+
+//Define timeline
+var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+var i = 0; //counter-increment
+
+var shepD_standard = ['sounds/D_00.mp3']; //no noise burst, descending
+var shepU_standard = ['sounds/U_00.mp3']; //no noise burst, ascending
+
+var shepD_noise = ['sounds/D_L01.mp3', 'sounds/D_L02.mp3', 'sounds/D_L03.mp3', 'sounds/D_R01.mp3', 'sounds/D_R02.mp3', 'sounds/D_R03.mp3']; //noise bursts, descending
+var shepU_noise = ['sounds/U_L01.mp3', 'sounds/U_L02.mp3', 'sounds/U_L03.mp3', 'sounds/U_R01.mp3', 'sounds/U_R02.mp3', 'sounds/U_R03.mp3']; //noise bursts, descending
+
+shepD_noise = jsPsych.randomization.repeat(shepD_noise, 1);
+shepU_noise = jsPsych.randomization.repeat(shepU_noise, 1);
+
+var audPreload = [...shepD_noise, ...shepU_noise, ...shepD_standard, ...shepU_standard];
+
+//Overal Intro
+var welcome = {
+	type: 'html-button-response',
+	stimulus:'<p><b>Perceptual Judgments in Audition and Vision</b></p><p>Sample Stimuli</p>',
+	choices: ['Continue']
+};
+
+timeline.push(welcome);
+
+
+var shepD_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Shepard Tone (Descending)</br>No noise burst</p>',
+	choices: ['Listen']
+	};
+
+var shepU_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Shepard Tone (Ascending)</br>No noise burst</p>',
+	choices: ['Listen']
+	};
+	
+var shepU_introN = {
+	type: 'html-button-response',
+	stimulus:'<p>Shepard Tone (Ascending)</br>Noise burst</p>',
+	choices: ['Listen']
+	};
+
+var shepD_introN = {
+	type: 'html-button-response',
+	stimulus:'<p>Shepard Tone (Descending)</br>Noise burst</p>',
+	choices: ['Listen']
+	};
+
+var shepard_down = {
+	type: 'audio-keyboard-response',
+	stimulus: shepD_standard[0],
+	response_ends_trial: false,
+	trial_ends_after_audio: true	
+	};
+	
+var shepard_down_noise = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return shepD_noise[i];},
+	response_ends_trial: false,
+	trial_ends_after_audio: true,
+	on_finish: function(){i += 1;}
+	};	
+
+var shepard_up = {	
+	type: 'audio-keyboard-response',
+	stimulus: shepU_standard[0],
+	response_ends_trial: false,
+	trial_ends_after_audio: true	
+	};
+	
+var shepard_up_noise = {
+	type: 'audio-keyboard-response',
+	stimulus: function(){return shepU_noise[i];},
+	response_ends_trial: false,
+	trial_ends_after_audio: true,
+	on_finish: function(){i += 1;}
+	};		
+	
+timeline.push(shepD_intro, shepard_down, shepD_introN, shepard_down_noise, shepU_intro, shepard_up, shepU_introN, shepard_up_noise);	
+
+
+//RDK Samples
+var high_up = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: 90,
+	coherence: 0.5,
+	RDK_type: 5,
+	trial_duration: 1000,
+	dot_life: 10
+}
+
+var low_up = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: 90,
+	coherence: 0.2,
+	RDK_type: 5,
+	trial_duration: 1000,
+	dot_life: 10
+}
+
+var zero = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: 90,
+	coherence: 0,
+	RDK_type: 5,
+	trial_duration: 1000,
+	dot_life: 10
+}
+
+var low_down = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: 270,
+	coherence: 0.2,
+	RDK_type: 5,
+	trial_duration: 1000,
+	dot_life: 10
+}
+
+var high_down = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: 270,
+	coherence: 0.5,
+	RDK_type: 5,
+	trial_duration: 1000,
+	dot_life: 10
+}
+
+
+var su_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Stronger Upward Motion</p>',
+	choices: ['View']
+	}
+	
+var wu_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Weaker Upward Motion</p>',
+	choices: ['View']
+	}
+
+var z_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>No Coherent Motion</p>',
+	choices: ['View']
+	}	
+
+var wd_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Weaker Downward Motion</p>',
+	choices: ['View']
+	}	
+
+var sd_intro = {
+	type: 'html-button-response',
+	stimulus:'<p>Stronger Downward Motion</p>',
+	choices: ['View']
+	}	
+	
+timeline.push(su_intro, high_up, wu_intro, low_up, z_intro, zero, wd_intro, low_down, sd_intro, high_down);
+
+
+     jsPsych.init({
+        timeline: timeline,
+		preload_audio: audPreload
+      });
+    </script>
+  </body>
+</html>
