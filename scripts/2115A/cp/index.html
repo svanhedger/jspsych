@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PSY2115A-3</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="jspsych-6.1.0/jspsych.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-audio-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="audcheck.js"></script>
+
+<link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+	
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+
+
+//////////////////////////////////////
+// Categorical Perception of Speech //
+//////////////////////////////////////
+
+Stephen Van Hedger, 2020
+
+This experiment demos classic categorical perception for speech sounds
+(ranging from 'ba' to 'da'). 
+
+*/
+
+//Timeline and other Variables
+var timeline = []; //this is the timeline to which all trials are pushed
+var totalTrials = 54; //this is how many trials participants will experience for each subtest
+
+//Participant ID
+var identifier = jsPsych.randomization.randomID(15); //random alphanumeric identifier
+var speechFirst = Math.floor(Math.random()*2) //randomly determine ordering
+
+//Tones
+
+var speech_array = ['audMain/speech/bd_01.mp3', 'audMain/speech/bd_02.mp3', 'audMain/speech/bd_03.mp3', 'audMain/speech/bd_04.mp3', 'audMain/speech/bd_05.mp3', 'audMain/speech/bd_06.mp3', 'audMain/speech/bd_07.mp3', 'audMain/speech/bd_08.mp3', 'audMain/speech/bd_09.mp3'];
+var music_array = ['audMain/music/sh_01.mp3', 'audMain/music/sh_02.mp3', 'audMain/music/sh_03.mp3', 'audMain/music/sh_04.mp3', 'audMain/music/sh_05.mp3', 'audMain/music/sh_06.mp3', 'audMain/music/sh_07.mp3', 'audMain/music/sh_08.mp3', 'audMain/music/sh_09.mp3'];
+
+//Noise adjustment
+var audcalibsound = return_audcheck_folder();
+
+//Preload Sounds
+var audioload = [...speech_array, ...music_array, ...audcalibsound];
+
+
+/*******************/
+/** PLAY EXAMPLES **/
+/*******************/
+
+var numBA = 0; //to log the number of times the participant plays the BA sample
+var numDA = 0; //to log the number of times the participant plays the DA sample
+var numS = 0; //to log the number of times the participant plays the SAD sample
+var numH = 0; //to log the number of times the participant plays the HAPPY sample
+
+function playBA() {
+	var playBA = 'examples/BA.mp3';
+	var audio = document.getElementById('playerBA');
+	document.getElementById('playerBA').src = playBA;	
+	audio.play(); //this actually plays the file	
+	//Log the button press in an ongoing array for the trial
+	numBA += 1;
+};
+
+function playDA() {
+	var playDA = 'examples/DA.mp3';
+	var audio = document.getElementById('playerDA');
+	document.getElementById('playerDA').src = playDA;	
+	audio.play(); //this actually plays the file	
+	//Log the button press in an ongoing array for the trial
+	numDA += 1;
+};
+
+function playS() {
+	var playS = 'examples/SAD.mp3';
+	var audio = document.getElementById('playerS');
+	document.getElementById('playerS').src = playS;	
+	audio.play(); //this actually plays the file	
+	//Log the button press in an ongoing array for the trial
+	numS += 1;
+};
+
+function playH() {
+	var playH = 'examples/HAPPY.mp3';
+	var audio = document.getElementById('playerH');
+	document.getElementById('playerH').src = playH;	
+	audio.play(); //this actually plays the file	
+	//Log the button press in an ongoing array for the trial
+	numH += 1;
+};
+
+
+
+//Introduction Screens
+var intro_general = {
+	type: 'html-button-response',
+	stimulus: '<p style="color:#e31838;"><b>Portfolio 3 Study</b></p>' +
+			  '<p>Welcome to the third porfolio study!</br>In this study, you will get a first-hand feel of <b>categorical perception</b><p>' +
+			  '<p>On each trial, you will hear a sound. You will be asked to categorize this sound based on the labels provided on the computer screen.</p>' +
+			  '<p>You will complete this task twice - once while listening to speech sounds, and once while listening to music sounds.</br>Each time, you will complete 72 trials.</p>',
+	choices: ['Continue'],
+	post_trial_gap: 200
+};
+
+var intro_speech = {
+	type: 'html-button-response',
+	stimulus: '<p>You will now complete the task while listening to <b>speech sounds</b></p>' +
+		      '<p>On each trial, you will hear a single sound. You will be asked to categorize the sound as either <b>ba</b> or <b>da</b>.' +
+			  '<p>To hear clear examples of these two categories, press the blue buttons below.</p>' +
+			  "<p><input class='jspsych-btn' style='background-color:powderblue;' id='BA' type='button' value='BA' onclick='playBA()'><audio id='playerBA' src=''></audio></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+			  "<input class='jspsych-btn' style='background-color:powderblue;' id='DA' type='button' value='DA' onclick='playDA()'><audio id='playerDA' src=''></audio></input></p>",
+	choices: ['Begin'],
+	post_trial_gap: 200
+};
+
+var intro_music = {
+	type: 'html-button-response',
+	stimulus: '<p>You will now complete the task while listening to <b>music sounds</b></p>' +
+		      '<p>On each trial, you will hear a musical chord. You will be asked to categorize the sound as either <b>sad</b> or <b>happy</b>.' +
+			  '<p>(If you have a musical background, it might help to know that the "sad" sound is a <em>minor</em> chord and the "happy" sound is a <em>major</em> chord.)</p>' +
+			  '<p>To hear clear examples of these two categories, press the blue buttons below.</p>' +
+			  "<p><input class='jspsych-btn' style='background-color:powderblue;' id='S' type='button' value='SAD' onclick='playS()'><audio id='playerS' src=''></audio></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+			  "<input class='jspsych-btn' style='background-color:powderblue;' id='H' type='button' value='HAPPY' onclick='playH()'><audio id='playerH' src=''></audio></input></p>",
+	choices: ['Begin'],
+	post_trial_gap: 200
+};
+
+//Timeline Variables
+var speech_vars = [
+{file: 'audMain/speech/bd_01.mp3', step: 0, cat: 'speech'},
+{file: 'audMain/speech/bd_02.mp3', step: 1, cat: 'speech'},
+{file: 'audMain/speech/bd_03.mp3', step: 2, cat: 'speech'},
+{file: 'audMain/speech/bd_04.mp3', step: 3, cat: 'speech'},
+{file: 'audMain/speech/bd_05.mp3', step: 4, cat: 'speech'},
+{file: 'audMain/speech/bd_06.mp3', step: 5, cat: 'speech'},
+{file: 'audMain/speech/bd_07.mp3', step: 6, cat: 'speech'},
+{file: 'audMain/speech/bd_08.mp3', step: 7, cat: 'speech'},
+{file: 'audMain/speech/bd_09.mp3', step: 8, cat: 'speech'}
+]
+
+speech_vars = jsPsych.randomization.repeat(speech_vars, 8);
+
+var music_vars = [
+{file: 'audMain/music/sh_01.mp3', step: 0, cat: 'music'},
+{file: 'audMain/music/sh_02.mp3', step: 1, cat: 'music'},
+{file: 'audMain/music/sh_03.mp3', step: 2, cat: 'music'},
+{file: 'audMain/music/sh_04.mp3', step: 3, cat: 'music'},
+{file: 'audMain/music/sh_05.mp3', step: 4, cat: 'music'},
+{file: 'audMain/music/sh_06.mp3', step: 5, cat: 'music'},
+{file: 'audMain/music/sh_07.mp3', step: 6, cat: 'music'},
+{file: 'audMain/music/sh_08.mp3', step: 7, cat: 'music'},
+{file: 'audMain/music/sh_09.mp3', step: 8, cat: 'music'}
+]
+
+music_vars = jsPsych.randomization.repeat(music_vars, 8);
+
+
+//Variables for storing responses (for summary plots) - clunky but works
+var s_ans = [0,0,0,0,0,0,0,0,0]; //speech
+var m_ans = [0,0,0,0,0,0,0,0,0]; //music
+
+
+//Main Trial Screens
+var fixation = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size:40px;">+</p>',
+	trial_duration: 500,
+	choices: jsPsych.NO_KEYS
+};
+
+//speech
+var speech_cat = {
+	type: 'audio-button-response',
+	stimulus: jsPsych.timelineVariable('file'),
+	prompt: '<p>Please classify the sound you heard.</p>',
+	choices: ['ba', 'da'],
+	post_trial_gap: 500,
+	data: {step: jsPsych.timelineVariable('step'), type: jsPsych.timelineVariable('cat')},
+	on_finish: function(data){
+		var curRESP = jsPsych.data.get().last(1).values()[0].button_pressed; //what the participant heard
+		if(curRESP == 1){
+			var index = data.step; //what step was heard
+			s_ans[index] += 1; //does this work?
+			//console.log(s_ans); //let's find out! (yes)
+		}
+	}
+};
+
+//music
+var music_cat = {
+	type: 'audio-button-response',
+	stimulus: jsPsych.timelineVariable('file'),
+	prompt: '<p>Please classify the sound you heard.</p>',
+	choices: ['sad', 'happy'],
+	post_trial_gap: 500,
+	data: {step: jsPsych.timelineVariable('step'), type: jsPsych.timelineVariable('cat')},
+	on_finish: function(data){
+		var curRESP = jsPsych.data.get().last(1).values()[0].button_pressed; //what the participant heard
+		if(curRESP == 1){
+			var index = data.step; //what step was heard
+			m_ans[index] += 1; //does this work?
+			//console.log(s_ans); //let's find out! (yes)
+		}
+	}
+};
+
+//Short Break
+var shortbreak = {
+	type: 'html-button-response',
+	stimulus: '<p>You may take a short break if you wish.</p>',
+	choices: ['Continue'],
+	post_trial_gap: 500
+}
+
+//Save the Data
+var backup_data = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Saving your results...</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000,
+	on_finish: function() {
+          var csvData = jsPsych.data.get().csv(); //this is the csv data
+          console.log(csvData);
+          var formData = {
+            exp: "P2115A_03", 
+            subj: identifier,
+            results: csvData
+          };
+          $.post(
+            "https://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+    }
+};
+
+//Feedback Graph
+var feedback_screen = {
+	type: 'html-keyboard-response',
+	stimulus: function(){
+		var html = '<p>Here is a summary of your performance.</p><p><b>Please download this image or take a screenshot of this graph.</b> You will need to paste it into the reflection worksheet.</p><div id="myDiv" style="width:65vw;height:65vh;"></div><p>Once you have taken a screenshot, you may exit this tab.</p>';
+	
+		setTimeout(function(){
+		var speechPlot = {
+		x: [1,2,3,4,5,6,7,8,9],
+		y: [s_ans[0], s_ans[1], s_ans[2], s_ans[3], s_ans[4], s_ans[5], s_ans[6], s_ans[7], s_ans[8]],
+		mode: 'scatter',
+		opacity: 0.5,
+		name: 'BA-DA',
+		marker: {
+			size: 10,
+			color: 'rgb(255, 0, 0)',
+			line: {
+				color: 'rgb(255, 0, 0)',
+				width: 3
+			}
+		}
+	};	
+		var musicPlot = {
+		x: [1,2,3,4,5,6,7,8,9],
+		y: [m_ans[0], m_ans[1], m_ans[2], m_ans[3], m_ans[4], m_ans[5], m_ans[6], m_ans[7], m_ans[8]],
+		mode: 'scatter',
+		opacity: 0.5,
+		name: 'SAD-HAPPY',
+		marker: {
+			size: 10,
+			color: 'rgb(0, 0, 255)',
+			line: {
+				color: 'rgb(0, 0, 255)',
+				width: 3
+			}
+		}
+	};		
+	
+		var layout = {
+		title: '',
+		xaxis: {
+			title: 'Stimulus Steps',
+			titlefont: {
+				family: 'Arial, sans-serif',
+				size: 14
+				}
+				},
+		yaxis: {
+			title: 'Number of DA / HAPPY Responses',
+			titlefont: {
+				family: 'Arial, sans-serif',
+				size: 14
+				}
+				}
+		};				
+
+		var data = [speechPlot, musicPlot];
+
+		Plotly.newPlot('myDiv', data, layout);
+		}, 500);
+
+		return [html];},
+	choices: jsPsych.NO_KEYS
+};
+
+//Define the procedures
+var speech_proc = {
+	timeline: [fixation, speech_cat],
+	timeline_variables: speech_vars
+}
+
+var music_proc = {
+	timeline: [fixation, music_cat],
+	timeline_variables: music_vars
+}
+
+
+//Push everything to timeline!
+timeline.push(intro_general);
+
+if(speechFirst){
+	timeline.push(intro_speech, speech_proc, shortbreak, intro_music, music_proc, backup_data, feedback_screen);
+	} else {
+	timeline.push(intro_music, music_proc, shortbreak, intro_speech, speech_proc, backup_data, feedback_screen);
+	}
+
+
+jsPsych.init({
+timeline: timeline,
+preload_audio: audioload
+});
+
+</script>

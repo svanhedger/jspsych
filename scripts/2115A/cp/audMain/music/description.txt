@@ -1,0 +1,3 @@
+Standards: C (261.63 Hz) && G (392 Hz)
+
+Middle Hz ranges from Eb (01) to E (09), with a continuum of 12.5 cents. e.g., sh_02 is Eb + 12.5c, sh_03 is Eb + 25c etc.
