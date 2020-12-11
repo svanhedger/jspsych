@@ -485,6 +485,13 @@ var final_screen = {
 
 timeline.push(training_proc);
 timeline.push(MOT_MAIN_PROC);
+
+//exit fullscreen
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: false
+});
+
 timeline.push(backup_data);
 timeline.push(final_screen);
 
