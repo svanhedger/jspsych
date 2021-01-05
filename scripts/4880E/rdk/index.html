@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sample Stimuli</title>
+    <title>Perception Study</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="jspsych-6.1.0/jspsych.js"></script>
 	<script src="jspsych-6.1.0/plugins/jspsych-rdk.js"></script>
 	<script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
 	<script src="jspsych-6.1.0/plugins/jspsych-audio-keyboard-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-audio-button-response.js"></script>
+	<script src="audcheck.js"></script>
 	
     <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
 
@@ -15,177 +18,517 @@
       <script>
 
 
+////////////////////
+//Global Variables//
+////////////////////
+
 //Define timeline
 var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
-var i = 0; //counter-increment
 
-var shepD_standard = ['sounds/D_00.mp3']; //no noise burst, descending
-var shepU_standard = ['sounds/U_00.mp3']; //no noise burst, ascending
+//Counterbalance Ordering
+var descendingFirst = (Math.random()>0.5)? 1 : 0 //randomize order (descending scales first or second)
+jsPsych.data.addProperties({Descending_First: descendingFirst}); //add counterbalance to data output
 
-var shepD_noise = ['sounds/D_L01.mp3', 'sounds/D_L02.mp3', 'sounds/D_L03.mp3', 'sounds/D_R01.mp3', 'sounds/D_R02.mp3', 'sounds/D_R03.mp3']; //noise bursts, descending
-var shepU_noise = ['sounds/U_L01.mp3', 'sounds/U_L02.mp3', 'sounds/U_L03.mp3', 'sounds/U_R01.mp3', 'sounds/U_R02.mp3', 'sounds/U_R03.mp3']; //noise bursts, descending
+//Participant Identifier
+var participantID = Math.random().toString(36).substr(2, 15); //random alphanumeric string for ID
+jsPsych.data.addProperties({participant: participantID}); //add participant ID to data output
 
-shepD_noise = jsPsych.randomization.repeat(shepD_noise, 1);
-shepU_noise = jsPsych.randomization.repeat(shepU_noise, 1);
+//Signal Detection
+var SDT; //for use in calculating SDT in noise detection (if applicable)
+var totalHit = 0; //tallying HITS
+var totalFA = 0; //tallying FALSE ALARMS
+var totalTarget = 0; //tallying TARGETS
+var totalNonTarget = 0; //tallying NONTARGETS
 
-var audPreload = [...shepD_noise, ...shepU_noise, ...shepD_standard, ...shepU_standard];
+var setFeedback; //for providing feedback in the practice trials
+
+var blockCounter = 1; //for specifying which block participants are completing
+
+//Shepard Tone Stimuli (for preloading)
+var shepAudio = [
+'sounds/DLONG_00.mp3', 'sounds/DLONG_L06.mp3', 'sounds/DLONG_L18.mp3', 'sounds/DLONG_R06.mp3', 'sounds/DLONG_R18.mp3',
+'sounds/ULONG_00.mp3', 'sounds/ULONG_L06.mp3', 'sounds/ULONG_L18.mp3', 'sounds/ULONG_R06.mp3', 'sounds/ULONG_R18.mp3',
+'sounds/USHORT_00.mp3', 'sounds/USHORT_L02.mp3', 'sounds/USHORT_L06.mp3', 'sounds/USHORT_R02.mp3', 'sounds/USHORT_R06.mp3',
+'sounds/DSHORT_00.mp3', 'sounds/DSHORT_L02.mp3', 'sounds/DSHORT_L06.mp3', 'sounds/DSHORT_R02.mp3', 'sounds/DSHORT_R06.mp3'
+];
+
 
 //Overal Intro
 var welcome = {
 	type: 'html-button-response',
-	stimulus:'<p><b>Perceptual Judgments in Audition and Vision</b></p><p>Sample Stimuli</p>',
-	choices: ['Continue']
+	stimulus:'<p><b>Welcome to the study!</b></p><p>This study involves making perceptual judgments about sounds and images.</p>'+
+			 '<p>Before we begin, you will complete a short sound calibration. This is to make sure that you will be able to hear the sounds in the main study.</p>',
+	choices: ['Begin Sound Calibration']
 };
 
-timeline.push(welcome);
+///////////////////////
+// Sound Calibration //
+///////////////////////
+/*
+Taken from audcheck.js
+(simply push audcheck to the timeline when desired)
+*/
+
+// timeline.push(audcheck); simple auditory calibration
+var audcalib = return_audcheck_folder(); //auditory calibration folder
 
 
-var shepD_intro = {
+////////////////////////////////////////////////
+// Motion Detection Task (Diverted Attention) //
+////////////////////////////////////////////////
+
+// Noise Practice //
+var noiseburst_instruct = {
 	type: 'html-button-response',
-	stimulus:'<p>Shepard Tone (Descending)</br>No noise burst</p>',
-	choices: ['Listen']
-	};
+	stimulus: '<p>We will now introduce the main study.</p><p>In the main study, you will complete two tasks. You will now have the option of practicing them now.</p>'+
+			  '<p>The first involves listening for short "noise bursts." Occasionally, you will hear a brief noise, and you must determine whether the noise is coming from the left or the right.</p>',
+	choices: ['Begin Practice']		  
+};
 
-var shepU_intro = {
-	type: 'html-button-response',
-	stimulus:'<p>Shepard Tone (Ascending)</br>No noise burst</p>',
-	choices: ['Listen']
+var noiseburst_vars = [
+{noise: 'sounds/noiseR.wav', correctANS: 39, noiseLOC: 'R'},
+{noise: 'sounds/noiseL.wav', correctANS: 37, noiseLOC: 'L'}
+];
+
+noiseburst_vars = jsPsych.randomization.sampleWithReplacement(noiseburst_vars, 10, [5,5]); //expand the list to make it 10 trials
+
+var noisePractice = ['sounds/noiseL.wav', 'sounds/noiseR.wav']; //for preloading
+
+var noiseburst_prac = {
+	type: 'audio-keyboard-response',
+	stimulus: jsPsych.timelineVariable('noise'),
+	prompt: function(){
+		var promptext = '<p>Did the noise come from the <b>left</b> or the <b>right</b>?Press the corresponding arrow key to make your response.</p><p>left arrow key (&larr;) = left</br>right arrow key (&rarr;) = right</p>';
+		var html = '<div id="instruct"></div>';
+		setTimeout(function(){ document.getElementById("instruct").innerHTML = promptext; }, 500);
+		return html;
+		},
+	data: {correct: jsPsych.timelineVariable('correctANS'), designation: 'NOISE-PRACTICE'},
+	choices: [37,39],
+	on_finish: function(data){
+		var resp = jsPsych.data.get().last(1).values()[0].key_press; // key pressed
+		if(resp == data.correct){
+			setFeedback = '<p style="color:green;">Correct!</p>';
+			} else {
+			setFeedback = '<p style="color:red;">Incorrect</p>';
+			}
+		}	
 	};
 	
-var shepU_introN = {
-	type: 'html-button-response',
-	stimulus:'<p>Shepard Tone (Ascending)</br>Noise burst</p>',
-	choices: ['Listen']
+var feedback_screen = {
+	type: 'html-keyboard-response',
+	stimulus: function(){return setFeedback;},
+	trial_duration: 1500,
+	post_trial_gap: 250,
+	choices: jsPsych.NO_KEYS
 	};
 
-var shepD_introN = {
+var noiseburst_wrapup = {
 	type: 'html-button-response',
-	stimulus:'<p>Shepard Tone (Descending)</br>Noise burst</p>',
-	choices: ['Listen']
+	stimulus: '<p>This concludes the noise burst practice.</p><p>In the main study, these noise bursts will be embedded in musical sounds.</p>'+
+			  '<p>You should <b>IGNORE</b> the musical sounds and try to focus on the noise bursts.</p><p>Whenever you hear a noise burst in the main task, please respond as quickly as possible by pressing either the right or left arrow key.</p>'+
+			  '<p>To read more about the second task you will be performing, press the button below.</p>',
+	choices: ['Continue']
+}
+
+var noisetrain_proc = {
+	timeline: [noiseburst_prac, feedback_screen],
+	timeline_variables: noiseburst_vars,
+	randomize_order: true
 	};
 
-var shepard_down = {
-	type: 'audio-keyboard-response',
-	stimulus: shepD_standard[0],
+var noisetrain_FINAL = {
+	timeline: [noiseburst_instruct, noisetrain_proc, noiseburst_wrapup]
+};
+
+
+
+// RDK Practice //
+var rdktrain_instruct = {
+	type: 'html-button-response',
+	stimulus: '<p>The second part of the main task is a motion judgment task. It involves making judgments about the motion of blinking dots.</p><p>Occasionally, you will see some flashing dots on the screen.<p>' +
+			  '<p>Some of these dots will either be moving <b>up</b> or <b>down</b>. The rest of the dots will be moving randomly.</p>' +
+			  '<p>Your job is to judge whether the dots are moving up or down. You will make your response by pressing the up arrow or down arrow key.</p>'+
+			  '<p>To practice this task, press the button below.</p>',
+	choices: ['Begin Practice']		  
+};
+
+var rdktrain_vars = [
+{coh_dir: 90, coh_value: 0.90, correctANS: 38},
+{coh_dir: 90, coh_value: 0.70, correctANS: 38},
+{coh_dir: 90, coh_value: 0.50, correctANS: 38},
+{coh_dir: 270, coh_value: 0.90, correctANS: 40},
+{coh_dir: 270, coh_value: 0.70, correctANS: 40},
+{coh_dir: 270, coh_value: 0.50, correctANS: 40}
+];
+
+rdktrain_vars = jsPsych.randomization.sampleWithReplacement(rdktrain_vars, 12, [2,2,2,2,2,2]); //expand the list to make it 12 trials
+
+
+var rdktrain_prac = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: jsPsych.timelineVariable('coh_dir'),
+	coherence: jsPsych.timelineVariable('coh_value'),
+	RDK_type: 4,
+	aperture_width: 500,
+	dot_color: "black",
+	trial_duration: 1000,
+	aperture_type: 4,
 	response_ends_trial: false,
-	trial_ends_after_audio: true	
+	data: {designation: 'RDK-PRACTICE'}
+};
+
+var rdktrain_resp = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Were the dots moving <b>up</b> or <b>down</b>?</p><p>up arrow key (&uarr;) = up</br>down arrow key (&darr;) = down</p>'+
+			  '<p>(If you are not sure, please make your best guess)</p>',		  
+	choices: [38,40],
+	data: {designation: 'RDK-PRACTICE', correct: jsPsych.timelineVariable('correctANS')},
+	on_finish: function(data){
+		var rdkresp = jsPsych.data.get().last(1).values()[0].key_press; //this is the response
+		var cresp = data.correct;
+		if(rdkresp == data.correct){
+			setFeedback = '<p style="color:green;">Correct!</p>';
+			} else {
+			setFeedback = '<p style="color:red;">Incorrect</p>';
+			}
+	}
+};
+
+
+var rdktrain_wrapup = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the motion detection practice.</p>',
+	choices: ['Continue']
+}
+
+var rdktrain_proc = {
+	timeline: [rdktrain_prac, rdktrain_resp, feedback_screen],
+	timeline_variables: rdktrain_vars,
+	randomize_order: true
 	};
+
+var rdktrain_FINAL = {
+	timeline: [rdktrain_instruct, rdktrain_proc, rdktrain_wrapup]
+};
+
+		
 	
-var shepard_down_noise = {
+//Specific Instructions for Task
+/*
+1.Outline the general procedure
+2.Play noise bursts (only for the diverted-attention condition)
+3.Sample RDK?
+*/
+
+
+//////////////////////
+//Timeline Variables//
+//////////////////////
+
+//Ascending (Adaptation)
+var U_LONG = [
+{audFile: 'sounds/ULONG_00.mp3', type: 'no-noise', noiseLOC: 'NA', noiseTIME: 'NA', correctANS: null, direction: 'UP'},
+{audFile: 'sounds/ULONG_L06.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 6000, correctANS: 37, direction: 'UP'},
+{audFile: 'sounds/ULONG_L18.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 18000, correctANS: 37, direction: 'UP'},
+{audFile: 'sounds/ULONG_R06.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 6000, correctANS: 39, direction: 'UP'},
+{audFile: 'sounds/ULONG_R18.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 18000, correctANS: 39, direction: 'UP'}
+];
+
+U_LONG = jsPsych.randomization.sampleWithReplacement(U_LONG, 16, [12,1,1,1,1]); //75% weight for no noise, 25% weight for noise
+var U_LONG_01 = U_LONG[[0]]; //adaptation stimulus for first block of ascending
+var U_LONG_02 = U_LONG[[1]]; //adaptation stimulus for second block of ascending
+
+//Descending (Adaptation)
+var D_LONG = [
+{audFile: 'sounds/DLONG_00.mp3', type: 'no-noise', noiseLOC: 'NA', noiseTIME: 'NA', correctANS: null, direction: 'DOWN'},
+{audFile: 'sounds/DLONG_L06.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 6000, correctANS: 37, direction: 'DOWN'},
+{audFile: 'sounds/DLONG_L18.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 18000, correctANS: 37, direction: 'DOWN'},
+{audFile: 'sounds/DLONG_R06.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 6000, correctANS: 39, direction: 'DOWN'},
+{audFile: 'sounds/DLONG_R18.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 18000, correctANS: 39, direction: 'DOWN'}
+];
+
+D_LONG = jsPsych.randomization.sampleWithReplacement(D_LONG, 16, [12,1,1,1,1]); //75% weight for no noise, 25% weight for noise
+var D_LONG_01 = [D_LONG[0]]; //adaptation stimulus for first block of ascending
+var D_LONG_02 = [D_LONG[1]]; //adaptation stimulus for second block of ascending
+
+
+//Ascending (Top-Up)
+var U_SHORT = [
+{audFile: 'sounds/USHORT_00.mp3', type: 'no-noise', noiseLOC: 'NA', noiseTIME: 'NA', correctANS: null, direction: 'UP'},
+{audFile: 'sounds/USHORT_L02.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 2000, correctANS: 37, direction: 'UP'},
+{audFile: 'sounds/USHORT_L06.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 6000, correctANS: 37, direction: 'UP'},
+{audFile: 'sounds/USHORT_R02.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 2000, correctANS: 39, direction: 'UP'},
+{audFile: 'sounds/USHORT_R06.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 6000, correctANS: 39, direction: 'UP'}
+];
+
+U_SHORT = jsPsych.randomization.sampleWithReplacement(U_SHORT, 48, [36,3,3,3,3]); //75% weight for no noise, 25% weight for noise
+var U_SHORT_01 = U_SHORT.splice(0,24); //adaptation stimulus for first block of ascending (24 trials)
+var U_SHORT_02 = U_SHORT.splice(24, 48); //adaptation stimulus for second block of ascending (24 trials)
+
+
+//Descending (Top-Up)
+var D_SHORT = [
+{audFile: 'sounds/DSHORT_00.mp3', type: 'no-noise', noiseLOC: 'NA', noiseTIME: 'NA', correctANS: null, direction: 'DOWN'},
+{audFile: 'sounds/DSHORT_L02.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 2000, correctANS: 37, direction: 'DOWN'},
+{audFile: 'sounds/DSHORT_L06.mp3', type: 'noise', noiseLOC: 'L', noiseTIME: 6000, correctANS: 37, direction: 'DOWN'},
+{audFile: 'sounds/DSHORT_R02.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 2000, correctANS: 39, direction: 'DOWN'},
+{audFile: 'sounds/DSHORT_R06.mp3', type: 'noise', noiseLOC: 'R', noiseTIME: 6000, correctANS: 39, direction: 'DOWN'}
+];
+
+D_SHORT = jsPsych.randomization.sampleWithReplacement(D_SHORT, 48, [36,3,3,3,3]); //75% weight for no noise, 25% weight for noise
+var D_SHORT_01 = D_SHORT.splice(0,24); //adaptation stimulus for first block of ascending (24 trials)
+var D_SHORT_02 = D_SHORT.splice(24, 48); //adaptation stimulus for second block of ascending (24 trials)
+
+//RDK Stimuli
+var rdk_list = [
+{coh_dir: 90, coh_level: 2, code: 'strong_up', coh_value: 0.30},
+{coh_dir: 90, coh_level: 1, code: 'weak_up', coh_value: 0.15},
+{coh_dir: 90, coh_level: 0, code: 'zero', coh_value: 0},
+{coh_dir: 270, coh_level: -1, code: 'weak_down', coh_value: 0.15},
+{coh_dir: 270, coh_level: -2, code: 'strong_down', coh_value: 0.30}
+];
+
+var RDKLISTFINAL_01 = jsPsych.randomization.sampleWithReplacement(rdk_list, 25, [5,5,5,5,5]); //expand rdk types for block 1
+var RDKLISTFINAL_02 = jsPsych.randomization.sampleWithReplacement(rdk_list, 25, [5,5,5,5,5]); //expand rdk types for block 2
+var RDKLISTFINAL_03 = jsPsych.randomization.sampleWithReplacement(rdk_list, 25, [5,5,5,5,5]); //expand rdk types for block 3
+var RDKLISTFINAL_04 = jsPsych.randomization.sampleWithReplacement(rdk_list, 25, [5,5,5,5,5]); //expand rdk types for block 4
+
+//Combine arrays to make final timeline variables
+function mergeTimelines(tline1, tline2){
+	var temp = [];
+	for(var i=0; i<tline1.length; i++){
+		temp.push(tline1[i]);
+		}
+	for(var i=0; i<tline2.length; i++){
+		temp.push(tline2[i]);
+		}	
+	return temp;
+}
+
+function addRDKs(sounds, rdks){
+	var temp = [];
+	for(var i=0; i<sounds.length; i++){
+		var tester = Object.assign(sounds[i], rdks[i]);
+		console.log(tester);
+		temp.push(tester);
+	}
+	return temp;	
+}
+
+var D01_SOUNDS = mergeTimelines(D_LONG_01, D_SHORT_01);
+var D02_SOUNDS = mergeTimelines(D_LONG_02, D_SHORT_02);
+var U01_SOUNDS = mergeTimelines(U_LONG_01, U_SHORT_01);
+var U02_SOUNDS = mergeTimelines(U_LONG_02, D_SHORT_02);
+
+//These are the final timeline arrays that also include the appended RDKs
+var D01_FINAL = addRDKs(D01_SOUNDS, RDKLISTFINAL_01);
+var D02_FINAL = addRDKs(D02_SOUNDS, RDKLISTFINAL_02);
+var U01_FINAL = addRDKs(U01_SOUNDS, RDKLISTFINAL_03);
+var U02_FINAL = addRDKs(U02_SOUNDS, RDKLISTFINAL_04);
+
+D01_FINAL = D01_FINAL.slice(0,3); //for testing (comment out if not testing)
+
+
+//////////////////////
+//Main Trial Screens//
+//////////////////////
+
+//Shepard Scale Presentation
+var scale_presentation = {
 	type: 'audio-keyboard-response',
-	stimulus: function(){return shepD_noise[i];},
+	stimulus: jsPsych.timelineVariable('audFile'),
 	response_ends_trial: false,
 	trial_ends_after_audio: true,
-	on_finish: function(){i += 1;}
-	};	
-
-var shepard_up = {	
-	type: 'audio-keyboard-response',
-	stimulus: shepU_standard[0],
-	response_ends_trial: false,
-	trial_ends_after_audio: true	
-	};
-	
-var shepard_up_noise = {
-	type: 'audio-keyboard-response',
-	stimulus: function(){return shepU_noise[i];},
-	response_ends_trial: false,
-	trial_ends_after_audio: true,
-	on_finish: function(){i += 1;}
-	};		
-	
-timeline.push(shepD_intro, shepard_down, shepD_introN, shepard_down_noise, shepU_intro, shepard_up, shepU_introN, shepard_up_noise);	
-
-
-//RDK Samples
-var high_up = {
-	type: 'rdk',
-	number_of_dots: 200,
-	coherent_direction: 90,
-	coherence: 0.5,
-	RDK_type: 5,
-	trial_duration: 1000,
-	dot_life: 10
-}
-
-var low_up = {
-	type: 'rdk',
-	number_of_dots: 200,
-	coherent_direction: 90,
-	coherence: 0.2,
-	RDK_type: 5,
-	trial_duration: 1000,
-	dot_life: 10
-}
-
-var zero = {
-	type: 'rdk',
-	number_of_dots: 200,
-	coherent_direction: 90,
-	coherence: 0,
-	RDK_type: 5,
-	trial_duration: 1000,
-	dot_life: 10
-}
-
-var low_down = {
-	type: 'rdk',
-	number_of_dots: 200,
-	coherent_direction: 270,
-	coherence: 0.2,
-	RDK_type: 5,
-	trial_duration: 1000,
-	dot_life: 10
-}
-
-var high_down = {
-	type: 'rdk',
-	number_of_dots: 200,
-	coherent_direction: 270,
-	coherence: 0.5,
-	RDK_type: 5,
-	trial_duration: 1000,
-	dot_life: 10
-}
-
-
-var su_intro = {
-	type: 'html-button-response',
-	stimulus:'<p>Stronger Upward Motion</p>',
-	choices: ['View']
+	choices: [37,39],
+	data: {designation: 'scale', direction: jsPsych.timelineVariable('direction'), type: jsPsych.timelineVariable('type'), corANS_ATTN: jsPsych.timelineVariable('correctANS'), noiseLOC: jsPsych.timelineVariable('noiseLOC')},
+	on_finish: function(data){
+		var resp = jsPsych.data.get().last(1).values()[0].key_press; //participant response (if applicable)		
+		var curcor = (resp == data.corANS_ATTN)? 1 : 0 //correct/incorrect
+		
+		//Signal-Detection Measures for Noise Detection
+		if(curcor == 1 & data.type == 'noise'){
+			SDT = 'HIT';
+			totalHit += 1;
+			totalTarget += 1;
+			} else if (curcor == 1 & data.type == 'no-noise'){
+			SDT = 'CR';
+			totalNonTarget += 1;
+			} else if (curcor == 0 & data.type == 'noise'){
+			SDT = 'MISS';
+			totalTarget += 1;
+			} else {
+			SDT = 'FA';
+			totalFA += 1;
+			totalNonTarget += 1;
+			}
+			
+			jsPsych.data.addDataToLastTrial({
+			SDT: SDT,
+			noiseRESP: resp
+		});
 	}
-	
-var wu_intro = {
+};
+
+//Visual Fixation
+var fixation = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 40px;">+</p>',
+	trial_duration: 1000,
+	choices: jsPsych.NO_KEYS
+};
+
+
+
+//Short Break between blocks
+var shortBreak = {
 	type: 'html-button-response',
-	stimulus:'<p>Weaker Upward Motion</p>',
-	choices: ['View']
+	stimulus: '<p><em>Block '+blockCounter+' of 4 Completed</em></p><p>Press the button below when you are ready to continue.</p>',
+	choices: ['Continue'],
+	on_finish:function(data){
+	blockCounter += 1;
 	}
+}
 
-var z_intro = {
+
+
+////////////////////////////////////
+//Random Dot Kinematograms (RDKs) //
+////////////////////////////////////
+
+var rdk_presentation = {
+	type: 'rdk',
+	number_of_dots: 200,
+	coherent_direction: jsPsych.timelineVariable('coh_dir'),
+	coherence: jsPsych.timelineVariable('coh_value'),
+	RDK_type: 4,
+	aperture_width: 500,
+	dot_color: "black",
+	trial_duration: 1000,
+	aperture_type: 4,
+	response_ends_trial: false,
+	data: {designation: 'RDK', direction: jsPsych.timelineVariable('direction'),},
+	on_finish: function(data){
+
+	}
+};
+
+
+/////////////////////
+// Response Screen //
+/////////////////////
+
+var resp_screen = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Were the dots moving <b>up</b> or <b>down</b>?</p><p>up arrow key (&uarr;) = up</br>down arrow key (&darr;) = down</p>'+
+			  '<p>(If you are not sure, please make your best guess)</p>',		  
+	choices: [38,40],
+	data: {designation: 'RDK-RESP', direction: jsPsych.timelineVariable('direction'), coh_code: jsPsych.timelineVariable('coh_level')},
+	on_finish: function(data){
+		var rdkresp = jsPsych.data.get().last(1).values()[0].key_press;
+		if(rdkresp == 38){
+			var upresp = 1;
+			} else {
+			var upresp = 0;
+			}
+		console.log(upresp);
+		//now let's make some summary stats -- maybe tallying up responses based on up/down response and coherence level
+	}
+};
+
+///////////////////////
+// Define the Blocks //
+///////////////////////
+
+var D01_BLOCK = {
+	timeline: [scale_presentation, fixation, rdk_presentation, resp_screen, fixation],
+	timeline_variables: D01_FINAL
+};
+
+var D02_BLOCK = {
+	timeline: [scale_presentation, fixation, rdk_presentation, resp_screen, fixation],
+	timeline_variables: D02_FINAL
+};
+
+var U01_BLOCK = {
+	timeline: [scale_presentation, fixation, rdk_presentation, resp_screen, fixation],
+	timeline_variables: U01_FINAL
+};
+
+var U02_BLOCK = {
+	timeline: [scale_presentation, fixation, rdk_presentation, resp_screen, fixation],
+	timeline_variables: U02_FINAL
+};
+
+//////////////////////////
+// Push to the timeline //
+//////////////////////////
+
+var begin_maintask = {
 	type: 'html-button-response',
-	stimulus:'<p>No Coherent Motion</p>',
-	choices: ['View']
-	}	
-
-var wd_intro = {
-	type: 'html-button-response',
-	stimulus:'<p>Weaker Downward Motion</p>',
-	choices: ['View']
-	}	
-
-var sd_intro = {
-	type: 'html-button-response',
-	stimulus:'<p>Stronger Downward Motion</p>',
-	choices: ['View']
-	}	
-	
-timeline.push(su_intro, high_up, wu_intro, low_up, z_intro, zero, wd_intro, low_down, sd_intro, high_down);
+	stimulus: '<p>You are now ready to begin the main task.</p>'+
+			  '<p>Remember, you are responsible for making two kinds of judgments:</p>'+
+			  '<p><b>1. Noise Burst Task</b></br>You will occasionally hear a brief burst of noise. Press the <em>right</em> or <em>left</em> arrow key depending on whether the noise came from the right or left.</p>'+
+			  '<p><b>2. Motion Detection Task</b></br>You will occasionally see a blinking dot pattern. Press the <em>up</em> or <em>down</em> arrow key depending on whether the dots seem to be moving up or down.</p>'+
+			  '<p>Remember that the noise bursts will be embedded within musical sounds. Please try to ignore the musical sounds and focus on detecting the noise bursts.</p>'+
+			  '<p>There are four blocks in the study.</p>',
+	choices: ['Begin']
+};
 
 
-     jsPsych.init({
-        timeline: timeline,
-		preload_audio: audPreload
+
+timeline.push(welcome); //general introduction
+timeline.push(noisetrain_FINAL);
+timeline.push(rdktrain_FINAL);
+timeline.push(begin_maintask);
+timeline.push(D01_BLOCK);
+
+
+//Change block ordering depending on descendingFirst (D-U-D-U or U-D-U-D)
+/*
+if(descendingFirst == 1){
+	timeline.push(D01_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(U01_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(D02_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(U02_BLOCK);
+} else {
+	timeline.push(U01_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(D01_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(U02_BLOCK);
+	timeline.push(shortBreak);
+	timeline.push(D02_BLOCK);
+}
+*/
+
+
+//Here's where we will push the Questionnaire
+
+//Here's where we will push the Debriefing and Completion Code
+
+var expt_end = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>This concludes the demonstration!</p><p>You may exit out of this tab at this time.</p>',
+	choices: jsPsych.NO_KEYS
+};
+
+timeline.push(expt_end);
+
+//Final preload folder
+var audFinal = [...shepAudio, ...audcalib, ...noisePractice];
+
+
+//Initialize the experiment
+jsPsych.init({
+    timeline: timeline,
+	preload_audio: audFinal
       });
+	  
     </script>
   </body>
 </html>

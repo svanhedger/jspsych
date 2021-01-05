@@ -457,7 +457,7 @@ jsPsych.plugins["rdk"] = (function() {
 		var keyboardListener; 
 		
 		//Declare global variable to store the frame rate of the trial
-		var frameRate = []; //How often the monitor refreshes, in ms. Currently an array to store all the intervals. Will be converted into a single number (the average) in end_trial function.
+		var frameRate = [400]; //How often the monitor refreshes, in ms. Currently an array to store all the intervals. Will be converted into a single number (the average) in end_trial function.
 		
 		//variable to store how many frames were presented.
 		var numberOfFrames = 0;
