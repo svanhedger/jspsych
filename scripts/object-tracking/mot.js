@@ -106,16 +106,6 @@ function arraysEqual(a, b) {
   return true;
 }
 
-/*******************/
-/** FULL-SCREEN **/
-/*******************/
-
-timeline.push({
-  type: 'fullscreen',
-  fullscreen_mode: true,
-  message:'<div style="font-family: arial; size: 16px;"><p>Welcome to the study.</p><p><b>It is important that this study be run in fullscreen mode.</b></p><p>Press the button below to enter fullscreen mode and continue.</p></div>',
-});
-
 
 /*******************/
 /** INSTRUCTIONS **/

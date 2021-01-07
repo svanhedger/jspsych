@@ -16,6 +16,7 @@
 <script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
 <script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
 <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+<script src="mot.js"></script>
 
 
 <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
@@ -86,7 +87,7 @@ input[type=number] {
 var timeline = [];
 
 //Array to store the video files
-var mot_vids = return_motvid_folder();
+var mot_vid = return_motvid_folder();
 
 //Array to store the images
 var mot_img = return_motimg_folder();
@@ -116,7 +117,17 @@ var save_data = {
 };
 
 //Push components to experiment timeline
-timeline.push(mot); //from bds_adaptive.js
+//1. Fullscreen
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true,
+  message:'<div style="font-family: arial; size: 16px;"><p>Welcome to the study.</p><p><b>It is important that this study be run in fullscreen mode.</b></p><p>Press the button below to enter fullscreen mode and continue.</p></div>',
+});
+
+//2.Main Task
+timeline.push(mot); //from mot.js
+
+//3.Save Data
 timeline.push(save_data); //final screen asking about data
 
 //Initialize the Experiment
