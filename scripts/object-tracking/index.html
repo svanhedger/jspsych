@@ -86,12 +86,6 @@ input[type=number] {
 //Define Timeline
 var timeline = [];
 
-//Array to store the video files
-var mot_vid = return_motvid_folder();
-
-//Array to store the images
-var mot_img = return_motimg_folder();
-
 
 //Function to give the option for a local save of the data
 var localSave;
@@ -129,6 +123,15 @@ timeline.push(mot); //from mot.js
 
 //3.Save Data
 timeline.push(save_data); //final screen asking about data
+
+//4.Media Preload
+
+//Array to store the video files
+var mot_vid = return_motvid_folder();
+
+//Array to store the images
+var mot_img = return_motimg_folder();
+
 
 //Initialize the Experiment
 jsPsych.init({
