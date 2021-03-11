@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MOT</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="jspsych-6.1.0/jspsych.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-video-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-audio-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+<script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+
+
+<link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<style>
+body {
+    background-color: gray;
+}
+
+div.wrapper {
+            width: 95%;
+            height:50px;
+			position: absolute;
+			left: 0%;
+			top: 0%
+        }
+
+        input[type="text"] {
+             display: block;
+             margin : 0 auto;
+        }
+
+input.mot {
+    border: 3px solid #FF0000;
+    width: 200px;
+    padding: 5px;
+    font-size: 14px;
+	color: #FF0000;
+}
+
+
+#myInput::-webkit-input-placeholder {
+
+ border-style:solid;
+border-width:medium;
+}
+#myInput:-moz-placeholder {
+ border-style:solid;
+border-width:medium;
+}
+#myInput:-ms-input-placeholder {
+ border-style:solid;
+border-width:medium;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+		
+</style>	
+
+
+<body>
+
+<script>
+
+
+//Define Timeline
+var timeline = [];
+
+//Array to store the video files
+var mot_vids = return_motvid_folder();
+
+//Array to store the images
+var mot_img = return_motimg_folder();
+
+
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'MOT_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+//Push components to experiment timeline
+timeline.push(mot); //from bds_adaptive.js
+timeline.push(save_data); //final screen asking about data
+
+//Initialize the Experiment
+jsPsych.init({
+	timeline: timeline,
+	preload_video: mot_vid,
+	preload_images: mot_img,
+	on_finish: saveData
+});
+
+</script>
