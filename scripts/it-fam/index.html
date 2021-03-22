@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Language Study</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="jspsych-6.1.0/jspsych.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-audio-keyboard-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-audio-slider-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-audio-button-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-image-button-response.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-survey-multi-select.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>
+	<script src="jspsych-6.1.0/plugins/jspsych-survey-likert.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+	<script src="audcheck.js"></script>
+	
+    <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+  </head>
+    <body>
+      <script>
+
+///////////////////////////////////////////////////
+// BASELINE UNDERSTANDING OF ITALIAN PHONOTACTICS//
+///////////////////////////////////////////////////
+
+
+//GENERAL VARIABLES
+var audPreload = []; //for preloading
+var subject_ID = jsPsych.randomization.randomID(15); //15-character subject identifier
+var audcheck_sounds = return_audcheck_folder();
+var LANG = 'Italian'; //for the response screen - default to italian, change to english after italian blocks are done
+
+//RANDOMIZE PRESENTATION ORDER
+var A_FIRST = (Math.random()>0.5)? 1 : 0;
+console.log(A_FIRST);
+
+//Define jsPsych timeline to which all trials/blocks are pushed
+var timeline = []; 
+jsPsych.data.addProperties({subject: subject_ID}); //add subject id to data output
+
+
+// GENERAL INSTRUCTIONS //
+var welcome = {
+	type:'html-button-response',
+	stimulus: '<p><b>Language Study</b></p>' +
+			  '<p>Welcome. This is a language study that has two parts. </br>To receive instructions for the first part, please continue when you are ready.</p>',
+	choices: ['Continue'],
+	post_trial_gap: 250
+};
+
+
+// FAMILIARITY TASK //
+/*
+Here, participants are presented with
+single words and must determine how
+familiar they sound based on their 
+understanding of Italian.
+
+This is a baseline follow-up from 
+a prior study. Thus, for the purposes
+of the present study, 'nontarget words' 
+and 'target words' are identical in 
+that both are real Italian words. 
+Foil words use plausible syllables 
+but generate pseudo-Italian words
+
+There are 30 total trials (randomized):
+20 words
+10 foil (pseudo) words
+
+*/
+
+var fam_array_A = [
+{audFile:'famtest/FW_babinne.mp3', type: 'foil_word', list: 'A', word: 'babinne'},
+{audFile:'famtest/FW_badarcio.mp3', type: 'foil_word', list: 'A', word: 'badarcio'},
+{audFile:'famtest/FW_batonica.mp3', type: 'foil_word', list: 'A', word: 'batonica'},
+{audFile:'famtest/FW_darasi.mp3', type: 'foil_word', list: 'A', word: 'darasi'},
+{audFile:'famtest/FW_gadervo.mp3', type: 'foil_word', list: 'A', word: 'gadervo'},
+{audFile:'famtest/FW_gagoia.mp3', type: 'foil_word', list: 'A', word: 'gagoia'},
+{audFile:'famtest/FW_gamachi.mp3', type: 'foil_word', list: 'A', word: 'gamachi'},
+{audFile:'famtest/FW_pazono.mp3', type: 'foil_word', list: 'A', word: 'pazono'},
+{audFile:'famtest/FW_tabepi.mp3', type: 'foil_word', list: 'A', word: 'tabepi'},
+{audFile:'famtest/FW_tacadi.mp3', type: 'foil_word', list: 'A', word: 'tacadi'},
+{audFile:'famtest/NTW_barchetta.mp3', type: 'nontarget_word', list: 'A', word: 'barchetta'},
+{audFile:'famtest/NTW_batello.mp3', type: 'nontarget_word', list: 'A', word: 'batello'},
+{audFile:'famtest/NTW_calzino.mp3', type: 'nontarget_word', list: 'A', word: 'calzino'},
+{audFile:'famtest/NTW_gattino.mp3', type: 'nontarget_word', list: 'A', word: 'gattino'},
+{audFile:'famtest/NTW_letizia.mp3', type: 'nontarget_word', list: 'A', word: 'letizia'},
+{audFile:'famtest/NTW_paniere.mp3', type: 'nontarget_word', list: 'A', word: 'paniere'},
+{audFile:'famtest/NTW_passero.mp3', type: 'nontarget_word', list: 'A', word: 'passero'},
+{audFile:'famtest/NTW_pavone.mp3', type: 'nontarget_word', list: 'A', word: 'pavone'},
+{audFile:'famtest/NTW_tapetto.mp3', type: 'nontarget_word', list: 'A', word: 'tapetto'},
+{audFile:'famtest/NTW_bacino.mp3', type: 'nontarget_word', list: 'A', word: 'bacino'},
+{audFile:'famtest/TW_balena.mp3', type: 'target_word', list: 'A', word: 'balena'},
+{audFile:'famtest/TW_bassotto.mp3', type: 'target_word', list: 'A', word: 'bassotto'},
+{audFile:'famtest/TW_ciabatte.mp3', type: 'target_word', list: 'A', word: 'ciabatte'},
+{audFile:'famtest/TW_darsena.mp3', type: 'target_word', list: 'A', word: 'darsena'},
+{audFile:'famtest/TW_galera.mp3', type: 'target_word', list: 'A', word: 'galera'},
+{audFile:'famtest/TW_pagella.mp3', type: 'target_word', list: 'A', word: 'pagella'},
+{audFile:'famtest/TW_pallone.mp3', type: 'target_word', list: 'A', word: 'pallone'},
+{audFile:'famtest/TW_panchina.mp3', type: 'target_word', list: 'A', word: 'panchina'},
+{audFile:'famtest/TW_ragazzo.mp3', type: 'target_word', list: 'A', word: 'ragazzo'},
+{audFile:'famtest/TW_tassista.mp3', type: 'target_word', list: 'A', word: 'tassista'}
+];
+
+var fam_array_B = [
+{audFile:'famtest/FW_babacia.mp3', type: 'foil_word', list: 'B', word: 'babacia'},
+{audFile:'famtest/FW_bazabo.mp3', type: 'foil_word', list: 'B', word: 'babazo'},
+{audFile:'famtest/FW_dafota.mp3', type: 'foil_word', list: 'B', word: 'dafota'},
+{audFile:'famtest/FW_gabinia.mp3', type: 'foil_word', list: 'B', word: 'gabinia'},
+{audFile:'famtest/FW_gagello.mp3', type: 'foil_word', list: 'B', word: 'gagello'},
+{audFile:'famtest/FW_gasenio.mp3', type: 'foil_word', list: 'B', word: 'gasenio'},
+{audFile:'famtest/FW_pabicio.mp3', type: 'foil_word', list: 'B', word: 'pabicio'},
+{audFile:'famtest/FW_pagasa.mp3', type: 'foil_word', list: 'B', word: 'pagasa'},
+{audFile:'famtest/FW_tabradi.mp3', type: 'foil_word', list: 'B', word: 'tabradi'},
+{audFile:'famtest/FW_tanibie.mp3', type: 'foil_word', list: 'B', word: 'tanibie'},
+{audFile:'famtest/NTW_badile.mp3', type: 'nontarget_word', list: 'B', word: 'badile'},
+{audFile:'famtest/NTW_banchisa.mp3', type: 'nontarget_word', list: 'B', word: 'banchisa'},
+{audFile:'famtest/NTW_baracca.mp3', type: 'nontarget_word', list: 'B', word: 'baracca'},
+{audFile:'famtest/NTW_cabina.mp3', type: 'nontarget_word', list: 'B', word: 'cabina'},
+{audFile:'famtest/NTW_cerbiatto.mp3', type: 'nontarget_word', list: 'B', word: 'cerbiatto'},
+{audFile:'famtest/NTW_galletta.mp3', type: 'nontarget_word', list: 'B', word: 'galletta'},
+{audFile:'famtest/NTW_palazzo.mp3', type: 'nontarget_word', list: 'B', word: 'palazzo'},
+{audFile:'famtest/NTW_palpebra.mp3', type: 'nontarget_word', list: 'B', word: 'palpebra'},
+{audFile:'famtest/NTW_piacere.mp3', type: 'nontarget_word', list: 'B', word: 'piacere'},
+{audFile:'famtest/NTW_tamburo.mp3', type: 'nontarget_word', list: 'B', word: 'tamburo'},
+{audFile:'famtest/TW_bambino.mp3', type: 'target_word', list: 'B', word: 'bambino'},
+{audFile:'famtest/TW_bambola.mp3', type: 'target_word', list: 'B', word: 'bambola'},
+{audFile:'famtest/TW_barbiere.mp3', type: 'target_word', list: 'B', word: 'barbiere'},
+{audFile:'famtest/TW_bastone.mp3', type: 'target_word', list: 'B', word: 'bastone'},
+{audFile:'famtest/TW_dalamata.mp3', type: 'target_word', list: 'B', word: 'dalmata'},
+{audFile:'famtest/TW_gamberi.mp3', type: 'target_word', list: 'B', word: 'gamberi'},
+{audFile:'famtest/TW_palestra.mp3', type: 'target_word', list: 'B', word: 'palestra'},
+{audFile:'famtest/TW_panino.mp3', type: 'target_word', list: 'B', word: 'panino'},
+{audFile:'famtest/TW_quaderno.mp3', type: 'target_word', list: 'B', word: 'quaderno'},
+{audFile:'famtest/TW_tavolo.mp3', type: 'target_word', list: 'B', word: 'tavolo'}
+];
+
+
+//push familiarity audio to preload folder
+for (var i=0; i<fam_array_A.length; i++){
+	audPreload.push(fam_array_A[i].audFile);
+	}
+
+for (var i=0; i<fam_array_B.length; i++){
+	audPreload.push(fam_array_B[i].audFile);
+	}
+
+
+//instructions
+var fam_instruct = {
+	type: 'html-button-response',
+	stimulus: '<p>Welcome to the first part of the study.</p>'+
+			  '<p>You will hear a series of Italian and Italian-like words. Please rate how much like a real Italian word they sound to you.</p>'+
+			  '<p>You will rate 60 words in total, and you will have the opportunity to take a short break halfway through.</p>',
+	choices: ['Begin']		  
+};
+
+
+//simple fixation
+var fixation = {
+	type: 'html-keyboard-response',
+	stimulus: '',
+	prompt: '<p style=font-size:50px;">+</p>',
+	trial_duration: 1000
+};
+
+//play the sound
+var fam_sound = {
+	type: 'audio-keyboard-response',
+	stimulus: jsPsych.timelineVariable('audFile'),
+	prompt: '<p style=font-size:50px;">+</p>',
+	trial_ends_after_audio: true,
+	post_trial_gap: 500
+};
+
+//familiarity rating screen
+var fam_trial = {
+	type: 'html-keyboard-response',
+	data: {fam_sound: jsPsych.timelineVariable('audFile'), fam_type: jsPsych.timelineVariable('type'), list: jsPsych.timelineVariable('list'), word:jsPsych.timelineVariable('word')},
+	stimulus:function(){return '<p>How much like a real '+LANG+' word did this sound to you?</p><p>1 &emsp; &emsp; &emsp; &emsp; &emsp; 2 &emsp; &emsp; &emsp; &emsp; &emsp; 3 &emsp; &emsp; &emsp; &emsp; &emsp; 4</p>'+
+			 '<p style="font-size:14px">not very much like an '+LANG+' word &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  very much like an '+LANG+' word</p><p>(press the corresponding number on your keyboard)</p>';},
+	choices: ['1','2','3','4'],
+	post_trial_gap: 1000,
+	response_ends_trial: true	
+};
+
+//final familiarity procedure
+var fam_proc_A = {
+	timeline: [fixation, fam_sound, fam_trial],
+	timeline_variables: fam_array_A,
+	randomize_order: true
+};
+
+
+var fam_proc_B = {
+	timeline: [fixation, fam_sound, fam_trial],
+	timeline_variables: fam_array_B,
+	randomize_order: true
+};
+
+
+// BREAK SCREEN //
+var takeabreak = {
+	type: 'html-button-response',
+	stimulus: '<p>You are now halfway through the first part of the study. You may take a short break if you wish.</p>'+
+			  '<p>When you are ready to continue, press the button below.</p>',
+	choices:['Continue']
+};
+
+
+
+// COMPREHENSION CHECK //
+/*
+Here, participants are presented with
+single words and must determine how
+familiar they sound based on their 
+understanding of English.
+
+For English-speaking participants, this 
+should be trivial, and as such it serves
+as a kind of basic comprehension check.
+
+There are 30 total trials (randomized):
+20 words
+10 foil (pseudo) words
+
+*/
+
+var fam_array_ENG = [
+{audFile:'famtest/EF_001.mp3', type: 'foil_word', list: 'ENG', word: 'beerpuglet'},
+{audFile:'famtest/EF_002.mp3', type: 'foil_word', list: 'ENG', word: 'cobrying'},
+{audFile:'famtest/EF_003.mp3', type: 'foil_word', list: 'ENG', word: 'derbians'},
+{audFile:'famtest/EF_004.mp3', type: 'foil_word', list: 'ENG', word: 'gonvolder'},
+{audFile:'famtest/EF_005.mp3', type: 'foil_word', list: 'ENG', word: 'moskeuin'},
+{audFile:'famtest/EF_006.mp3', type: 'foil_word', list: 'ENG', word: 'prosison'},
+{audFile:'famtest/EF_007.mp3', type: 'foil_word', list: 'ENG', word: 'requelime'},
+{audFile:'famtest/EF_008.mp3', type: 'foil_word', list: 'ENG', word: 'servation'},
+{audFile:'famtest/EF_009.mp3', type: 'foil_word', list: 'ENG', word: 'thodian'},
+{audFile:'famtest/EF_010.mp3', type: 'foil_word', list: 'ENG', word: 'trudicakes'},
+{audFile:'famtest/EW_001.mp3', type: 'word', list: 'ENG', word: 'battery'},
+{audFile:'famtest/EW_002.mp3', type: 'word', list: 'ENG', word: 'banana'},
+{audFile:'famtest/EW_003.mp3', type: 'word', list: 'ENG', word: 'camera'},
+{audFile:'famtest/EW_004.mp3', type: 'word', list: 'ENG', word: 'cabinet'},
+{audFile:'famtest/EW_005.mp3', type: 'word', list: 'ENG', word: 'cinema'},
+{audFile:'famtest/EW_006.mp3', type: 'word', list: 'ENG', word: 'chemical'},
+{audFile:'famtest/EW_007.mp3', type: 'word', list: 'ENG', word: 'domestic'},
+{audFile:'famtest/EW_008.mp3', type: 'word', list: 'ENG', word: 'disaster'},
+{audFile:'famtest/EW_009.mp3', type: 'word', list: 'ENG', word: 'gorilla'},
+{audFile:'famtest/EW_010.mp3', type: 'word', list: 'ENG', word: 'gallery'},
+{audFile:'famtest/EW_011.mp3', type: 'word', list: 'ENG', word: 'medium'},
+{audFile:'famtest/EW_012.mp3', type: 'word', list: 'ENG', word: 'mineral'},
+{audFile:'famtest/EW_013.mp3', type: 'word', list: 'ENG', word: 'period'},
+{audFile:'famtest/EW_014.mp3', type: 'word', list: 'ENG', word: 'piano'},
+{audFile:'famtest/EW_015.mp3', type: 'word', list: 'ENG', word: 'passenger'},
+{audFile:'famtest/EW_016.mp3', type: 'word', list: 'ENG', word: 'recipe'},
+{audFile:'famtest/EW_017.mp3', type: 'word', list: 'ENG', word: 'residence'},
+{audFile:'famtest/EW_018.mp3', type: 'word', list: 'ENG', word: 'satellite'},
+{audFile:'famtest/EW_019.mp3', type: 'word', list: 'ENG', word: 'telephone'},
+{audFile:'famtest/EW_020.mp3', type: 'word', list: 'ENG', word: 'vehicle'}
+];
+
+//push familiarity audio to preload folder
+for (var i=0; i<fam_array_ENG.length; i++){
+	audPreload.push(fam_array_ENG[i].audFile);
+	}
+
+//ADD INSTRUCTIONS HERE
+
+var eng_instruct = {
+	type: 'html-button-response',
+	stimulus: '<p>Thank you for your responses.</p>'+
+			  '<p>The second part of the study is virtually identical to the first part.</p>'+
+			  '<p>The only difference is that you will be ratings sounds from English rather than Italian.</p>',
+	choices: ['Begin'],
+	on_finish:function(){LANG = 'English';} //change screen to say english instead of italian
+};
+
+
+
+var fam_proc_ENG = {
+	timeline: [fixation, fam_sound, fam_trial],
+	timeline_variables: fam_array_ENG,
+	randomize_order: true
+};
+
+
+// WRAP-UP //
+
+//backup data to python anywhere server
+var backup_data = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>Saving your results...</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000,
+	on_finish: function() {
+          var csvData = jsPsych.data.get().csv(); //this is the csv data
+          console.log(csvData);
+          var formData = {
+            exp: "SLI_BASE", 
+            subj: subject_ID,
+            results: csvData
+          };
+          $.post(
+            "https://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+    }
+};
+
+//unique participation code
+var final_screen = {
+	type: 'html-keyboard-response',
+	stimulus: '<p>This concludes the study session. Thank you for your answers!</p>'+
+			  '<p>Please click on the link below to be redirected back to SONA and receive course credit.</p>' +
+			  '<p><a href="https://uwo-psychology.sona-systems.com/webstudy_credit.aspx?experiment_id=1950&credit_token=f967acad67204aa59525c02ffefaaa1a&survey_code=XXXX">FINISH STUDY</a></p>',
+	response_ends_trial: false,
+	choices: jsPsych.NO_KEYS	
+}
+
+if(A_FIRST == 1) {
+	var mainProc = {
+		timeline: [welcome, fam_instruct, fam_proc_A, takeabreak, fam_proc_B, eng_instruct, fam_proc_ENG]
+	};
+} else {
+	var mainProc = {
+		timeline: [welcome, fam_instruct, fam_proc_B, takeabreak, fam_proc_A, eng_instruct, fam_proc_ENG]
+	};
+}
+
+// PUSH EVERYTHING TO TIMELINE //
+timeline.push(audcheck);
+timeline.push(mainProc);
+timeline.push(backup_data);
+timeline.push(final_screen);
+
+audPreload = [...audPreload, ...audcheck_sounds];
+
+jsPsych.init({
+    timeline: timeline,
+	preload_audio: audPreload
+    });
+    </script>
+  </body>
+</html>
