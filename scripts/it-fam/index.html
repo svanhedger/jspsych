@@ -193,6 +193,7 @@ var fam_sound = {
 	stimulus: jsPsych.timelineVariable('audFile'),
 	prompt: '<p style=font-size:50px;">+</p>',
 	trial_ends_after_audio: true,
+	choices: jsPsych.NO_KEYS,
 	post_trial_gap: 500
 };
 
@@ -334,8 +335,8 @@ var backup_data = {
 var final_screen = {
 	type: 'html-keyboard-response',
 	stimulus: '<p>This concludes the study session. Thank you for your answers!</p>'+
-			  '<p>Please click on the link below to be redirected back to SONA and receive course credit.</p>' +
-			  '<p><a href="https://uwo-psychology.sona-systems.com/webstudy_credit.aspx?experiment_id=1950&credit_token=f967acad67204aa59525c02ffefaaa1a&survey_code=XXXX">FINISH STUDY</a></p>',
+			  '<p>The experimenter will verify your participation and grant you credit within 48 hours. If you have not received credit within 48 hours, please contact the experimenters through SONA.</p>'+
+			  '<p>You may exit out of this broswer tab at this time.</p>',
 	response_ends_trial: false,
 	choices: jsPsych.NO_KEYS	
 }
