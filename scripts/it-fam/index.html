@@ -34,7 +34,7 @@
 
 //GENERAL VARIABLES
 var audPreload = []; //for preloading
-var subject_ID = jsPsych.randomization.randomID(15); //15-character subject identifier
+var sona_ID; //sona id
 var audcheck_sounds = return_audcheck_folder();
 var LANG = 'Italian'; //for the response screen - default to italian, change to english after italian blocks are done
 
@@ -44,8 +44,22 @@ console.log(A_FIRST);
 
 //Define jsPsych timeline to which all trials/blocks are pushed
 var timeline = []; 
-jsPsych.data.addProperties({subject: subject_ID}); //add subject id to data output
 
+
+//INSTRUCTIONS
+var given_ID = {
+	type:'survey-text',
+	questions: [
+    {prompt: "Before we begin, please enter your SONA ID. This will ensure that you receive credit.", name:'ID'}
+	],
+	choices: ['Continue'],
+	post_trial_gap: 250,
+	on_finish: function(data){
+		sona_ID = JSON.parse(jsPsych.data.get().last(1).values()[0].responses).ID; 
+		jsPsych.data.addProperties({SONA_ID: sona_ID}); //add id to data output
+		console.log(sona_ID);
+	}
+};
 
 // GENERAL INSTRUCTIONS //
 var welcome = {
@@ -306,7 +320,7 @@ var backup_data = {
           console.log(csvData);
           var formData = {
             exp: "SLI_BASE", 
-            subj: subject_ID,
+            subj: sona_ID,
             results: csvData
           };
           $.post(
@@ -337,6 +351,7 @@ if(A_FIRST == 1) {
 }
 
 // PUSH EVERYTHING TO TIMELINE //
+timeline.push(given_ID); 
 timeline.push(audcheck);
 timeline.push(mainProc);
 timeline.push(backup_data);
