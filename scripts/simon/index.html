@@ -20,12 +20,26 @@
 
 
 //Define timeline
+
+/*TO-DO
+
+1. change light up colors? DONE
+2 add instructions (and multiple "games" to the script)
+3. add run length to data (perhaps when an incorrect response is logged)
+4. add game number to data output
+5. final feedback screen
+
+
+*/
+
+
 var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
 
 //IMPORTANT VARIABLES
 var curAnswer = []; //this stores the current answer and checks it against the correct answer
 var correctANS = []; //this will store the correct answer
 var currentSEQ = []; //this stores the current sequence information
+var spanList = []; //this is for storing summary performance on each game/round
 var feedbackText; //for displaying feedback
 
 var toneITI = 750; //inter-tone-interval for presenting the Simon sounds
@@ -33,6 +47,8 @@ var endTime = 500; //trailing edge for presentation trial
 var prepTime = 500; //leading edge for presentation trial
 
 var continueGame = 1; //toggle this depending on correct/incorrect to continue or end the current run ("game")
+var number_of_games = 3; //how many games do you want to play?
+var current_game = 1; //will be updated, no need to change here
 
 
 //COMPARE ARRAYS (for checking if response is correct)
@@ -79,7 +95,7 @@ and play sounds when clicked
 
 //1. Top Left
 function downClickTL(){
-	document.getElementById('topleft').style.background = "green";
+	document.getElementById('topleft').style.background = "lightgreen";
 	};
 	
 function upClickTL(){
@@ -95,7 +111,7 @@ function playTL(){
 	
 //2. Top Right
 function downClickTR(){
-	document.getElementById('topright').style.background = "red";
+	document.getElementById('topright').style.background = "tomato";
 	};
 	
 function upClickTR(){
@@ -127,7 +143,7 @@ function playBL(){
 
 //4. Bottom Right
 function downClickBR(){
-	document.getElementById('bottomright').style.background = "blue";
+	document.getElementById('bottomright').style.background = "lightskyblue";
 	};
 	
 function upClickBR(){
@@ -151,8 +167,31 @@ function clearANS(){
 		}, 1000)
 };
 
+//Calculate Average of an Array
+function avgARR(elmt){
+	var sum = 0;
+	for( var i = 0; i < elmt.length; i++ ){
+		sum += parseInt( elmt[i], 10 ); //don't forget to add the base
+	}
+	var avg = sum/(elmt.length);
+	avg = Math.round(avg * 10) / 10
+	return avg;
+};
 
+//////////////////////////
+// GENERAL INSTRUCTIONS //
+//////////////////////////
 
+var simon_welcome = {
+	type: 'html-button-response',
+	stimulus: '<p><strong>Memory Game</strong></p>'+
+			  '<p>Welcome. This game tests your memory for sequences. It is based on the popular "Simon" Memory Game by Hasbro.</p>'+
+			  '<p>You will play '+number_of_games+' round(s) in total. On each round, you will start by hearing a single sound. The sound will trigger one of four colored buttons to light up.</p>'+
+			  '<p>You will then be asked to repeat the sequence by clicking on the colored buttons. If you are correct, another sound is added and the round continues. If you are incorrect, the round is over.</p>',
+	choices: ['Begin!']
+};
+
+timeline.push(simon_welcome);
 //////////////////////////
 //GENERATE THE SEQUENCES//
 //////////////////////////
@@ -160,10 +199,10 @@ function clearANS(){
 //This is the HTML for the Simon Boards
 var simonBoardRESP = '<div id="outercircle"><div id="topleft" onmousedown="downClickTL()" onmouseup="upClickTL()" onclick="playTL()"><audio id="pgreen" src="simonNotes/green.wav" preload="auto"></audio></div><div id="topright" onmousedown="downClickTR()" onmouseup="upClickTR()" onclick="playTR()"><audio id="pred" src="simonNotes/red.wav" preload="auto"></audio></div><div id="bottomleft" onmousedown="downClickBL()" onmouseup="upClickBL()" onclick="playBL()"><audio id="pyellow" src="simonNotes/yellow.wav" preload="auto"></audio></div><div id="bottomright" onmousedown="downClickBR()" onmouseup="upClickBR()" onclick="playBR()"><audio id="pblue" src="simonNotes/blue.wav" preload="auto"></audio></div><div id="inner-circle"><div id="title"><p><em>press <strong>ENTER</strong> to lock in your answer</em></p></div></div><div id="clearbtn" onclick="clearANS()"><p>CLEAR ANSWER</p></div></div>'; 
 var simonBoard = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
-var simonBoardGreen = '<div id="outercircle"><div id="topleft" style="background:green;"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
-var simonBoardRed = '<div id="outercircle"><div id="topleft"></div><div id="topright" style="background:red;"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardGreen = '<div id="outercircle"><div id="topleft" style="background:lightgreen;"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardRed = '<div id="outercircle"><div id="topleft"></div><div id="topright" style="background:tomato;"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
 var simonBoardYellow = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft" style="background:yellow;"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
-var simonBoardBlue = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright" style="background:blue;"></div><div id="inner-circle"></div></div>';
+var simonBoardBlue = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright" style="background:lightskyblue;"></div><div id="inner-circle"></div></div>';
 
 var simonTones = [
 {tone: 'simonNotes/green.wav', cRESP: 1, board: simonBoardGreen, audid: 'audgreen'},
@@ -196,24 +235,34 @@ var simonPresent = {
 	type: 'html-keyboard-response',
 	stimulus: function(){
 		var timings = [];
+		var audnames = []; //for storing names for individual audio events
 		var counter = 0;
+		var audhtmlstring = '';
 		for(var j=0; j<currentSEQ.length; j++){
 			timings[j] = (j*toneITI)+prepTime;	//get the ISIs for lighting up the board and playing the sound (with an initial delay)
+			
+			audnames[j] = 'audio_'+j;
+			///////////DO YOU WANNA ADD SOMETHING HERE TO CREATE UNIQUE AUDIO ELEMENTS AND PRELOAD EVERYTHING???????		
+			var addedaudio = '<audio id="'+audnames[j]+'" src="'+currentSEQ[j].tone+'" preload="auto"></audio>';
+			audhtmlstring = audhtmlstring + addedaudio; //add the current audio tag to the html
+
 		};
+		var finalhtml = audhtmlstring+'<audio id="audred" preload="auto" src="simonNotes/red.wav"></audio><audio id="audblue" preload="auto" src="simonNotes/blue.wav"></audio><audio id="audgreen" preload="auto" src="simonNotes/green.wav"></audio><audio id="audyellow" preload="auto" src="simonNotes/yellow.wav"></audio><div id="swrapper">'+simonBoard+'</div>';
 
 		for(var k=0; k<timings.length; k++){
 			setTimeout(function(){		
 				document.getElementById('swrapper').innerHTML = currentSEQ[counter].board;	//change the board color
 				//play the audio
 				var selectedTone = currentSEQ[counter].audid
-				var audio = document.getElementById(selectedTone);
+				//var audio = document.getElementById(selectedTone);
+				var currentsoundid = audnames[counter];
+				var audio = document.getElementById(currentsoundid);
 				audio.play(); //this actually plays the file	
 				correctANS.push(currentSEQ[counter].cRESP); //this pushes the current tone to the correct sequence array
 				counter += 1;
 			}, timings[k]);
 		}
 		
-		var finalhtml = '<audio id="audred" preload="auto" src="simonNotes/red.wav"></audio><audio id="audblue" preload="auto" src="simonNotes/blue.wav"></audio><audio id="audgreen" preload="auto" src="simonNotes/green.wav"></audio><audio id="audyellow" preload="auto" src="simonNotes/yellow.wav"></audio><div id="swrapper">'+simonBoard+'</div>';
 		return finalhtml;
 		},
 	choices: jsPsych.NO_KEYS,
@@ -221,7 +270,8 @@ var simonPresent = {
 	on_finish: function(data){
 		jsPsych.data.addDataToLastTrial({
 			designation: 'SIMON-PLAY',
-			SEQ: correctANS 
+			SEQ: correctANS,
+			GAME: current_game	
 			});	
 	}
 };
@@ -240,18 +290,26 @@ var simonResponse = {
 			continueGame = 1; //tells the program to continue the current game
 			var nextTone = getOneMore(simonTones); //new tone to be added
 			currentSEQ.push(nextTone[0]); //append new tone to existing structure
-			console.log(currentSEQ);
+			var wascorrect = 1; //for adding to data
+			var maxspan = '';
 			} else {
-			feedbackText = '<p style="color:darkred;">Incorrect</p>';
-			continueGame = 0; //tells the program to exit the current game
-			currentSEQ = getOneMore(); //reset current sequence to be a single tone
+			continueGame = 0; //tells the program to exit the current game		
+			var wascorrect = 0;
+			var maxspan = (currentSEQ.length - 1) //maximum span
+			spanList.push(maxspan);
+			feedbackText = '<p style="color:darkred;">Incorrect</p><p>You correctly recalled '+maxspan+' sounds on that round.</p><p><em>Round '+current_game+' of '+number_of_games+' completed</em></p>';
+			currentSEQ = getOneMore(simonTones); //reset current sequence to be a single tone
+			current_game += 1;
+			
 			}
 		//add to data output
 		jsPsych.data.addDataToLastTrial({
 			designation: 'SIMON-RESP',
 			SEQ: correctANS,
 			RESP: curAnswer,
-			correct: gotitright	
+			correct: wascorrect,
+			GAME: current_game,		
+			max_span: maxspan	
 			});
 		curAnswer = []; //regardless of correct/incorrect, clear the current response for the trial
 		correctANS = []; //regardless of correct/incorrect, clear the correct answer for the trial	
@@ -264,7 +322,8 @@ var simonResponse = {
 var showFeedback = {
 	type: 'html-button-response',
 	stimulus: function(){return feedbackText;},
-	choices: ['Continue']
+	choices: ['Continue'],
+	data: {GAME: current_game}
 };
 
 //CREATE THE PROCEDURE
@@ -279,12 +338,24 @@ var simonGame = {
 	}
 };
 
+//PUSH TO TIMELINE (BASED ON NUMBER OF GAMES SPECIFIED)
+for(var i=0; i<number_of_games; i++){
+	timeline.push(simonGame);
+};
 
-timeline.push(simonGame);
+
+//CLOSING SCREEN
+var wrapup = {
+	type: 'html-keyboard-response',
+	stimulus: function(){return '<p>Thanks for playing!</p><p><u>Summary</u></p><p>Average number of remembered sounds per round: '+avgARR(spanList)+'</p><p>Best round: '+Math.max(...spanList)+'</p><p>Worst round: '+Math.min(...spanList)+'</p><p><em>You may exit out of your broswer tab at this time or refresh the page to play again!</em></p>'},
+	choices: jsPsych.NO_KEYS
+};
+
+timeline.push(wrapup);
+
 
      jsPsych.init({
-        timeline: timeline,
-		on_finish: function(){jsPsych.data.get().localSave('csv','mydata.csv');}
+        timeline: timeline
       });
     </script>
   </body>
