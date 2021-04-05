@@ -26,7 +26,6 @@ var timeline = []; //specify the jsPsych timeline to which all trials/blocks are
 var curAnswer = []; //this stores the current answer and checks it against the correct answer
 var correctANS = []; //this will store the correct answer
 var currentSEQ = []; //this stores the current sequence information
-var i = 0; //counting the current Simon span
 var feedbackText; //for displaying feedback
 
 var toneITI = 750; //inter-tone-interval for presenting the Simon sounds
@@ -174,12 +173,12 @@ var simonTones = [
 ];
 
 
-function getOneMore(){
-	var sample = jsPsych.randomization.sampleWithoutReplacement(simonTones, 1); //get another tone from the array if successful
+function getOneMore(array){
+	var sample = jsPsych.randomization.sampleWithoutReplacement(array, 1); //get another tone from the array if successful
 	return sample;
 };
 
-currentSEQ = getOneMore(); //this starts everything out with one tone
+currentSEQ = getOneMore(simonTones); //this starts everything out with one tone
 
 /////////////////////////////////
 
@@ -239,7 +238,7 @@ var simonResponse = {
 		if(gotitright){
 			feedbackText = '<p style="color:darkgreen;">Correct!</p>';
 			continueGame = 1; //tells the program to continue the current game
-			var nextTone = getOneMore(); //new tone to be added
+			var nextTone = getOneMore(simonTones); //new tone to be added
 			currentSEQ.push(nextTone[0]); //append new tone to existing structure
 			console.log(currentSEQ);
 			} else {
@@ -250,7 +249,7 @@ var simonResponse = {
 		//add to data output
 		jsPsych.data.addDataToLastTrial({
 			designation: 'SIMON-RESP',
-			SEQ: correctANS
+			SEQ: correctANS,
 			RESP: curAnswer,
 			correct: gotitright	
 			});
