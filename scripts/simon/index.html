@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SIMON</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="jspsych-6.3.0/jspsych.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>	
+	<script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
+	<script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
+	<script src="jspsych-6.3.0/plugins/jspsych-preload.js"></script>	
+	<script src="jspsych-6.3.0/plugins/jspsych-call-function.js"></script>
+	
+    <link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
+	<link href="jspsych-6.3.0/css/circle.css" rel="stylesheet" type="text/css">
+
+
+  </head>
+    <body>
+      <script>
+
+
+//Define timeline
+var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+
+//IMPORTANT VARIABLES
+var curAnswer = []; //this stores the current answer and checks it against the correct answer
+var correctANS = []; //this will store the correct answer
+var currentSEQ = []; //this stores the current sequence information
+var i = 0; //counting the current Simon span
+var feedbackText; //for displaying feedback
+
+var toneITI = 750; //inter-tone-interval for presenting the Simon sounds
+var endTime = 500; //trailing edge for presentation trial
+var prepTime = 500; //leading edge for presentation trial
+
+var continueGame = 1; //toggle this depending on correct/incorrect to continue or end the current run ("game")
+
+
+//COMPARE ARRAYS (for checking if response is correct)
+// Warn if overriding existing method
+if(Array.prototype.equals)
+    console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;       
+        }           
+        else if (this[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
+
+
+
+/////////////////////
+// SIMON FUNCTIONS //
+/////////////////////
+/*
+Functions to change Simon colors 
+and play sounds when clicked 
+(for response screen)
+*/
+
+//1. Top Left
+function downClickTL(){
+	document.getElementById('topleft').style.background = "green";
+	};
+	
+function upClickTL(){
+	document.getElementById('topleft').style.background = "darkgreen";
+	};
+
+function playTL(){
+	var audio = document.getElementById('pgreen');
+	audio.play(); //this actually plays the file
+	curAnswer.push(1);
+	console.log(curAnswer);
+	};
+	
+//2. Top Right
+function downClickTR(){
+	document.getElementById('topright').style.background = "red";
+	};
+	
+function upClickTR(){
+	document.getElementById('topright').style.background = "darkred";
+	};
+
+function playTR(){
+	var audio = document.getElementById('pred');
+	audio.play(); //this actually plays the file
+	curAnswer.push(2);
+	console.log(curAnswer);
+	};			
+
+//3. Bottom Left
+function downClickBL(){
+	document.getElementById('bottomleft').style.background = "yellow";
+	};
+	
+function upClickBL(){
+	document.getElementById('bottomleft').style.background = "goldenrod";
+	};
+
+function playBL(){
+	var audio = document.getElementById('pyellow');
+	audio.play(); //this actually plays the file
+	curAnswer.push(3);
+	console.log(curAnswer);
+	};		
+
+//4. Bottom Right
+function downClickBR(){
+	document.getElementById('bottomright').style.background = "blue";
+	};
+	
+function upClickBR(){
+	document.getElementById('bottomright').style.background = "darkblue";
+	};
+
+function playBR(){
+	var audio = document.getElementById('pblue');	
+	audio.play(); //this actually plays the file
+	curAnswer.push(4);
+	console.log(curAnswer);
+	};	
+
+//Clear the Current ANSWER
+function clearANS(){
+	curAnswer = [];
+	console.log(curAnswer);
+	document.getElementById('clearbtn').innerHTML = '<p style="color:darkblue;">ANSWER CLEARED!</p>';
+	setTimeout(function(){
+		document.getElementById('clearbtn').innerHTML = '<p>CLEAR ANSWER</p>';
+		}, 1000)
+};
+
+
+
+//////////////////////////
+//GENERATE THE SEQUENCES//
+//////////////////////////
+
+//This is the HTML for the Simon Boards
+var simonBoardRESP = '<div id="outercircle"><div id="topleft" onmousedown="downClickTL()" onmouseup="upClickTL()" onclick="playTL()"><audio id="pgreen" src="simonNotes/green.wav" preload="auto"></audio></div><div id="topright" onmousedown="downClickTR()" onmouseup="upClickTR()" onclick="playTR()"><audio id="pred" src="simonNotes/red.wav" preload="auto"></audio></div><div id="bottomleft" onmousedown="downClickBL()" onmouseup="upClickBL()" onclick="playBL()"><audio id="pyellow" src="simonNotes/yellow.wav" preload="auto"></audio></div><div id="bottomright" onmousedown="downClickBR()" onmouseup="upClickBR()" onclick="playBR()"><audio id="pblue" src="simonNotes/blue.wav" preload="auto"></audio></div><div id="inner-circle"><div id="title"><p><em>press <strong>ENTER</strong> to lock in your answer</em></p></div></div><div id="clearbtn" onclick="clearANS()"><p>CLEAR ANSWER</p></div></div>'; 
+var simonBoard = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardGreen = '<div id="outercircle"><div id="topleft" style="background:green;"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardRed = '<div id="outercircle"><div id="topleft"></div><div id="topright" style="background:red;"></div><div id="bottomleft"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardYellow = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft" style="background:yellow;"></div><div id="bottomright"></div><div id="inner-circle"></div></div>';
+var simonBoardBlue = '<div id="outercircle"><div id="topleft"></div><div id="topright"></div><div id="bottomleft"></div><div id="bottomright" style="background:blue;"></div><div id="inner-circle"></div></div>';
+
+var simonTones = [
+{tone: 'simonNotes/green.wav', cRESP: 1, board: simonBoardGreen, audid: 'audgreen'},
+{tone: 'simonNotes/red.wav', cRESP: 2, board: simonBoardRed, audid: 'audred'},
+{tone: 'simonNotes/yellow.wav', cRESP: 3, board: simonBoardYellow, audid: 'audyellow'},
+{tone: 'simonNotes/blue.wav', cRESP: 4, board: simonBoardBlue, audid: 'audblue'}
+];
+
+
+function getOneMore(){
+	var sample = jsPsych.randomization.sampleWithoutReplacement(simonTones, 1); //get another tone from the array if successful
+	return sample;
+};
+
+currentSEQ = getOneMore(); //this starts everything out with one tone
+
+/////////////////////////////////
+
+var tone_preload = {
+    type: 'preload',
+    auto_preload: true,  
+    audio: [simonTones[0].tone, simonTones[1].tone, simonTones[2].tone, simonTones[3].tone]
+};
+
+timeline.push(tone_preload);
+
+
+//PRESENTATION SCREEN
+var simonPresent = {
+	type: 'html-keyboard-response',
+	stimulus: function(){
+		var timings = [];
+		var counter = 0;
+		for(var j=0; j<currentSEQ.length; j++){
+			timings[j] = (j*toneITI)+prepTime;	//get the ISIs for lighting up the board and playing the sound (with an initial delay)
+		};
+
+		for(var k=0; k<timings.length; k++){
+			setTimeout(function(){		
+				document.getElementById('swrapper').innerHTML = currentSEQ[counter].board;	//change the board color
+				//play the audio
+				var selectedTone = currentSEQ[counter].audid
+				var audio = document.getElementById(selectedTone);
+				audio.play(); //this actually plays the file	
+				correctANS.push(currentSEQ[counter].cRESP); //this pushes the current tone to the correct sequence array
+				counter += 1;
+			}, timings[k]);
+		}
+		
+		var finalhtml = '<audio id="audred" preload="auto" src="simonNotes/red.wav"></audio><audio id="audblue" preload="auto" src="simonNotes/blue.wav"></audio><audio id="audgreen" preload="auto" src="simonNotes/green.wav"></audio><audio id="audyellow" preload="auto" src="simonNotes/yellow.wav"></audio><div id="swrapper">'+simonBoard+'</div>';
+		return finalhtml;
+		},
+	choices: jsPsych.NO_KEYS,
+	trial_duration: function(){var len = (currentSEQ.length*toneITI)+prepTime+endTime; return len;}, //dynamic trial duration + buffer of 1000ms
+	on_finish: function(data){
+		jsPsych.data.addDataToLastTrial({
+			designation: 'SIMON-PLAY',
+			SEQ: correctANS 
+			});	
+	}
+};
+
+
+//RESPONSE SCREEN//
+var simonResponse = {
+	type: 'html-keyboard-response',
+	stimulus: simonBoardRESP,
+	choices: ['ENTER'],
+	on_finish: function(data){
+		var gotitright = curAnswer.equals(correctANS);
+		console.log(gotitright);
+		if(gotitright){
+			feedbackText = '<p style="color:darkgreen;">Correct!</p>';
+			continueGame = 1; //tells the program to continue the current game
+			var nextTone = getOneMore(); //new tone to be added
+			currentSEQ.push(nextTone[0]); //append new tone to existing structure
+			console.log(currentSEQ);
+			} else {
+			feedbackText = '<p style="color:darkred;">Incorrect</p>';
+			continueGame = 0; //tells the program to exit the current game
+			currentSEQ = getOneMore(); //reset current sequence to be a single tone
+			}
+		//add to data output
+		jsPsych.data.addDataToLastTrial({
+			designation: 'SIMON-RESP',
+			SEQ: correctANS
+			RESP: curAnswer,
+			correct: gotitright	
+			});
+		curAnswer = []; //regardless of correct/incorrect, clear the current response for the trial
+		correctANS = []; //regardless of correct/incorrect, clear the correct answer for the trial	
+	}
+};
+
+
+
+//FEEDBACK//
+var showFeedback = {
+	type: 'html-button-response',
+	stimulus: function(){return feedbackText;},
+	choices: ['Continue']
+};
+
+//CREATE THE PROCEDURE
+var simonGame = {
+	timeline: [simonPresent, simonResponse, showFeedback],
+	loop_function: function(){
+		if(continueGame){
+			return true;
+			} else {
+			return false
+			}
+	}
+};
+
+
+timeline.push(simonGame);
+
+     jsPsych.init({
+        timeline: timeline,
+		on_finish: function(){jsPsych.data.get().localSave('csv','mydata.csv');}
+      });
+    </script>
+  </body>
+</html>
