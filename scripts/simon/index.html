@@ -86,6 +86,15 @@ Array.prototype.equals = function (array) {
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+//PRELOADING (probably unnecessary given the approach but oh well)
+var tone_preload = {
+    type: 'preload',
+    auto_preload: true,  
+    audio: [simonTones[0].tone, simonTones[1].tone, simonTones[2].tone, simonTones[3].tone]
+};
+
+timeline.push(tone_preload);
+
 
 
 /////////////////////
@@ -223,15 +232,6 @@ function getOneMore(array){
 
 currentSEQ = getOneMore(simonTones); //this starts everything out with one tone
 
-/////////////////////////////////
-
-var tone_preload = {
-    type: 'preload',
-    auto_preload: true,  
-    audio: [simonTones[0].tone, simonTones[1].tone, simonTones[2].tone, simonTones[3].tone]
-};
-
-timeline.push(tone_preload);
 
 
 //PRESENTATION SCREEN
@@ -330,9 +330,17 @@ var showFeedback = {
 	data: {GAME: current_game}
 };
 
+//FIXATION//
+var fixation = {
+	type: 'html-keyboard-response',
+	stimulus: '<p style="font-size: 40px;">+</p>',
+	choices: jsPsych.NO_KEYS,
+	trial_duration: 1000
+};
+
 //CREATE THE PROCEDURE
 var simonGame = {
-	timeline: [simonPresent, simonResponse, showFeedback],
+	timeline: [fixation, simonPresent, simonResponse, showFeedback],
 	loop_function: function(){
 		if(continueGame){
 			return true;
