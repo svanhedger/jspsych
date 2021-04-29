@@ -1,0 +1,17 @@
+
+	
+.jspsych-btn {
+	background-color: #FFFFFF;
+	border: 2px solid black;
+	color: black;
+	font-size: 18px;
+	border-radius: 20px;
+	}
+
+.jspsych-btn:hover,
+.jspsych-btn:focus {
+	background-color: #808080;
+	color: white;
+	border: 2px solid black;
+	transition: 0.1s;
+	}	
