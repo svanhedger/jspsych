@@ -4,13 +4,13 @@
 
 /*
 Overview:
-This is a jsPsych implementation of the popular 
-automated reading span task, which is one of 
-several 'complex span' assessments of working 
+This is a jsPsych implementation of the popular
+automated reading span task, which is one of
+several 'complex span' assessments of working
 memory. Participants read sentences and determine
 whether or not they make sense. This sentence
 task is interleaved with a letter memory task,
-in which a single letter is presented on the 
+in which a single letter is presented on the
 screen. Participants go through this interleaved
 sentence/letter process anywhere from 3-7 times
 on a trial.
@@ -21,7 +21,7 @@ are also encouraged to keep their sentence accuracy
 above 85%, keeping in line with prior research.
 
 To Use:
-1. Load this js file in your html file. 
+1. Load this js file in your html file.
 2. Reference the css (rspanstyle.css) in your html file
 3. Push the variable 'rspan_final' to your timeline in your html file
 
@@ -62,11 +62,11 @@ var showSentACC; //for displaying sentence accuracy on feedback
 //function to randomly select 'n' letters from the array without replacement
 function getSample(letterList, n) {
         return jsPsych.randomization.sampleWithoutReplacement(letterList, n);
-      } 
+      }
 
 ////////////////
 //INSTRUCTIONS//
-//////////////// 
+////////////////
 
 //Letter Instructions
 var rspan_instruct_1 = {
@@ -197,7 +197,7 @@ Rather, the array is randomized and then for each sentence an index
 selects one element (sequentially). Because the array was randomized,
 this ensures that the main sentences are presented in random order
 AND that each sentence is only presented one time in the experiment.
-There is probably a more elegant way of doing this, but oh well. 
+There is probably a more elegant way of doing this, but oh well.
 */
 
 var practice_sentences = [
@@ -309,20 +309,20 @@ main_sentences = jsPsych.randomization.repeat(main_sentences, 1);
 //////////////////
 //SET-UP SCREENS//
 //////////////////
-/*  
+/*
 These screens are just 1000ms fixation screens before each trial run.
 They should help orient participants' attention to the center of the screen,
-where the first sentence of a trial will appear (or letter in the case of 
-letter-only practice). However, they serve the purpose of selecting the 
+where the first sentence of a trial will appear (or letter in the case of
+letter-only practice). However, they serve the purpose of selecting the
 appropriate length of letter strings (with no letter repeats)
-*/	
+*/
 var set_up_2 = {
 	type: "html-keyboard-response",
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 2); //select two random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
@@ -332,7 +332,7 @@ var set_up_3 = {
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 3); //select three random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
@@ -342,7 +342,7 @@ var set_up_4 = {
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 4); //select four random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
@@ -352,7 +352,7 @@ var set_up_5 = {
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 5); //select five random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
@@ -362,7 +362,7 @@ var set_up_6 = {
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 6); //select six random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
@@ -372,14 +372,14 @@ var set_up_7 = {
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 7); //select seven random letters
-		numIndex = 0; //reset the numIndex		
+		numIndex = 0; //reset the numIndex
 	}
 };
 
 ///////////////////////
 //LETTER PRESENTATION//
 ///////////////////////
-/* 
+/*
 This screen displays each to-be-remembered letter to participants.
 The number of letters displayed ranges from 3 to 7 depending on
 the trial. 'numIndex' increases on the finish so that the next letter
@@ -391,8 +391,8 @@ var letter_presentation = {
 	trial_duration: 1000,
 	post_trial_gap: 500,
 	on_start: function(){currentLetter = correctSEQ[numIndex];},
-	stimulus: function(){return '<div style="font-size:75px;">' + correctSEQ[numIndex] + '</div>';},	
-	data: {letterSeen: currentLetter},	
+	stimulus: function(){return '<div style="font-size:75px;">' + correctSEQ[numIndex] + '</div>';},
+	data: {letterSeen: currentLetter},
 	on_finish: function(){
 		numIndex += 1;
 	}
@@ -403,11 +403,11 @@ var letter_presentation = {
 /////////////////////////
 /*
 These screens display the to-be-judged sentence to participants.
-For each sentence, participants must determine whether it makes 
+For each sentence, participants must determine whether it makes
 sense. During practice, these judgments are untimed and the
 sentences are drawn SEQUENTIALLY from the practice list ('practice_sentences').
-During the main task, sentences are drawn from the RANDOMIZED main 
-list ('sentenceRandom') AND each sentence is shown for the average amount 
+During the main task, sentences are drawn from the RANDOMIZED main
+list ('sentenceRandom') AND each sentence is shown for the average amount
 of time that participants took to read the practice sentences. This RT value
 is stored in the array 'calibRT'
 */
@@ -436,8 +436,8 @@ var sentence_presentation_practice = {
 			  designation: "PRACTICE",
 			  sentence: practice_sentences[calibRTindex].stimulus,
 			  sentenceCRESP: practice_sentences[calibRTindex].nonsense
-            });		
-		
+            });
+
 		calibRT[calibRTindex] = jsPsych.data.get().last(1).values()[0].rt;
 		calibRTindex += 1;
 	}
@@ -477,7 +477,7 @@ var sentence_judgment_feedback = {
 var overall_practice_feedback = {
 	type: 'html-button-response',
 	post_trial_gap: 250,
-	stimulus: function(){ 
+	stimulus: function(){
 		if(senPracticeCorrect > 12) {
 			return '<p style="font-size: 20px;">You responded correctly on ' + senPracticeCorrect + ' of ' + calibRTindex + ' sentences. Good job!</p>';
 		} else {
@@ -493,7 +493,7 @@ var sentence_judgment_practice_combined = {
 	type: 'html-button-response',
 	stimulus: "<p> This sentence makes sense.</p>",
 	choices: ["TRUE","FALSE"],
-	button_html: '<button class="buttonStyle">%choice%</button>',	
+	button_html: '<button class="buttonStyle">%choice%</button>',
 	on_finish: function(data) {
 		sentenceCRESP = jsPsych.data.get().last(2).values()[0].sentenceCRESP;
 		sentenceRESP = jsPsych.data.get().last(1).values()[0].button_pressed;
@@ -504,7 +504,7 @@ var sentence_judgment_practice_combined = {
 			practiceACC[practiceIndex] = 0;
 		}
 		practiceIndex += 1;
-		
+
 	}
 };
 
@@ -537,7 +537,7 @@ var sentence_presentation_main = {
 			  designation: "MAIN",
 			  sentence: main_sentences[mainSelectionIndex].stimulus,
 			  sentenceCRESP: main_sentences[mainSelectionIndex].nonsense
-            });		
+            });
 			mainSelectionIndex +=1;
 		if (currentRT == null) {
 			sentencetimeout += 1;
@@ -546,7 +546,7 @@ var sentence_presentation_main = {
 			sentenceIndex += 1;
 			practiceIndex += 1;
 		}
-	  }	
+	  }
 	};
 
 var sentence_judgment_main = {
@@ -587,7 +587,7 @@ var if_timeout_node = {
 /*
 These response screens will show 'n' response boxes (corresponding
 to the number of letters participants saw). Participants will then
-be asked to type in the letters IN ORDER. If a particular letter 
+be asked to type in the letters IN ORDER. If a particular letter
 is not remembered, they are instructued to leave this box blank.
 */
 
@@ -599,7 +599,7 @@ var recordClick = function(elm) {
 		response.push(($(elm).text())) //push the letter to the array
 		document.getElementById("echoed_txt").innerHTML = response.join(" ");
 	}
-	
+
 //function to clear the response array
 var clearResponse = function() {
 		response.pop(); //this will remove the most recent response
@@ -611,9 +611,9 @@ var blankResponse = function() {
 		response.push('_'); //push the blank to the array
 		document.getElementById("echoed_txt").innerHTML = response.join(" ");
 	}
-	
 
-//Adapted from the Experiment Factory Repository 
+
+//Adapted from the Experiment Factory Repository
 var response_grid =
 '<div class = numbox>' +
 '<p>Please recall the letters you saw to the best of your ability. If you do not remember a particular letter, use the SKIP button.<br><b>(When you are ready to lock in your answer, press ENTER)</b></p>' +
@@ -631,7 +631,7 @@ var response_grid =
 '<button id = button_12 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>Y</div></div></button>' +
 '<button class = clear_button id = "ClearButton" onclick = "clearResponse()">BACKSPACE</button>'+
 '<button class = blank_button id = "BlankButton" onclick = "blankResponse()">SKIP</button>'+
-'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b></b></div></div>' 
+'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b></b></div></div>'
 
 
 //UPDATED RECALL SCREEN
@@ -641,27 +641,27 @@ var rspan_recall = {
 	choices: [13],
 	on_finish: function(data){
 		var feedbackarray = [];
-		for (i = 0; i < correctSEQ.length; i++) { 
+		for (i = 0; i < correctSEQ.length; i++) {
 			if (correctSEQ[i] == response[i]) {
-				if(practice == false){RSPAN_TOTAL +=1;} //add to rspan total if not practice	
+				if(practice == false){RSPAN_TOTAL +=1;} //add to rspan total if not practice
 				trialCorrect[i] = 1;
 				feedbackarray[i] = correctSEQ[i].fontcolor("green");
 				} else {
 				feedbackarray[i] = correctSEQ[i].fontcolor("red");
 				trialCorrect[i] = 0;
 			}
-		}					
-		var tallyCorrect = arrSum(trialCorrect); //sum of correct responses (for feedback)		
+		}
+		var tallyCorrect = arrSum(trialCorrect); //sum of correct responses (for feedback)
 		if(arrAvg(trialCorrect) == 1) {
 		    fullCorrect = 1;
 			if(practice == false){
 				RSPAN_ABS += correctSEQ.length; //if main task, add to absolute score
 				}
-		  }			
+		  }
 		var data_resp = JSON.stringify(response); //stringify response for data output
 		var data_cresp = JSON.stringify(correctSEQ); //stringify correct answer for data output
 		var spanlength = correctSEQ.length; //how long the sequence was
-		
+
 		response = []; //clear the response for the next trial
 		trialCorrect = []; //clear correct answer array for next trial
 
@@ -677,7 +677,7 @@ var rspan_recall = {
 			numCorrect: tallyCorrect,
 			feedback: feedbackarray
 		};
-		} else {	  
+		} else {
 		  var responseData = {
 		    designation: 'MAIN',
 			RSPAN_TOTAL: RSPAN_TOTAL,
@@ -688,10 +688,10 @@ var rspan_recall = {
 			fullCorrect: fullCorrect,
 			numCorrect: tallyCorrect,
 			feedback: feedbackarray
-		  };  
+		  };
 		}
 		jsPsych.data.addDataToLastTrial(responseData);
-	}	
+	}
 };
 
 
@@ -709,19 +709,19 @@ var feedback_screen = {
 				var currentACC = Math.round(arrAvg(sentenceACC)*100);
 			} else {
 				var currentACC = Math.round(arrAvg(practiceACC)*100);
-			}	
+			}
 			if(currentACC > 84){var sentFont = "green"}else{var sentFont = "red"} //assign colored font based on 85% accuracy threshold
 				currentACC = currentACC.toString();
 				currentACC = currentACC + '%';
 				var sentenceTicker = '<p class = "senFB" id="senFB">Sentence:</br>'+ currentACC.fontcolor(sentFont) +'</p>';
 			} else {
 				var sentenceTicker = '';
-			}	
+			}
 		var getFeedback = jsPsych.data.get().last(1).values()[0].feedback;
-		var feedbackText = getFeedback.join(" ");		
+		var feedbackText = getFeedback.join(" ");
 		var pageText = '<p style="font-size:40px;">' + feedbackText + '</p>' + sentenceTicker +
-						'<p> You correctly identified ' + jsPsych.data.get().last(1).values()[0].numCorrect + ' of  '+jsPsych.data.get().last(1).values()[0].LENGTH+' letters.</p>'; 
-		
+						'<p> You correctly identified ' + jsPsych.data.get().last(1).values()[0].numCorrect + ' of  '+jsPsych.data.get().last(1).values()[0].LENGTH+' letters.</p>';
+
 		return[pageText];
 		},
 	choices: ['Continue'],
@@ -748,7 +748,7 @@ var practice_twoletter_trial = {
 
 var practice_threeletter_trial = {
 	timeline: [set_up_3, letter_presentation, letter_presentation, letter_presentation,  rspan_recall, feedback_screen]
-	};	
+	};
 
 //final letter practice proc
 var letter_practice_final = {
@@ -764,7 +764,23 @@ var sentence_instructions = {
 };
 
 var sentence_practice = {
-	timeline: makeRepeated([sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback], 15)
+	timeline: [
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback,
+	sentence_presentation_practice, sentence_judgment_practice, sentence_judgment_feedback
+	]
 };
 
 //final sentence practice proc
@@ -782,12 +798,15 @@ var lettersentence_instructions = {
 };
 
 var lettersentence_practice = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_practice, letter_presentation], 2)
+	timeline: [
+	sentence_presentation_main, if_timeout_practice, letter_presentation,
+	sentence_presentation_main, if_timeout_practice, letter_presentation
+	]
 };
 
 var lettersentence_practice_feedback = {
 	timeline: [rspan_recall, feedback_screen]
-};	
+};
 
 var letterpractice_run = {
 	timeline: [set_up_2, lettersentence_practice, lettersentence_practice_feedback],
@@ -803,23 +822,53 @@ var lettersentence_practice_final = {
 ///////////////////////
 
 var rspan_3_core = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_node, letter_presentation],3)
+	timeline: [
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation
+];
 }
 
 var rspan_4_core = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_node, letter_presentation],4)
+    timeline: [
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation
+];
 }
 
 var rspan_5_core = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_node, letter_presentation],5)
+    timeline: [
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation
+];
 }
 
 var rspan_6_core = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_node, letter_presentation],6)
+    timeline: [
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation
+];
 }
 
 var rspan_7_core = {
-	timeline: makeRepeated([sentence_presentation_main, if_timeout_node, letter_presentation],7)
+    timeline: [
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation,
+    sentence_presentation_main, if_timeout_node, letter_presentation
+];
 }
 
 //final procedures
@@ -844,13 +893,19 @@ var final_rspan7_run = {
 }
 
 var final_combined_runs = {
-	timeline: jsPsych.randomization.repeat(makeRepeated([final_rspan3_run, final_rspan4_run, final_rspan5_run, final_rspan6_run, final_rspan7_run],3), 1)
+	timeline: jsPsych.randomization.repeat([
+        final_rspan3_run, final_rspan3_run, final_rspan3_run,
+        final_rspan4_run, final_rspan4_run, final_rspan4_run,
+        final_rspan5_run, final_rspan5_run, final_rspan5_run,
+        final_rspan6_run, final_rspan6_run, final_rspan6_run,
+        final_rspan7_run, final_rspan7_run, final_rspan7_run
+        ], 1)
 }
 
- 
+
 ////////////////
 // 5. WRAP-UP //
-//////////////// 
+////////////////
 
 var rspan_done = {
 	type: "html-button-response",
@@ -866,7 +921,7 @@ var rspan_done = {
 			RSPAN_ABS: RSPAN_ABS,
 			SENT_ACC: finalSentenceACC,
 			SENT_RT: sentenceCutoff
-		  };  
+		  };
 		   jsPsych.data.addDataToLastTrial(summaryData);
 	}
 };
