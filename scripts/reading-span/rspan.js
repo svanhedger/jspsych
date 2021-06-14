@@ -58,6 +58,7 @@ var calibRTindex = 0; //variable for indexing sentence number during the sentenc
 var letters = ['F', 'H', 'J', 'K', 'L', 'N', 'P', 'Q', 'R', 'S', 'T', 'Y']; //possible letters to be recalled
 var practice; //for dynamic data
 var showSentACC; //for displaying sentence accuracy on feedback
+var currRun; //for debugging/making sure the correct number of letters are shown
 
 //function to randomly select 'n' letters from the array without replacement
 function getSample(letterList, n) {
@@ -323,6 +324,7 @@ var set_up_2 = {
 	on_finish: function(data){
 		correctSEQ = getSample(letters, 2); //select two random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -334,6 +336,7 @@ var set_up_3 = {
 		correctSEQ = [];
 		correctSEQ = getSample(letters, 3); //select three random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -345,6 +348,7 @@ var set_up_4 = {
 		correctSEQ = [];
 		correctSEQ = getSample(letters, 4); //select four random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -356,6 +360,7 @@ var set_up_5 = {
 		correctSEQ = [];
 		correctSEQ = getSample(letters, 5); //select five random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -367,6 +372,7 @@ var set_up_6 = {
 		correctSEQ = [];
 		correctSEQ = getSample(letters, 6); //select six random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -378,6 +384,7 @@ var set_up_7 = {
 		correctSEQ = [];
 		correctSEQ = getSample(letters, 7); //select seven random letters
 		numIndex = 0; //reset the numIndex
+		currRun = 0; //reset debugger
 	}
 };
 
@@ -400,6 +407,7 @@ var letter_presentation = {
 	data: {letterSeen: currentLetter},
 	on_finish: function(){
 		numIndex += 1;
+		currRun += 1; //for debugging purposes
 	}
 };
 
@@ -669,6 +677,14 @@ var rspan_recall = {
 
 		response = []; //clear the response for the next trial
 		trialCorrect = []; //clear correct answer array for next trial
+		
+		if(practice == false){
+			if (currRun < spanlength){
+				var debug = 'PROBLEM'
+			} else {
+				var debug = 'NO PROBLEM'
+				}
+		}
 
 		if(practice == true){
 		var responseData = {
@@ -680,7 +696,8 @@ var rspan_recall = {
 			correctRESP: data_cresp,
 			fullCorrect: fullCorrect,
 			numCorrect: tallyCorrect,
-			feedback: feedbackarray
+			feedback: feedbackarray,
+			debug: debug
 		};
 		} else {
 		  var responseData = {
@@ -692,7 +709,8 @@ var rspan_recall = {
 			correctRESP: data_cresp,
 			fullCorrect: fullCorrect,
 			numCorrect: tallyCorrect,
-			feedback: feedbackarray
+			feedback: feedbackarray,
+			debug: debug
 		  };
 		}
 		jsPsych.data.addDataToLastTrial(responseData);
