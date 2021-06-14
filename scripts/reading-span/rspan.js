@@ -331,6 +331,7 @@ var set_up_3 = {
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
+		correctSEQ = [];
 		correctSEQ = getSample(letters, 3); //select three random letters
 		numIndex = 0; //reset the numIndex
 	}
@@ -341,6 +342,7 @@ var set_up_4 = {
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
+		correctSEQ = [];
 		correctSEQ = getSample(letters, 4); //select four random letters
 		numIndex = 0; //reset the numIndex
 	}
@@ -351,6 +353,7 @@ var set_up_5 = {
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
+		correctSEQ = [];
 		correctSEQ = getSample(letters, 5); //select five random letters
 		numIndex = 0; //reset the numIndex
 	}
@@ -361,6 +364,7 @@ var set_up_6 = {
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
+		correctSEQ = [];
 		correctSEQ = getSample(letters, 6); //select six random letters
 		numIndex = 0; //reset the numIndex
 	}
@@ -371,6 +375,7 @@ var set_up_7 = {
 	trial_duration: 1000,
 	stimulus: '<p style="font-size:75px;">...</p>',
 	on_finish: function(data){
+		correctSEQ = [];
 		correctSEQ = getSample(letters, 7); //select seven random letters
 		numIndex = 0; //reset the numIndex
 	}
@@ -826,7 +831,7 @@ var rspan_3_core = {
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation
-];
+]
 }
 
 var rspan_4_core = {
@@ -835,7 +840,7 @@ var rspan_4_core = {
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation
-];
+]
 }
 
 var rspan_5_core = {
@@ -845,7 +850,7 @@ var rspan_5_core = {
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation
-];
+]
 }
 
 var rspan_6_core = {
@@ -856,7 +861,7 @@ var rspan_6_core = {
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation
-];
+]
 }
 
 var rspan_7_core = {
@@ -868,7 +873,7 @@ var rspan_7_core = {
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation,
     sentence_presentation_main, if_timeout_node, letter_presentation
-];
+]
 }
 
 //final procedures
