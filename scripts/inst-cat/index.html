@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8"/>
+    <title>Music Categorization Study</title>
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="jspsych-6.3.0/jspsych.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-audio-button-response.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-preload.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-instructions.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-external-html.js"></script>
+    <script src="jspsych-6.3.0/plugins/jspsych-survey-likert.js"></script>
+    <script src="audcheck.js"></script>
+
+    <link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+
+  </head>
+    <body>
+      <script>
+/*
+----------------------------------------------------------
+Effects of Instrument on Categorization of Musical Sounds
+----------------------------------------------------------
+
+Description will go here
+
+Stephen Van Hedger & Ethan Axler
+November 2021
+
+*/
+
+//1. Define important variables for the script
+var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+var blocknum = 1; //to be updated with each passing block
+var takeabreak = ''; //to be updated with a break message after block 1
+var givePractice = true; //boolean - if true, participant will practice categorizing unambiguous major/minor sounds
+
+//Participant Identifier
+var identifier = Math.random().toString(36).substr(2, 15); //random alphanumeric string for ID
+    jsPsych.data.addProperties({
+      participant: identifier,
+      expt: 'inst-cat-01'
+    });
+
+var main_variables = [
+  {audio: 'sounds/violin/FINAL_STIM/B000.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/violin/FINAL_STIM/B025.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/violin/FINAL_STIM/B050.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/violin/FINAL_STIM/B075.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/violin/FINAL_STIM/B100.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/violin/FINAL_STIM/C000.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/violin/FINAL_STIM/C025.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/violin/FINAL_STIM/C050.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/violin/FINAL_STIM/C075.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/violin/FINAL_STIM/C100.wav', instrument: 'violin', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/flute/FINAL_STIM/B000.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/flute/FINAL_STIM/B025.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/flute/FINAL_STIM/B050.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/flute/FINAL_STIM/B075.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/flute/FINAL_STIM/B100.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/flute/FINAL_STIM/C000.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/flute/FINAL_STIM/C025.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/flute/FINAL_STIM/C050.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/flute/FINAL_STIM/C075.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/flute/FINAL_STIM/C100.wav', instrument: 'flute', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/oboe/FINAL_STIM/B000.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/oboe/FINAL_STIM/B025.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/oboe/FINAL_STIM/B050.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/oboe/FINAL_STIM/B075.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/oboe/FINAL_STIM/B100.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/oboe/FINAL_STIM/C000.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 1},
+  {audio: 'sounds/oboe/FINAL_STIM/C025.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 2},
+  {audio: 'sounds/oboe/FINAL_STIM/C050.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 3},
+  {audio: 'sounds/oboe/FINAL_STIM/C075.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 4},
+  {audio: 'sounds/oboe/FINAL_STIM/C100.wav', instrument: 'oboe', instrument_type: 'sad', stimulus_type: 5},
+  {audio: 'sounds/piano/FINAL_STIM/B000.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 1},
+  {audio: 'sounds/piano/FINAL_STIM/B025.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 2},
+  {audio: 'sounds/piano/FINAL_STIM/B050.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 3},
+  {audio: 'sounds/piano/FINAL_STIM/B075.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 4},
+  {audio: 'sounds/piano/FINAL_STIM/B100.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 5},
+  {audio: 'sounds/piano/FINAL_STIM/C000.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 1},
+  {audio: 'sounds/piano/FINAL_STIM/C025.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 2},
+  {audio: 'sounds/piano/FINAL_STIM/C050.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 3},
+  {audio: 'sounds/piano/FINAL_STIM/C075.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 4},
+  {audio: 'sounds/piano/FINAL_STIM/C100.wav', instrument: 'piano', instrument_type: 'neutral', stimulus_type: 5},
+  {audio: 'sounds/marimba/FINAL_STIM/B000.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/marimba/FINAL_STIM/B025.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/marimba/FINAL_STIM/B050.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/marimba/FINAL_STIM/B075.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/marimba/FINAL_STIM/B100.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 5},
+  {audio: 'sounds/marimba/FINAL_STIM/C000.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/marimba/FINAL_STIM/C025.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/marimba/FINAL_STIM/C050.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/marimba/FINAL_STIM/C075.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/marimba/FINAL_STIM/C100.wav', instrument: 'marimba', instrument_type: 'happy', stimulus_type: 5},
+  {audio: 'sounds/xylophone/FINAL_STIM/B000.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/xylophone/FINAL_STIM/B025.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/xylophone/FINAL_STIM/B050.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/xylophone/FINAL_STIM/B075.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/xylophone/FINAL_STIM/B100.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 5},
+  {audio: 'sounds/xylophone/FINAL_STIM/C000.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/xylophone/FINAL_STIM/C025.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/xylophone/FINAL_STIM/C050.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/xylophone/FINAL_STIM/C075.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/xylophone/FINAL_STIM/C100.wav', instrument: 'xylophone', instrument_type: 'happy', stimulus_type: 5},
+  {audio: 'sounds/vibraphone/FINAL_STIM/B000.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/vibraphone/FINAL_STIM/B025.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/vibraphone/FINAL_STIM/B050.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/vibraphone/FINAL_STIM/B075.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/vibraphone/FINAL_STIM/B100.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 5},
+  {audio: 'sounds/vibraphone/FINAL_STIM/C000.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 1},
+  {audio: 'sounds/vibraphone/FINAL_STIM/C025.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 2},
+  {audio: 'sounds/vibraphone/FINAL_STIM/C050.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 3},
+  {audio: 'sounds/vibraphone/FINAL_STIM/C075.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 4},
+  {audio: 'sounds/vibraphone/FINAL_STIM/C100.wav', instrument: 'vibraphone', instrument_type: 'happy', stimulus_type: 5},
+];
+
+//preload all of the audio files for calibration and main task
+var preload_audio = [];
+
+for(var i=0; i<main_variables.length; i++){
+  preload_audio.push(main_variables[i].audio);
+}
+
+preload_audio = [...preload_audio, return_audcheck_folder]; //add the audCalib files
+
+var preload_audio_screen = {
+  type: 'preload',
+  audio: preload_audio,
+  continue_after_error: true
+};
+
+
+//////////////////
+// Trials //
+/////////////////
+
+//Instruction Screens
+var welcome = {
+  type: 'html-button-response',
+  stimulus: '<p>This study involves making judgments about different sounds you will hear.</p>' +
+            '<p>Before we begin, you will complete a short sound calibration. This will make sure that you can hear the sounds in the main study.</p>',
+  choices: ['Begin Sound Calibration']
+  };
+
+
+
+//Main instructions
+var main_instructions = {
+  type: 'instructions',
+  pages: [
+    '<p>You will now learn more about the main task.</p>',
+    '<p>This is a categorization task. On each trial, you will hear three musical notes, played one after another. Your task is to determine whether the three notes make up a <b>major</b> or <b>minor</b> triad.</p>',
+    '<p>If you are not sure of your answer, please guess to the best of your abilities. This task is expected to take approximately 45 minutes. You will be given several opportunities to take breaks throughout the study.</p>'
+  ],
+  show_clickable_nav: true
+};
+
+
+
+var triad_presentation = {
+  type: 'audio-keyboard-response',
+  stimulus: jsPsych.timelineVariable('audio'),
+  trial_ends_after_audio: true,
+  choices: jsPsych.NO_KEYS,
+  post_trial_gap: 250
+};
+
+var response_screen = {
+  type: 'html-button-response',
+  stimulus: '<p>Was that a <b>minor</b> or <b>major</b> triad?</p>',
+  choices: ['Minor', 'Major'],
+  post_trial_gap: 500
+};
+
+var main_procedure = {
+  timeline: [triad_presentation, response_screen],
+  timeline_variables: main_variables,
+  randomize_order: true
+};
+
+//Final Procedure, repeating the 70 sounds five times
+var shortBreak = {
+  type: 'html-button-response',
+  stimulus: function(){return '<p>Block '+blocknum+ ' of 5.</p><p>'+takeabreak+'</p>';},
+  choices: ['Begin'],
+  on_finish: function(){
+    blocknum +=1;
+    takeabreak = 'Please take a short break if you wish.';
+  }
+};
+
+
+var final_proc = {
+  timeline:[shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure]
+};
+
+/////////////////////////////
+/* Initiate Practice Block */
+/////////////////////////////
+
+var numMin = 0; //logs how many times they play the minor example
+var numMaj = 0; //logs how many times they play the major example
+var pracBlock = 1; //for determining which practice block they are on
+var setFeedback; //dynamic feedback for each trial
+var totalTally = 0; //tallying correct responses
+var repeatPrac; //whether participants must repeat practice
+var repeatPracInstruct; //instructions for repeating practice
+var curTally; //the current tally of performance of each block
+var maxPracBlock = 3; //practice will repeat up to three times if participants have poor performance
+
+function playMaj() {
+    	var audio = document.getElementById('playerMaj');
+    	audio.play();
+    	numMaj +=1;
+    };
+
+function playMin() {
+        var audio = document.getElementById('playerMin');
+        audio.play();
+        numMin +=1;
+        };
+
+
+var prac_instruct = {
+  type: 'html-button-response',
+  stimulus: '<p>You will now have the opportunity to practice the categorization task.</p>'+
+            '<p>You will hear three notes, played one at a time. You will then be asked to categorize the sound as <em>minor</em> or <em>major</em></p>'+
+            '<p>In case you do not know what these sound like, please press the buttons below to hear an example of each.</p>'+
+            '<p><input class="jspsych-btn" style="background-color:lightgrey;" id="MIN" type="button" value="Minor" onclick="playMin()"><audio id="playerMin" src="examples/B000.wav"></audio></input></p>'+
+            '<p><input class="jspsych-btn" style="background-color:lightgrey;" id="MAJ" type="button" value="Major" onclick="playMaj()"><audio id="playerMaj" src="examples/B100.wav"></audio></input></p>'+
+            '<p>During practice, you will receive feedback about whether you made the right choice.</p>',
+  choices: ['Begin Practice'],
+  on_finish: function(data){
+    jsPsych.data.addDataToLastTrial({
+  		played_major: numMaj,
+      played_minor: numMin,
+      designation: 'practice-intro'
+  		});
+  }
+};
+
+var practice_vars = [
+  {audio: 'examples/B000.wav', correct: 0, designation: 'practice'},
+  {audio: 'examples/B100.wav', correct: 1, designation: 'practice'},
+  {audio: 'examples/C000.wav', correct: 0, designation: 'practice'},
+  {audio: 'examples/C100.wav', correct: 1, designation: 'practice'}
+];
+
+//push to array audio for preloading
+for(var i=0; i<practice_vars.length; i++){
+  preload_audio.push(practice_vars[i].audio)
+};
+
+var prac_audio = {
+  type: 'audio-keyboard-response',
+  stimulus: jsPsych.timelineVariable('audio'),
+  trial_ends_after_audio: true,
+  choices: jsPsych.NO_KEYS,
+  post_trial_gap: 250
+};
+
+
+var prac_resp = {
+  type: 'html-button-response',
+  stimulus: '<p>Was that a <b>minor</b> or <b>major</b> triad?</p>',
+  choices: ['Minor', 'Major'],
+  post_trial_gap: 0,
+  data: {correct: jsPsych.timelineVariable('correct')},
+  on_finish: function(data){
+    if(data.response == data.correct){
+      var gotitright = 1;
+      totalTally += 1;
+      setFeedback = '<p style="color: darkgreen">Correct!</p>';
+    } else {
+      var gotitright = 0;
+      setFeedback = '<p style="color:red">Incorrect.</p>';
+    }
+    jsPsych.data.addDataToLastTrial({
+      practice_was_correct: gotitright,
+      designation: 'practice-resp'
+      });
+  }
+};
+
+var prac_feedback = {
+  type: 'html-keyboard-response',
+  stimulus: function(){return setFeedback;},
+  trial_duration: 1000,
+  choices: jsPsych.NO_KEYS
+};
+
+var prac_proc = {
+  timeline: [prac_audio, prac_resp, prac_feedback],
+  timeline_variables: practice_vars,
+  randomize_order: true,
+  sample: {
+        type: 'fixed-repetitions',
+        size: [5,5,5,5]
+      }
+};
+
+var blockPassed;
+var passedPrac;
+
+var calc_prac_perf = {
+  type: 'html-keyboard-response',
+  stimulus: '<p>+</p>',
+  trial_duration: 500,
+  on_finish: function(){
+    curTally = totalTally;
+    if(totalTally >= 15){
+      repeatPrac = 0;
+      repeatPracInstruct = 'Good job! You may now move onto the main task.';
+      blockPassed = pracBlock;
+      passedPrac = 1;
+    } else if(pracBlock == maxPracBlock) {
+      repeatPrac = 0;
+      blockPassed = NA;
+      passedPrac = 0;
+      repeatPracInstruct = 'You do not have to repeat practice again. However, please try your best in the main task.';
+    } else {
+      repeatPrac = 1
+      repeatPracInstruct = 'You must repeat practice. This time, try to get at least 15 of 20 correct.';
+    }
+    totalTally = 0;
+    pracBlock +=1; //add one to practice block
+    }
+}
+
+var prac_block_feedback = {
+  type: 'html-button-response',
+  stimulus: function(){return '<p>You correctly identified '+curTally+ ' of 20 sounds.</p><p>'+repeatPracInstruct+'</p>';},
+  choices: ['Continue']
+}
+
+var prac_proc_loop = {
+  timeline: [prac_proc, calc_prac_perf, prac_block_feedback],
+  loop_function: function(){
+        if(repeatPrac == 1){
+            return true;
+        } else {
+            return false;
+        }
+}
+};
+
+var final_practice_proc = {
+  timeline: [prac_instruct, prac_proc_loop]
+};
+
+var begin_main = {
+  type: 'html-button-response',
+  stimulus: '<p>You will now complete the main task.</p>',
+  choices: ['Begin'],
+  on_finish: function(data){
+    jsPsych.data.addDataToLastTrial({
+      designation: 'PRACTICE-PASSED-SUMMARY',
+      passed_practice: passedPrac,
+      block_passed_practice: blockPassed,
+      practice_score: curTally
+      });
+  }
+};
+
+/* Explicit Categorization of Isolated Notes */
+
+var explicit_instruct = {
+  type: 'html-button-response',
+  stimulus: '<p>Thank you for your responses.</p><p>In this next part of the study, you will hear single musical notes, played one at a time.</p>'+
+            '<p>Imagine that each musical note is the very first note of a song.</br>You will then be asked how likely it is that the song is happy versus sad.</p>'+
+            '<p>You will rate 21 notes in total. This part of the study is expected to take about 5 minutes.</p>',
+  choices: ['Begin'],
+  post_trial_gap: 500
+};
+
+
+var explicit_var = [
+  {audio: 'sounds/vibraphone/vD000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/vibraphone/vDs000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'minmaj'},
+  {audio: 'sounds/vibraphone/vE000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'maj'},
+  {audio: 'sounds/xylophone/xD000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/xylophone/xDs000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'minmaj'},
+  {audio: 'sounds/xylophone/xE000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'maj'},
+  {audio: 'sounds/marimba/mD000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/marimba/mDs000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'minmaj'},
+  {audio: 'sounds/marimba/mE000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'maj'},
+  {audio: 'sounds/piano/pD000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'min'},
+  {audio: 'sounds/piano/pDs000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'minmaj'},
+  {audio: 'sounds/piano/pE000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'maj'},
+  {audio: 'sounds/flute/fD000.wav', instrument: 'flute', instrument_type: 'sad', context: 'min'},
+  {audio: 'sounds/flute/fDs000.wav', instrument: 'flute', instrument_type: 'sad', context: 'minmaj'},
+  {audio: 'sounds/flute/fE000.wav', instrument: 'flute', instrument_type: 'sad', context: 'maj'},
+  {audio: 'sounds/violin/vD000.wav', instrument: 'violin', instrument_type: 'sad', context: 'min'},
+  {audio: 'sounds/violin/vDs000.wav', instrument: 'violin', instrument_type: 'sad', context: 'minmaj'},
+  {audio: 'sounds/violin/vE000.wav', instrument: 'violin', instrument_type: 'sad', context: 'maj'},
+  {audio: 'sounds/oboe/oD000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'min'},
+  {audio: 'sounds/oboe/oDs000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'minmaj'},
+  {audio: 'sounds/oboe/oE000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'maj'}
+];
+
+//preload sounds for explicit ratings
+var explicit_audio = [];
+for(var i=0; i<explicit_var.length; i++){
+  explicit_audio.push(explicit_var[i].audio);
+};
+
+var explicit_preload = {
+  type: 'preload',
+  audio: explicit_audio,
+  continue_after_error: true
+};
+
+var likert_rtg = ["Very likely a sad song", "Possibly a sad song", "Possibly a happy song", "Very likely a happy song"];
+
+var explicit_audio = {
+  type: 'audio-keyboard-response',
+  stimulus: jsPsych.timelineVariable('audio'),
+  trial_ends_after_audio: true,
+  choices: jsPsych.NO_KEYS
+};
+
+var explicit_rating = {
+  type: 'survey-likert',
+  questions: [
+      {prompt: "<p>Imagine that was the opening note to a song. How likely was that from a sad (versus happy) song?</p>", name: 'exprtg', labels: likert_rtg}
+    ],
+  post_trial_gap: 500
+};
+
+var fixation = {
+  type: 'html-keyboard-response',
+  stimulus: '<p style="font-size: 40px;">+</p>',
+  trial_duration: 500,
+  choices: jsPsych.NO_KEYS
+};
+
+var explicit_rating_proc = {
+  timeline: [fixation, explicit_audio, explicit_rating],
+  timeline_variables: explicit_var,
+  randomize_order: true
+};
+
+var final_explicit_proc = {
+  timeline: [explicit_preload, explicit_instruct, explicit_rating_proc]
+};
+
+//////////////////////////////////////
+// Push everything to the timeline! //
+//////////////////////////////////////
+
+timeline.push(preload_audio_screen);
+timeline.push(welcome, audcheck);
+timeline.push(main_instructions);
+
+//only push the practice procedure to the timeline if givePractice is set to true
+if(givePractice){
+timeline.push(final_practice_proc, begin_main);
+}
+
+//main procedures
+timeline.push(final_proc);
+timeline.push(final_explicit_proc);
+
+//still need to add a questionnaire
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+jsPsych.init({
+    timeline: timeline,
+    show_progress_bar: true,
+    override_safe_mode: true,
+	      on_finish: function() {
+        var csvname = 'inst-cat_' + identifier + '.csv';
+        jsPsych.data.get().localSave('csv', csvname);
+      } //this automatically saves the data to your local computer
+    });
+    </script>
+  </body>
+</html>
