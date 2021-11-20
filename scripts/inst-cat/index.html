@@ -204,8 +204,10 @@ var final_proc = {
 /* Initiate Practice Block */
 /////////////////////////////
 
-var numMin = 0; //logs how many times they play the minor example
-var numMaj = 0; //logs how many times they play the major example
+var numMin1 = 0; //logs how many times they play the minor example #1
+var numMaj1 = 0; //logs how many times they play the major example #1
+var numMin2 = 0; //logs how many times they play the minor example #2
+var numMaj2 = 0; //logs how many times they play the major example #2
 var pracBlock = 1; //for determining which practice block they are on
 var setFeedback; //dynamic feedback for each trial
 var totalTally = 0; //tallying correct responses
@@ -213,33 +215,49 @@ var repeatPrac; //whether participants must repeat practice
 var repeatPracInstruct; //instructions for repeating practice
 var curTally; //the current tally of performance of each block
 var maxPracBlock = 3; //practice will repeat up to three times if participants have poor performance
+var blockPassed; //logs whether the block was pass/fail
+var passedPrac; //passed practice as boolean
 
-function playMaj() {
-    	var audio = document.getElementById('playerMaj');
+function playMaj1() {
+    	var audio = document.getElementById('playerMaj1');
     	audio.play();
-    	numMaj +=1;
+    	numMaj1 +=1;
     };
 
-function playMin() {
-        var audio = document.getElementById('playerMin');
-        audio.play();
-        numMin +=1;
+function playMin1() {
+      var audio = document.getElementById('playerMin1');
+      audio.play();
+      numMin1 +=1;
+        };
+
+function playMaj2() {
+      var audio = document.getElementById('playerMaj2');
+      audio.play();
+      numMaj2 +=1;
+        };
+
+function playMin2() {
+      var audio = document.getElementById('playerMin2');
+      audio.play();
+      numMin2 +=1;
         };
 
 
 var prac_instruct = {
   type: 'html-button-response',
   stimulus: '<p>You will now have the opportunity to practice the categorization task.</p>'+
-            '<p>You will hear three notes, played one at a time. You will then be asked to categorize the sound as <em>minor</em> or <em>major</em></p>'+
-            '<p>In case you do not know what these sound like, please press the buttons below to hear an example of each.</p>'+
-            '<p><input class="jspsych-btn" style="background-color:lightgrey;" id="MIN" type="button" value="Minor" onclick="playMin()"><audio id="playerMin" src="examples/B000.wav"></audio></input></p>'+
-            '<p><input class="jspsych-btn" style="background-color:lightgrey;" id="MAJ" type="button" value="Major" onclick="playMaj()"><audio id="playerMaj" src="examples/B100.wav"></audio></input></p>'+
-            '<p>During practice, you will receive feedback about whether you made the right choice.</p>',
+            '<p>Each sound consists of three musical notes, played one at a time. The <u>middle</u> note of each sound is what determines whether it is <em>minor</em> or <em>major</em>.</p>'+
+            '<p>In case you do not know what these sound like, please press the buttons below to hear an example of each.There are four sounds you will hear - two that are <em>minor</em> and two that are <em>major</em>.</p>'+
+            '<p><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin1()"><audio id="playerMin1" src="examples/B000.wav"></audio></input><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin2()"><audio id="playerMin2" src="examples/C000.wav"></audio></input></p>'+
+            '<p><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj1()"><audio id="playerMaj1" src="examples/B100.wav"></audio></input><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj2()"><audio id="playerMaj2" src="examples/C100.wav"></audio></input></p>'+
+            '<p>During practice, after you categorize each sound as <em>minor</em> or <em>major</em>, you will receive feedback about whether you made the right choice.</p>',
   choices: ['Begin Practice'],
   on_finish: function(data){
     jsPsych.data.addDataToLastTrial({
-  		played_major: numMaj,
-      played_minor: numMin,
+  		played_major1: numMaj1,
+      played_minor1: numMin1,
+      played_major1: numMaj2,
+      played_minor1: numMin2,
       designation: 'practice-intro'
   		});
   }
@@ -304,9 +322,6 @@ var prac_proc = {
         size: [5,5,5,5]
       }
 };
-
-var blockPassed;
-var passedPrac;
 
 var calc_prac_perf = {
   type: 'html-keyboard-response',
@@ -476,11 +491,7 @@ timeline.push(final_explicit_proc);
 jsPsych.init({
     timeline: timeline,
     show_progress_bar: true,
-    override_safe_mode: true,
-	      on_finish: function() {
-        var csvname = 'inst-cat_' + identifier + '.csv';
-        jsPsych.data.get().localSave('csv', csvname);
-      } //this automatically saves the data to your local computer
+    override_safe_mode: true
     });
     </script>
   </body>
