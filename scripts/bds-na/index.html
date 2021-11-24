@@ -72,7 +72,7 @@ var recordClick = function(elm) {
 
 //function to clear the response array
 var clearResponse = function() {
-		response = [];
+		response.pop();
 		document.getElementById("echoed_txt").innerHTML = response;
 	}
 
@@ -149,8 +149,8 @@ var response_grid =
 '<button id = button_7 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>7</div></div></button>' +
 '<button id = button_8 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>8</div></div></button>' +
 '<button id = button_9 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>9</div></div></button>' +
-'<button class = clear_button id = "ClearButton" onclick = "clearResponse()">Clear</button>'+
-'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b></b></div></div>'
+'<button class = clear_button id = "ClearButton" onclick = "clearResponse()">Backspace</button>'+
+'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b> </b></div></div>'
 
 
 
