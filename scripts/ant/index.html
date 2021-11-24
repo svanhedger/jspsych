@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Attention Network Test</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="jspsych-6.3.0/jspsych.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-preload.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-audio-button-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-survey-text-q.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-survey-multi-choice.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-survey-multi-choice-q.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-external-html.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-fullscreen.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-html-slider-response.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-survey-text.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-instructions.js"></script>
+
+  <link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <script>
+
+    ////////////////////
+    //Global Variables//
+    ////////////////////
+
+    //Define timeline
+    var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+
+    //Participant Identifier
+    var identifier = jsPsych.randomization.randomID(15); //random alphanumeric string for ID
+    jsPsych.data.addProperties({
+      participant: identifier,
+      expt: 'ANT'
+    }); //add participant ID to data output
+
+const rand_iti = (min, max) => Math.floor(Math.random() * (max - min)) + min; //to generate a random ITI
+
+/* Timeline Variables */
+
+//We Need to repeat each trial type here 6x to directly replicate Berman et al. (2008), which used 288 trials
+var ant_trialvars = [
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN',cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/top-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'NO-CUE'},
+  {cue: 'img/fixation.jpg',  targ: 'img/bottom-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'NO-CUE'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/top-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/center-cue.jpg',  targ: 'img/bottom-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'CENTER'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/top-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/both-cue.jpg',  targ: 'img/bottom-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'DOUBLE'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'SPATIAL'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'SPATIAL'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'SPATIAL'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-congruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'CONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-congruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'CONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-incongruent-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'INCONGRUENT', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-incongruent-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'INCONGRUENT', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/top-cue.jpg',  targ: 'img/top-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'UP', cue_type: 'SPATIAL'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-noflank-l.jpg', correct_resp: 'ArrowLeft', flanker_type: 'NEUTRAL', flanker_middle: 'L', flanker_loc: 'DOWN', cue_type: 'SPATIAL'},
+  {cue: 'img/bottom-cue.jpg',  targ: 'img/bottom-noflank-r.jpg', correct_resp: 'ArrowRight', flanker_type: 'NEUTRAL', flanker_middle: 'R', flanker_loc: 'DOWN', cue_type: 'SPATIAL'}
+];
+
+ant_trialvars = jsPsych.randomization.repeat(ant_trialvars,6); //repeat each trial type 6 times for a grand total of 288 trials
+
+/* Instruction Trials */
+
+var inst_01 = '<p>Welcome. This part of the experiment will take about 20 minutes to complete.</p><p>(Press <b>&#8594;</b> on your keyboard to continue.)</p>';
+var inst_02 = '<p>In this experiment you will see arrows pointing left or right</br>(e.g <b>&#8594; &#8594; &#8594; &#8594; &#8594;</b> or <b>&#8594; &#8594; &#8592; &#8594; &#8594;</b>)</br>presented randomly at the top or bottom of the screen.</p>'+
+              '<p>Your job is to indicate which way the central (middle) arrow is pointing by pressing the corresponding arrow key on your keyboard.</p>'+
+              '<p>Occasionally, you will only see a single arrow on the screen. When this happens, simply indicate which way the single arrow is pointing by pressing the corresponding arrow key on your keyboard.</p>'+
+              '<p>(Press &#8592; to go back or &#8594; to continue)</p>';
+var inst_03 = '<p>Before the arrows appear, an asterisk (*) will occasionally come up somewhere on the screen.</p>'+
+              '<p>Irrespective of whether or where the * appears, it is important that you respond as quickly and accurately as possible by pressing the arrow key corresponding to the direction of the center arrow.</p>'+
+              '<p>(Press &#8592; to go back or &#8594; to begin!)</p>';
+
+
+var ant_inst = {
+  type: 'instructions',
+  pages: [inst_01, inst_02, inst_03],
+  post_trial_gap: 1000
+};
+
+/* Main Procedure Trials */
+var setHeight=500;
+
+var ant_cue = {
+  type: 'image-keyboard-response',
+  stimulus: jsPsych.timelineVariable('cue'),
+  stimulus_height: function(){return setHeight;},
+  trial_duration: 100,
+  choices: jsPsych.NO_KEYS
+};
+
+var ant_delay = {
+  type: 'image-keyboard-response',
+  stimulus: 'img/fixation.jpg',
+  stimulus_height: function(){return setHeight;},
+  trial_duration: 400,
+  choices: jsPsych.NO_KEYS
+};
+
+var ant_target = {
+  type: 'image-keyboard-response',
+  stimulus: jsPsych.timelineVariable('targ'),
+  stimulus_height: function(){return setHeight;},
+  trial_duration: 1700,
+  choices: ['ArrowRight', 'ArrowLeft'],
+  data: {
+    designation: 'ANT-RESPONSE',
+    correct_resp: jsPsych.timelineVariable('correct_resp'),
+    flanker_type: jsPsych.timelineVariable('flanker_type'),
+    flanker_middle: jsPsych.timelineVariable('flanker_middle'),
+    flanker_loc: jsPsych.timelineVariable('flanker_loc'),
+    ANT_trialType: jsPsych.timelineVariable('cue_type')
+  },
+  on_finish: function(data){
+    if(data.response == data.correct_resp){
+      var gotitright = 1;
+    } else {
+      var gotitright = 0;
+    }
+    jsPsych.data.addDataToLastTrial({
+      correct: gotitright
+    });
+  }
+};
+
+var ant_iti = {
+  type: 'image-keyboard-response',
+  stimulus: 'img/fixation.jpg',
+  stimulus_height: function(){return setHeight;},
+  trial_duration: function(){return rand_iti(600, 3200);},
+  choices: jsPsych.NO_KEYS
+};
+
+var ant_procedure = {
+  timeline: [ant_cue, ant_delay, ant_target, ant_iti],
+  timeline_variables: ant_trialvars,
+  randomize_order: true
+};
+
+/* Preload Images */
+var img_preload = [
+  'img/both-cue.jpg', 'img/bottom-congruent-l.jpg', 'img/bottom-congruent-r.jpg', 'img/bottom-cue.jpg',
+  'img/bottom-incongruent-l.jpg', 'img/bottom-incongruent-r.jpg', 'img/bottom-noflank-l.jpg',
+  'img/bottom-noflank-r.jpg', 'img/center-cue.jpg', 'img/fixation.jpg', 'img/top-congruent-l.jpg',
+  'img/top-congruent-r.jpg', 'img/top-cue.jpg', 'img/top-incongruent-l.jpg',
+  'img/top-incongruent-r.jpg', 'img/top-noflank-l.jpg', 'img/top-noflank-r.jpg'
+];
+
+var ant_preload = {
+  type: 'preload',
+  images: img_preload
+};
+
+/* Wrap-Up Screen */
+var ant_finish = {
+  type: 'html-button-response',
+  stimulus: '<p>Thank you for your responses!</p>',
+  choices: ['Finish']
+};
+
+/* Push Everything to Timeline */
+timeline.push(ant_preload, ant_inst, ant_procedure, ant_finish);
+
+
+    //Initialize the experiment
+    jsPsych.init({
+      timeline: timeline,
+      on_finish: function() {
+        var csvname = identifier + '.csv';
+        jsPsych.data.get().localSave('csv', csvname);
+      }
+    });
+  </script>
+</body>
+
+</html>
