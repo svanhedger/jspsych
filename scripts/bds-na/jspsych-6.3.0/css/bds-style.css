@@ -1,0 +1,84 @@
+.digit-span-text {
+	text-align:center;
+	font-size: 80px;
+	position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+/* css for numpad */
+.square {
+    float:left;
+    position: relative;
+    width: 30%;
+    height: 30%; /* = width for a 1:1 aspect ratio */
+    margin:1.66%;
+    background-color:#fff;
+    overflow:hidden;
+    color: #000;
+    border-radius:15px;
+	border: 2px solid black;
+}
+
+.submit_button, .clear_button {
+    float:left;
+    position: relative;
+    width: 47%;
+    height: 15%; /* = width for a 1:1 aspect ratio */
+    margin:1.5%;
+    background-color:#fff;
+    overflow:hidden;
+    color: #000;
+    border-radius:15px;
+    font-size: 20px;
+	border: 2px solid black;
+}
+
+.square:hover, .submit_button:hover, .clear_button:hover {
+	color: blue;
+}
+
+.square:active, .submit_button:active, .clear_button:active {
+	background-color: #505050;
+}
+
+.numbers{
+    font-weight:900;
+    text-align: center;
+    font-size: 50px;
+    position: relative;
+    top: 50%; 
+}
+
+.numbox {
+  width:30vw;
+  height: 30vw;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-50%);
+}
+
+
+
+
+	
+.jspsych-btn {
+	background-color: #FFFFFF;
+	border: 2px solid black;
+	color: black;
+	font-size: 18px;
+	border-radius: 20px;
+	}
+
+.jspsych-btn:hover,
+.jspsych-btn:focus {
+	background-color: #808080;
+	color: white;
+	border: 2px solid black;
+	transition: 0.1s;
+	}	

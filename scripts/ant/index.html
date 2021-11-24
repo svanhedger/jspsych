@@ -9,15 +9,7 @@
   <script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
   <script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>
   <script src="jspsych-6.3.0/plugins/jspsych-image-keyboard-response.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-audio-button-response.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-survey-text-q.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-survey-multi-choice.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-survey-multi-choice-q.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-external-html.js"></script>
   <script src="jspsych-6.3.0/plugins/jspsych-fullscreen.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-html-slider-response.js"></script>
-  <script src="jspsych-6.3.0/plugins/jspsych-survey-text.js"></script>
   <script src="jspsych-6.3.0/plugins/jspsych-instructions.js"></script>
 
   <link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
@@ -197,8 +189,24 @@ var ant_finish = {
   choices: ['Finish']
 };
 
+
+/////////////////////////
+// fullscreen //
+////////////////////////
+
+var ant_fullscreen_enter = {
+	type: 'fullscreen',
+	fullscreen_mode: true,
+};
+
+var ant_fullscreen_exit = {
+	type: 'fullscreen',
+	fullscreen_mode: false,
+};
+
 /* Push Everything to Timeline */
-timeline.push(ant_preload, ant_inst, ant_procedure, ant_finish);
+
+timeline.push(ant_preload, ant_fullscreen_enter, ant_inst, ant_procedure, ant_fullscreen_exit, ant_finish);
 
 
     //Initialize the experiment
