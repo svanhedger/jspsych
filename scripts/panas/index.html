@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>PANAS</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="jspsych-6.3.0/jspsych.js"></script>
+  <script src="jspsych-6.3.0/plugins/jspsych-survey-likert.js"></script>
+  <script src="panas.js"></script>
+
+  <link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <script>
+
+    ////////////////////
+    //Global Variables//
+    ////////////////////
+
+    //Define timeline
+    var timeline = []; //specify the jsPsych timeline to which all trials/blocks are pushed
+
+    //Participant Identifier
+    var identifier = jsPsych.randomization.randomID(15); //random alphanumeric string for ID
+    jsPsych.data.addProperties({
+      participant: identifier,
+      expt: 'PANAS'
+    }); //add participant ID to data output
+
+timeline.push(panas); //loaded from panas.js
+
+    //Initialize the experiment
+    jsPsych.init({
+      timeline: timeline,
+      on_finish: function() {
+        var csvname = identifier + '.csv';
+        jsPsych.data.get().localSave('csv', csvname);
+      }
+    });
+  </script>
+</body>
+
+</html>
