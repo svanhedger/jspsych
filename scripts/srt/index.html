@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SRT</title>
+<script src="jspsych-6.0.2/jquery-3.3.1.min.js"></script>
+<script src="jspsych-6.0.2/jspsych.js"></script>	
+<script src="jspsych-6.0.2/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.0.2/plugins/jspsych-survey-text.js"></script>
+<script src="srt.js"></script>
+
+<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+<script>
+
+//Define Timeline
+var timeline = [];
+
+//Array to store the spoken digits
+var srt_sounds = return_srt_folder();
+
+const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length //simple constant for calculating mean of an array
+const arrSum = arr => arr.reduce((a,b) => a + b, 0) //simple constant for calculating sum of an array
+
+//Function to give the option for a local save of the data
+var localSave;
+
+function saveData() {
+	if(localSave == 1) {
+		var identifier = 'SRT_'+Math.round(new Date().getTime()/1000)+'.csv';
+		jsPsych.data.get().localSave('csv',identifier);
+		alert("You may now close this tab.");
+	} else {
+		alert("You may now close this tab.");
+		}
+	};	
+
+//Final screen
+var save_data = {
+	type: 'html-button-response',
+	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
+	choices: ['No','Yes'],
+	on_finish: function(data){
+		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
+	}		
+};
+
+//Push components to experiment timeline
+timeline.push(srt); //from nback.js
+timeline.push(save_data); //final screen asking about data
+
+//Initialize the Experiment
+jsPsych.init({
+	timeline: timeline,
+	preload_audio: srt_sounds,
+	on_finish: saveData
+});
+
+</script>
+</body>
+</html>
