@@ -16,7 +16,7 @@ Stephen Van Hedger, November 2021
 
 */
 
-var scale_panas = ["Very slightly or not at all", "A little", "Moderately", "Quite a bit", "Extremely"];
+var scale_panas = ["1<br>Very slightly or not at all", "2<br>A little", "3<br>Moderately", "4<br>Quite a bit", "5<br>Extremely"];
 
 var panas =  {
   type: 'survey-likert',
