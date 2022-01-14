@@ -155,8 +155,8 @@ var main_instructions = {
   type: 'instructions',
   pages: [
     '<p>You will now learn more about the main task.</p>',
-    '<p>This is a categorization task. On each trial, you will hear three musical notes, played one after another. Your task is to determine whether the three notes make up a <b>minor</b> or <b>major</b> triad.</p>',
-    '<p>If you are not sure of your answer, please guess to the best of your abilities. This task is expected to take approximately 45 minutes. You will be given several opportunities to take breaks throughout the study.</p>'
+    '<p>This is a categorization task. On each trial, you will hear three musical notes, played one after another.</p><p>Your task is to determine whether the three notes make up a <b>minor</b> or <b>major</b> triad.</p>',
+    '<p>If you are not sure of your answer, please guess to the best of your abilities. </p><p>This task is expected to take approximately 45 minutes. </p><p>You will be given several opportunities to take breaks throughout the study.</p>'
   ],
   show_clickable_nav: true,
   on_start: function(){jsPsych.setProgressBar(0.05);}
@@ -176,22 +176,23 @@ var response_screen = {
   type: 'html-button-response',
   stimulus: '<p>Did that sound more like a <b>minor</b> or <b>major</b> triad?</p>',
   choices: ['Minor', 'Major'],
-  post_trial_gap: 500
+  post_trial_gap: 500,
+  on_finish: function(){
+      var proportion_complete = jsPsych.getProgressBarCompleted();
+      jsPsych.setProgressBar(proportion_complete+.003);
+  }
 };
 
 var main_procedure = {
   timeline: [triad_presentation, response_screen],
   timeline_variables: main_variables,
-  randomize_order: true,
-  on_finish: function(){
-    var proportion_complete = jsPsych.getProgressBarCompleted();
-    jsPsych.setProgressBar(proportion_complete+.0003);}
+  randomize_order: true
 };
 
 //Final Procedure, repeating the 70 sounds five times
 var shortBreak = {
   type: 'html-button-response',
-  stimulus: function(){return '<p>Block '+blocknum+ ' of 4.</p><p>'+takeabreak+'</p>';},
+  stimulus: function(){return '<p>Block '+blocknum+ ' of 4</p><p>'+takeabreak+'</p>';},
   choices: ['Begin'],
   on_finish: function(){
     blocknum +=1;
@@ -396,34 +397,20 @@ var explicit_instruct = {
   type: 'html-button-response',
   stimulus: '<p>Thank you for your responses.</p><p>In this next part of the study, you will hear single musical notes, played one at a time.</p>'+
             '<p>Please pay attention to the instrument that is playing each note. Your task will be to judge whether you think the instrument is more likely to play a sad (versus happy) song</p>'+
-            '<p>You will rate 21 notes in total. This part of the study is expected to take about 5 minutes.</p>',
+            '<p>You will rate 7 notes in total. This part of the study is expected to take about 3 minutes.</p>',
   choices: ['Begin'],
   post_trial_gap: 500
 };
 
 
 var explicit_var = [
-  {audio: 'sounds/vibraphone/vD000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'min'},
-  {audio: 'sounds/vibraphone/vDs000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'minmaj'},
-  {audio: 'sounds/vibraphone/vE000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'maj'},
-  {audio: 'sounds/xylophone/xD000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'min'},
-  {audio: 'sounds/xylophone/xDs000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'minmaj'},
-  {audio: 'sounds/xylophone/xE000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'maj'},
-  {audio: 'sounds/marimba/mD000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'min'},
-  {audio: 'sounds/marimba/mDs000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'minmaj'},
-  {audio: 'sounds/marimba/mE000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'maj'},
-  {audio: 'sounds/piano/pD000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'min'},
-  {audio: 'sounds/piano/pDs000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'minmaj'},
-  {audio: 'sounds/piano/pE000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'maj'},
-  {audio: 'sounds/flute/fD000.wav', instrument: 'flute', instrument_type: 'sad', context: 'min'},
-  {audio: 'sounds/flute/fDs000.wav', instrument: 'flute', instrument_type: 'sad', context: 'minmaj'},
-  {audio: 'sounds/flute/fE000.wav', instrument: 'flute', instrument_type: 'sad', context: 'maj'},
-  {audio: 'sounds/violin/vD000.wav', instrument: 'violin', instrument_type: 'sad', context: 'min'},
-  {audio: 'sounds/violin/vDs000.wav', instrument: 'violin', instrument_type: 'sad', context: 'minmaj'},
-  {audio: 'sounds/violin/vE000.wav', instrument: 'violin', instrument_type: 'sad', context: 'maj'},
-  {audio: 'sounds/oboe/oD000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'min'},
-  {audio: 'sounds/oboe/oDs000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'minmaj'},
-  {audio: 'sounds/oboe/oE000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'maj'}
+  {audio: 'sounds/vibraphone/vC000.wav', instrument: 'vibraphone', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/xylophone/xC000.wav', instrument: 'xylophone', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/marimba/mC000.wav', instrument: 'marimba', instrument_type: 'happy', context: 'min'},
+  {audio: 'sounds/piano/pC000.wav', instrument: 'piano', instrument_type: 'neutral', context: 'min'},
+  {audio: 'sounds/flute/fC000.wav', instrument: 'flute', instrument_type: 'sad', context: 'min'},
+  {audio: 'sounds/violin/vC000.wav', instrument: 'violin', instrument_type: 'sad', context: 'min'},
+  {audio: 'sounds/oboe/oC000.wav', instrument: 'oboe', instrument_type: 'sad', context: 'min'}
 ];
 
 //preload sounds for explicit ratings
@@ -491,6 +478,32 @@ timeline.push(final_proc);
 timeline.push(final_explicit_proc);
 
 //still need to add a questionnaire
+
+//backup data to python anywhere server
+var backup_data = {
+  type: 'html-keyboard-response',
+  stimulus: '<p>Saving your results...</p>',
+  choices: jsPsych.NO_KEYS,
+  trial_duration: 1000,
+  on_finish: function() {
+    var csvData = jsPsych.data.get().csv(); //this is the csv data
+    console.log(csvData);
+    var dataname = identifier;
+    var formData = {
+      exp: "INST_CAT_01",
+      subj: dataname,
+      results: csvData
+    };
+    $.post(
+      "https://svanhedger.pythonanywhere.com/data",
+      formData
+    );
+  }
+};
+
+timeline.push(backup_data); //backup data server
+
+
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
