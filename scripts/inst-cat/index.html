@@ -155,10 +155,11 @@ var main_instructions = {
   type: 'instructions',
   pages: [
     '<p>You will now learn more about the main task.</p>',
-    '<p>This is a categorization task. On each trial, you will hear three musical notes, played one after another. Your task is to determine whether the three notes make up a <b>major</b> or <b>minor</b> triad.</p>',
+    '<p>This is a categorization task. On each trial, you will hear three musical notes, played one after another. Your task is to determine whether the three notes make up a <b>minor</b> or <b>major</b> triad.</p>',
     '<p>If you are not sure of your answer, please guess to the best of your abilities. This task is expected to take approximately 45 minutes. You will be given several opportunities to take breaks throughout the study.</p>'
   ],
-  show_clickable_nav: true
+  show_clickable_nav: true,
+  on_start: function(){jsPsych.setProgressBar(0.05);}
 };
 
 
@@ -173,7 +174,7 @@ var triad_presentation = {
 
 var response_screen = {
   type: 'html-button-response',
-  stimulus: '<p>Was that a <b>minor</b> or <b>major</b> triad?</p>',
+  stimulus: '<p>Did that sound more like a <b>minor</b> or <b>major</b> triad?</p>',
   choices: ['Minor', 'Major'],
   post_trial_gap: 500
 };
@@ -181,13 +182,16 @@ var response_screen = {
 var main_procedure = {
   timeline: [triad_presentation, response_screen],
   timeline_variables: main_variables,
-  randomize_order: true
+  randomize_order: true,
+  on_finish: function(){
+    var proportion_complete = jsPsych.getProgressBarCompleted();
+    jsPsych.setProgressBar(proportion_complete+.0003);}
 };
 
 //Final Procedure, repeating the 70 sounds five times
 var shortBreak = {
   type: 'html-button-response',
-  stimulus: function(){return '<p>Block '+blocknum+ ' of 5.</p><p>'+takeabreak+'</p>';},
+  stimulus: function(){return '<p>Block '+blocknum+ ' of 4.</p><p>'+takeabreak+'</p>';},
   choices: ['Begin'],
   on_finish: function(){
     blocknum +=1;
@@ -197,7 +201,7 @@ var shortBreak = {
 
 
 var final_proc = {
-  timeline:[shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure]
+  timeline:[shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure, shortBreak, main_procedure]
 };
 
 /////////////////////////////
@@ -214,7 +218,7 @@ var totalTally = 0; //tallying correct responses
 var repeatPrac; //whether participants must repeat practice
 var repeatPracInstruct; //instructions for repeating practice
 var curTally; //the current tally of performance of each block
-var maxPracBlock = 3; //practice will repeat up to three times if participants have poor performance
+var maxPracBlock = 2; //practice will repeat n times if participants have poor performance
 var blockPassed; //logs whether the block was pass/fail
 var passedPrac; //passed practice as boolean
 
@@ -248,8 +252,8 @@ var prac_instruct = {
   stimulus: '<p>You will now have the opportunity to practice the categorization task.</p>'+
             '<p>Each sound consists of three musical notes, played one at a time. The <u>middle</u> note of each sound is what determines whether it is <em>minor</em> or <em>major</em>.</p>'+
             '<p>In case you do not know what these sound like, please press the buttons below to hear an example of each.There are four sounds you will hear - two that are <em>minor</em> and two that are <em>major</em>.</p>'+
-            '<p><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin1()"><audio id="playerMin1" src="examples/B000.wav"></audio></input><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin2()"><audio id="playerMin2" src="examples/C000.wav"></audio></input></p>'+
-            '<p><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj1()"><audio id="playerMaj1" src="examples/B100.wav"></audio></input><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj2()"><audio id="playerMaj2" src="examples/C100.wav"></audio></input></p>'+
+            '<p><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin1()"><audio id="playerMin1" src="examples/B000.wav"></audio></input><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj1()"><audio id="playerMaj1" src="examples/B100.wav"></audio></input></p>'+
+            '<p><input class="jspsych-btn" style="background-color:#FADBD8;" id="MIN" type="button" value="Minor" onclick="playMin2()"><audio id="playerMin2" src="examples/C000.wav"></audio></input><input class="jspsych-btn" style="background-color:#D1F2EB;" id="MAJ" type="button" value="Major" onclick="playMaj2()"><audio id="playerMaj2" src="examples/C100.wav"></audio></input></p>'+
             '<p>During practice, after you categorize each sound as <em>minor</em> or <em>major</em>, you will receive feedback about whether you made the right choice.</p>',
   choices: ['Begin Practice'],
   on_finish: function(data){
@@ -319,7 +323,7 @@ var prac_proc = {
   randomize_order: true,
   sample: {
         type: 'fixed-repetitions',
-        size: [5,5,5,5]
+        size: [3,3,3,3]
       }
 };
 
@@ -329,7 +333,7 @@ var calc_prac_perf = {
   trial_duration: 500,
   on_finish: function(){
     curTally = totalTally;
-    if(totalTally >= 15){
+    if(totalTally >= 8){
       repeatPrac = 0;
       repeatPracInstruct = 'Good job! You may now move onto the main task.';
       blockPassed = pracBlock;
@@ -341,7 +345,7 @@ var calc_prac_perf = {
       repeatPracInstruct = 'You do not have to repeat practice again. However, please try your best in the main task.';
     } else {
       repeatPrac = 1
-      repeatPracInstruct = 'You must repeat practice. This time, try to get at least 15 of 20 correct.';
+      repeatPracInstruct = 'Please repeat practice one more time and try to get at least 8 of 12 correct.';
     }
     totalTally = 0;
     pracBlock +=1; //add one to practice block
@@ -350,7 +354,7 @@ var calc_prac_perf = {
 
 var prac_block_feedback = {
   type: 'html-button-response',
-  stimulus: function(){return '<p>You correctly identified '+curTally+ ' of 20 sounds.</p><p>'+repeatPracInstruct+'</p>';},
+  stimulus: function(){return '<p>You correctly identified '+curTally+ ' of 12 sounds.</p><p>'+repeatPracInstruct+'</p>';},
   choices: ['Continue']
 }
 
@@ -360,18 +364,21 @@ var prac_proc_loop = {
         if(repeatPrac == 1){
             return true;
         } else {
+            jsPsych.setProgressBar(0.10);
             return false;
         }
 }
 };
 
 var final_practice_proc = {
-  timeline: [prac_instruct, prac_proc_loop]
+  timeline: [prac_instruct, prac_proc_loop],
+
 };
 
 var begin_main = {
   type: 'html-button-response',
-  stimulus: '<p>You will now complete the main task.</p>',
+  stimulus: '<p>You will now complete the main task.</p><p>In the main task, some of the triads might be harder to classify than others, as they will be somewhat between typical minor and major triads.</p>'+
+            '<p><em>Thus, it is important to listen carefully to each sound.</em> Every triad you hear can be correctly classified as either minor or major, even if some feel more difficult to classify than others.</p>',
   choices: ['Begin'],
   on_finish: function(data){
     jsPsych.data.addDataToLastTrial({
@@ -388,7 +395,7 @@ var begin_main = {
 var explicit_instruct = {
   type: 'html-button-response',
   stimulus: '<p>Thank you for your responses.</p><p>In this next part of the study, you will hear single musical notes, played one at a time.</p>'+
-            '<p>Imagine that each musical note is the very first note of a song.</br>You will then be asked how likely it is that the song is happy versus sad.</p>'+
+            '<p>Please pay attention to the instrument that is playing each note. Your task will be to judge whether you think the instrument is more likely to play a sad (versus happy) song</p>'+
             '<p>You will rate 21 notes in total. This part of the study is expected to take about 5 minutes.</p>',
   choices: ['Begin'],
   post_trial_gap: 500
@@ -443,7 +450,7 @@ var explicit_audio = {
 var explicit_rating = {
   type: 'survey-likert',
   questions: [
-      {prompt: "<p>Imagine that was the opening note to a song. How likely was that from a sad (versus happy) song?</p>", name: 'exprtg', labels: likert_rtg}
+      {prompt: "<p>Do you think this instrument is likely to play a sad or happy song?</p>", name: 'exprtg', labels: likert_rtg}
     ],
   post_trial_gap: 500
 };
@@ -458,7 +465,8 @@ var fixation = {
 var explicit_rating_proc = {
   timeline: [fixation, explicit_audio, explicit_rating],
   timeline_variables: explicit_var,
-  randomize_order: true
+  randomize_order: true,
+  on_finish: function(){jsPsych.setProgressBar(1);}
 };
 
 var final_explicit_proc = {
@@ -491,7 +499,7 @@ timeline.push(final_explicit_proc);
 jsPsych.init({
     timeline: timeline,
     show_progress_bar: true,
-    override_safe_mode: true
+    auto_update_progress_bar: false
     });
     </script>
   </body>
