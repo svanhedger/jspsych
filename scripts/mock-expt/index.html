@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+		<title>Categorization Task</title>
+
+	<script src="jspsych-6.3.1/jquery-3.3.1.min.js"></script>
+  <script src="jspsych-6.3.1/jspsych.js"></script>
+  <script type="text/javascript" src="lib/jspsych-pavlovia-3.0.0.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-html-button-response.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-instructions.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-external-html.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="jspsych-6.3.1/plugins/jspsych-preload.js"></script>
+
+  <link href="jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+  </head>
+    <body>
+      <script>
+
+////////////////////////////////
+// Define Important Variables //
+////////////////////////////////
+
+var timeline = []; //array to hold all of the trials/procedures of the experiment
+var breakTiming = 25; //set this number to reflect when breaks occur in the task (e.g., 40 means after every 40 images)
+var breakCounter = 0; //to be updated in calculating breaks
+var feedbacktext; //update feedback text
+
+var identifier = jsPsych.randomization.randomID(12); //randomly generated participant identifier
+
+//counterbalance keys that are used
+if(Math.random()>0.5){
+  var animalkey = 'z';
+  var nonanimalkey = 'm';
+} else {
+  var animalkey = 'm';
+  var nonanimalkey = 'z';
+}
+
+
+var main_variables = [
+  {img: 'animate_face/09.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/10.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/11.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/12.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/13.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/14.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/15.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/16.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/17.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/18.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/19.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/20.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_face/21.jpg', animal: 1, face: 1, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/09.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/10.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/11.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/12.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/13.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/14.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/15.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/16.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/17.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/18.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/19.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/20.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'animate_noface/21.jpg', animal: 1, face: 0, correct_ans: animalkey, pareidolia: null},
+  {img: 'inanimate_face/09.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/10.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/11.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/12.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/13.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/14.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/15.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/16.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/17.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/18.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/19.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/20.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_face/21.jpg', animal: 0, face: 1, correct_ans: nonanimalkey, pareidolia: 1},
+  {img: 'inanimate_noface/09.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/10.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/11.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/12.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/13.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/14.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/15.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/16.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/17.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/18.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/19.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/20.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+  {img: 'inanimate_noface/21.jpg', animal: 0, face: 0, correct_ans: nonanimalkey, pareidolia: 0},
+];
+
+
+
+//preload all of the images
+var img_preload = [];
+for(var i=0; i<main_variables.length; i++){
+  img_preload.push(main_variables[i].img);
+};
+
+var media_preload = {
+  type: 'preload',
+  images: img_preload,
+  message:'<p>Loading the study...</p>'
+};
+
+timeline.push(media_preload);
+
+
+var instruct_01 ={
+  type: 'html-keyboard-response',
+  stimulus:'<p>Welcome to the study.</p>'+
+           '<p>In this mock experiment, you will be asked to categorize different pictures that you see. There are two kinds of pictures in this study:</p>'+
+           '<p><b style="color:blue;">1. Animal Pictures:</b></br><em>(for example, pictures of people, dogs, cats, birds etc.)</em></br>If you see an animal pictue, you should press <b style="color:blue;">'+animalkey+ '</b> on your keyboard as quickly as possible.</p>'+
+           '<p><b style="color:red;">2. Non-Animal Pictures:</b></br><em>(for example, pictures of rocks, plants, machines, buildings etc.)</em></br>If you see a non-animal pictue, you should press <b style="color:red;">'+nonanimalkey+ '</b> on your keyboard as quickly as possible.</p>'+
+           '<p>Please try to make your responses as quickly and accurately as possible. There are 48 total images, and you will have the option of taking a break at the halfway point. Participation is expected to take around 5-6 minutes.</p>'+
+           '<p><b>Press '+animalkey+' or '+nonanimalkey+ ' to begin!</b></p>',
+  choices: [animalkey, nonanimalkey],
+  post_trial_gap: 1000
+};
+
+timeline.push(instruct_01);
+
+var image_present = {
+  type: 'image-keyboard-response',
+  stimulus: jsPsych.timelineVariable('img'),
+  stimulus_height: 500,
+  choices: [animalkey, nonanimalkey],
+  trial_duration: 3000,
+  data: {animal: jsPsych.timelineVariable('animal'), face: jsPsych.timelineVariable('face'), correct_ans: jsPsych.timelineVariable('correct_ans'), pareidolia: jsPsych.timelineVariable('pareidolia')},
+  on_finish: function(data){
+    breakCounter +=1; //update trial counter
+    if(data.response == data.correct_ans){
+      var gotitright = 1;
+      feedbacktext = '<p style="font-size: 25px; color:darkgreen;">Correct!</p>';
+    } else {
+      var gotitright = 0;
+      feedbacktext = '<p style="font-size: 25px; color:red;">Incorrect.</p>';
+    }
+    jsPsych.data.addDataToLastTrial({
+			designation: 'image-response',
+			correct: gotitright
+    	});
+  }
+};
+
+var feedback_screen = {
+  type: 'html-keyboard-response',
+  stimulus: function(){return feedbacktext;},
+  trial_duration: 500,
+  post_trial_gap: 500,
+  choices: jsPsych.NO_KEYS
+};
+
+var fixation = {
+  type: 'html-keyboard-response',
+  stimulus: '<p style="font-size: 40px;">+</p>',
+  trial_duration: 1000,
+  choices: jsPsych.NO_KEYS
+};
+
+//build in breaks every n number of images
+var restproc = {
+  timeline:[
+    {
+      type: 'html-keyboard-response',
+      stimulus: '<p>You may take a short break if you wish.</p><p>When you are ready to continue, press either '+animalkey+ ' or '+nonanimalkey+ '</p>',
+      choices: [animalkey, nonanimalkey],
+      post_trial_gap: 500
+    }
+  ],
+  conditional_function: function(){
+    if(breakCounter == breakTiming){
+      breakCounter = 0; //reset the break counter
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
+var image_proc = {
+  timeline: [fixation, image_present, feedback_screen, restproc],
+  timeline_variables: main_variables,
+  randomize_order: true
+};
+
+timeline.push(image_proc);
+
+
+var cat_wrapup = {
+  type: 'html-button-response',
+  stimulus: '<p>Thanks! You are now done with the mock experiment.</p><p>You will need to reference your data throughout our lab tutorials this term. Press the button below to save your data.</p>',
+  choices: ['Save Data']
+};
+
+timeline.push(cat_wrapup);
+
+
+
+
+
+//This is what actually initializes the experiment - you likely will not need to modify anything below this point!
+     jsPsych.init({
+        timeline: timeline,
+        on_finish: function(){jsPsych.data.get().localSave('csv','mock-expt-data.csv');}
+      });
+    </script>
+  </body>
+</html>
