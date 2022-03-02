@@ -451,7 +451,7 @@ var sentence_presentation_practice = {
 			  sentenceCRESP: practice_sentences[calibRTindex].nonsense
             });
 
-		calibRT[calibRTindex] = jsPsych.data.get().last(1).values()[0].rt;
+		calibRT[calibRTindex] = data.rt;
 		calibRTindex += 1;
 	}
 };
@@ -462,8 +462,9 @@ var sentence_judgment_practice = {
 	choices: ["TRUE", "FALSE"],
 	button_html: '<button class="buttonStyle">%choice%</button>',
 	on_finish: function(data) {
-		sentenceRESP = jsPsych.data.get().last(1).values()[0].button_pressed;
+		sentenceRESP = data.response;
 		sentenceCRESP = jsPsych.data.get().last(2).values()[0].sentenceCRESP;
+    console.log(sentenceRESP, sentenceCRESP);
 		if(sentenceRESP == sentenceCRESP) {
 			data.correct = 1;
 			senPracticeCorrect += 1;
@@ -509,11 +510,12 @@ var sentence_judgment_practice_combined = {
 	button_html: '<button class="buttonStyle">%choice%</button>',
 	on_finish: function(data) {
 		sentenceCRESP = jsPsych.data.get().last(2).values()[0].sentenceCRESP;
-		sentenceRESP = jsPsych.data.get().last(1).values()[0].button_pressed;
+		sentenceRESP = data.response;
 		if(sentenceRESP == sentenceCRESP) {
 			data.correct = 1;
 			practiceACC[practiceIndex] = 1;
 		} else {
+      data.correct = 0;
 			practiceACC[practiceIndex] = 0;
 		}
 		practiceIndex += 1;
@@ -545,7 +547,7 @@ var sentence_presentation_main = {
 	button_html: '<button class="fullscreenStyle">%choice%</button>',
 	trial_duration: function(){if(useDynamicRT == false){ return 10000; } else { return Math.round(arrAvg(calibRT));}}, //10-second timeout window OR mean RT from practice, depending on 'useDynamicRT'
 	on_finish: function(data){
-		var currentRT = jsPsych.data.get().last(1).values()[0].rt;
+		var currentRT = data.rt;
 		jsPsych.data.addDataToLastTrial({
 			  designation: "MAIN",
 			  sentence: main_sentences[mainSelectionIndex].stimulus,
@@ -568,7 +570,7 @@ var sentence_judgment_main = {
 	choices: ["TRUE","FALSE"],
 	button_html: '<button class="buttonStyle">%choice%</button>',
 	on_finish: function(data) {
-		sentenceRESP = jsPsych.data.get().last(1).values()[0].button_pressed;
+		sentenceRESP = data.response;
 		sentenceCRESP = jsPsych.data.get().last(2).values()[0].sentenceCRESP;
 		if(sentenceRESP == sentenceCRESP) {
 			data.correct = 1;
@@ -651,7 +653,7 @@ var response_grid =
 var rspan_recall = {
 	type: 'html-keyboard-response',
 	stimulus: response_grid,
-	choices: [13],
+	choices: ['Enter'],
 	on_finish: function(data){
 		var feedbackarray = [];
 		for (i = 0; i < correctSEQ.length; i++) {
@@ -677,7 +679,7 @@ var rspan_recall = {
 
 		response = []; //clear the response for the next trial
 		trialCorrect = []; //clear correct answer array for next trial
-		
+
 		if(practice == false){
 			if (currRun < spanlength){
 				var debug = 'PROBLEM'
@@ -701,7 +703,7 @@ var rspan_recall = {
 		};
 		} else {
 		  var responseData = {
-		    designation: 'MAIN',
+		  designation: 'MAIN',
 			RSPAN_TOTAL: RSPAN_TOTAL,
 			RSPAN_ABS: RSPAN_ABS,
 			LENGTH: spanlength,
@@ -939,7 +941,7 @@ var rspan_done = {
 	  var finalSentenceACC = Math.round(arrAvg(sentenceACC)*100); //sentence accuracy
 	  var sentenceCutoff = Math.round(arrAvg(calibRT));
 		var summaryData = {
-		    designation: 'SUMMARY',
+		  designation: 'SUMMARY',
 			RSPAN_TOTAL: RSPAN_TOTAL,
 			RSPAN_ABS: RSPAN_ABS,
 			SENT_ACC: finalSentenceACC,
