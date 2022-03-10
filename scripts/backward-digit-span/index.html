@@ -2,16 +2,17 @@
 <html>
 <head>
 <title>Digit Span</title>
-<script src="jspsych-6.0.2/jquery-3.3.1.min.js"></script>
-<script src="jspsych-6.0.2/jspsych.js"></script>	
-<script src="jspsych-6.0.2/plugins/jspsych-audio-keyboard-response.js"></script>
-<script src="jspsych-6.0.2/plugins/jspsych-html-button-response.js"></script>
-<script src="jspsych-6.0.2/plugins/jspsych-html-keyboard-response.js"></script>
-<script src="jspsych-6.0.2/plugins/jspsych-call-function.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="jspsych-6.3.0/jspsych.js"></script>
+<script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
+<script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
+<script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="jspsych-6.3.0/plugins/jspsych-call-function.js"></script>
+<script src="jspsych-6.3.0/plugins/jspsych-preload.js"></script>
 <script src="bds_adaptive.js"></script>
 
-<link href="jspsych-6.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
-<link href="jspsych-6.0.2/css/bds-style.css" rel="stylesheet" type="text/css">
+<link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
+<link href="jspsych-6.3.0/css/bds-style.css" rel="stylesheet" type="text/css">
 
 </head>
 <body>
@@ -20,16 +21,6 @@
 //Define Timeline
 var timeline = [];
 
-//Array to store the spoken digits
-var bds_sounds = return_bds_adaptive_folder();
-
-//Function to load sounds only if useAudio is set to true in bds_adaptive.js
-function loadSounds(){
-if(useAudio){
-	return bds_sounds;
-	} else {
-	return null;
-  }}; 
 
 //Function to give the option for a local save of the data
 var localSave;
@@ -42,7 +33,7 @@ function saveData() {
 	} else {
 		alert("You may now close this tab.");
 		}
-	};	
+	};
 
 //Final screen
 var save_data = {
@@ -50,8 +41,8 @@ var save_data = {
 	stimulus: '<p>This concludes the task. Would you like to save the data?</p>',
 	choices: ['No','Yes'],
 	on_finish: function(data){
-		localSave = jsPsych.data.get().last(1).values()[0].button_pressed;			
-	}		
+		localSave = jsPsych.data.get().last(1).values()[0].response;
+	}
 };
 
 //Push components to experiment timeline
@@ -61,7 +52,6 @@ timeline.push(save_data); //final screen asking about data
 //Initialize the Experiment
 jsPsych.init({
 	timeline: timeline,
-	preload_audio: loadSounds(),
 	on_finish: saveData
 });
 

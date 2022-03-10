@@ -7,18 +7,18 @@
 This module consists of an adaptive backward digit span (BDS)
 task, commonly used as a measure of working memory.
 
-On each trial, participant hear or see a string of digits. 
-Then, participants have to click on buttons to report these 
+On each trial, participant hear or see a string of digits.
+Then, participants have to click on buttons to report these
 digits in reverse order.
 
-The script is easily customizable (e.g., audio or visual 
+The script is easily customizable (e.g., audio or visual
 digit presentation, starting span, number of trials, etc.)
 The task is adaptive based on a 1:2 staircase procedure -
-that is, a correct answer will increase the span by one, 
+that is, a correct answer will increase the span by one,
 whereas two incorrect answers in a row will decrease the
 span by one.
 
-The script outputs two important variables. The first is 
+The script outputs two important variables. The first is
 'bds_adaptive' which should be added to the experiment timeline
 in the main html file -- e.g., timeline.push(bds_adaptive);
 
@@ -66,6 +66,8 @@ var idx = 0; //for indexing the current letter to be presented
 var exitLetters; //for exiting the letter loop
 
 const arrSum = arr => arr.reduce((a,b) => a + b, 0) //simple variable for calculating sum of an array
+var aud_digits = ['digits/one.wav', 'digits/two.wav', 'digits/three.wav', 'digits/four.wav', 'digits/five.wav', 'digits/six.wav', 'digits/seven.wav', 'digits/eight.wav', 'digits/nine.wav']; //the digits
+
 
 //add to the dataframe whether the BDS was auditory or visual
 jsPsych.data.addProperties({
@@ -84,19 +86,19 @@ var fileMap = {
 8: "eight.wav",
 9: "nine.wav"
 };
-	
+
 //function to push button responses to array
 var recordClick = function(elm) {
 		response.push(Number($(elm).text()))
 		document.getElementById("echoed_txt").innerHTML = response;
 	}
-	
+
 //function to clear the response array
 var clearResponse = function() {
 		response = [];
 		document.getElementById("echoed_txt").innerHTML = response;
 	}
-	
+
 //function to map digit names to audio files (for auditory BDS)
 var digitToFile = function (digit) {
 		return folder + fileMap[digit];
@@ -127,7 +129,7 @@ function getDigitList(len) {
 			var interim_digits = shuffle(digit_list);
 			shuff_final = [...shuff_final, ...interim_digits];
 		}
-	}	
+	}
 	var digitList = shuff_final.slice(0,len); //array to hold the final digits
 	return digitList;
 }
@@ -135,19 +137,19 @@ function getDigitList(len) {
 //function to push the stimuli to an array
 function getStimuli(numDigits) {
 	var digit;
-	var stimList = [];	
+	var stimList = [];
 	currentDigitList = getDigitList(numDigits);
 	reversedDigitString = "";
 	for (var i = 0; i < currentDigitList.length; i += 1) {
 		if (useAudio) {
 			digit = currentDigitList[i];
 			stimList.push(digitToFile(digit));
-			reversedDigitString = digit.toString() + reversedDigitString;			
+			reversedDigitString = digit.toString() + reversedDigitString;
 		} else {
 			digit = currentDigitList[i].toString();
 			stimList.push('<p style="font-size:60px;font-weight:600;">' + digit + '</p>');
 			reversedDigitString = digit + reversedDigitString;
-		}		  
+		}
 	}
 	bds_correct_ans = currentDigitList.slice().reverse(); //this is the reversed array for assessing performance
 	return stimList;
@@ -155,12 +157,12 @@ function getStimuli(numDigits) {
 
 //function to update the span as appropriate (using a 1:2 staircase procedure)
 function updateSpan() {
-	//if they got the last trial correct, increase the span. 
+	//if they got the last trial correct, increase the span.
 	if (arrSum(staircaseChecker) == 1) {
 		currentSpan += 1; //add to the span if last trial was correct
 		staircaseChecker = []; //reset the staircase checker
 		staircaseIndex = 0; //reset the staircase index
-		//if they got the last two trials incorrect, decrease the span	
+		//if they got the last two trials incorrect, decrease the span
 	} else if (arrSum(staircaseChecker) == 0) {
 		if(staircaseChecker.length == 2) {
 			currentSpan -= 1; //lower the span if last two trials were incorrect
@@ -172,7 +174,7 @@ function updateSpan() {
 		}
 	} else {
 		return false;
-	}	
+	}
 };
 
 
@@ -180,7 +182,7 @@ function updateSpan() {
 /** Main Screens **/
 /******************/
 
-//From the Experiment Factory Repository 
+//From the Experiment Factory Repository
 var response_grid =
 '<div class = numbox>' +
 '<p>What were the numbers <b>in reverse order</b>?<br>(When you are ready to lock in your answer, press ENTER)</p>' +
@@ -194,11 +196,15 @@ var response_grid =
 '<button id = button_8 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>8</div></div></button>' +
 '<button id = button_9 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>9</div></div></button>' +
 '<button class = clear_button id = "ClearButton" onclick = "clearResponse()">Clear</button>'+
-'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b></b></div></div>' 
+'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b></b></div></div>'
 
+//preload audio
+var preload_digits = {
+	type: 'preload',
+	audio: aud_digits
+};
 
-
-//Dynamic instructions based on whether it is an auditory or visual task   
+//Dynamic instructions based on whether it is an auditory or visual task
 var instructions;
 if (useAudio) {
 	instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in reverse order.</p>'+
@@ -228,16 +234,16 @@ choices: ['Begin'],
 	on_finish: function(){
 		if(bdsTrialNum == 1) {
 			currentSpan = startingSpan;
-		} 
+		}
 		stimList = getStimuli(currentSpan); //get the current stimuli for the trial
-		spanHistory[bdsTrialNum-1]=currentSpan; //log the current span in an array	
+		spanHistory[bdsTrialNum-1]=currentSpan; //log the current span in an array
 		bdsTrialNum += 1; //add 1 to the total trial count
 		idx = 0; //reset the index prior to the letter presentation
 		exitLetters = 0; //reset the exit letter variable
 	}
 };
 
-//letter presentation      
+//letter presentation
 var letter_bds = {
 	type: 'audio-keyboard-response',
 	stimulus: function(){return stimList[idx];},
@@ -245,17 +251,17 @@ var letter_bds = {
 	post_trial_gap: 250,
 	trial_ends_after_audio: true,
 	on_finish: function(){
-		idx += 1; //update the index		
+		idx += 1; //update the index
 		//check to see if we are at the end of the letter array
 		if (idx == stimList.length) {
 			exitLetters = 1;
 		} else	{
 			exitLetters = 0;
-		}	
+		}
 	}
 };
 
-//visual letter presentation      
+//visual letter presentation
 var letter_bds_vis = {
 	type: 'html-keyboard-response',
 	stimulus: function(){return stimList[idx];},
@@ -263,13 +269,13 @@ var letter_bds_vis = {
 	trial_duration: 500,
 	post_trial_gap: 250,
 	on_finish: function(){
-		idx += 1; //update the index		
+		idx += 1; //update the index
 		//check to see if we are at the end of the letter array
 		if (idx == stimList.length) {
 			exitLetters = 1;
 		} else	{
 			exitLetters = 0;
-		}	
+		}
 	}
 };
 
@@ -302,30 +308,32 @@ if(useAudio){
 var bds_response_screen = {
 type: 'html-keyboard-response',
 stimulus: response_grid,
-choices: [13],
+choices: ['Enter'],
 	on_finish: function(data){
 		var curans = response;
 		var corans = bds_correct_ans;
 		if(JSON.stringify(curans) === JSON.stringify(corans)) {
 			var gotItRight = 1;
+			console.log("correct");
 			staircaseChecker[staircaseIndex] = 1;
 		} else {
 			var gotItRight = 0;
+			console.log("incorrect");
 			staircaseChecker[staircaseIndex] = 0;
 		}
 		response = []; //clear the response for the next trial
 		staircaseIndex += 1; //update the staircase index
 		console.log(staircaseChecker);
-		
+
 		jsPsych.data.addDataToLastTrial({
 			designation: 'BDS-RESPONSE',
-			span: currentSpan, 
+			span: currentSpan,
 			answer: curans,
 			correct: corans,
 			was_correct: gotItRight,
 			spanHistory: spanHistory
 		});
-	}	
+	}
 };
 
 
@@ -354,7 +362,7 @@ var bds_mainproc = {
 		} else {
 			return true;
 		}
-	}	
+	}
 };
 
 /*************/
@@ -371,30 +379,11 @@ choices: ['Exit']
 // 1. final procedure //
 ////////////////////////
 /*
-Simply push this to your timeline 
+Simply push this to your timeline
 variable in your main html files -
 e.g., timeline.push(bds_adaptive)
 */
 
 var bds_adaptive = {
-	timeline: [bds_welcome, bds_mainproc, bds_wrapup]
+	timeline: [preload_digits, bds_welcome, bds_mainproc, bds_wrapup]
 };
-
-/////////////////////////////////
-// 2. preload folder function //
-////////////////////////////////
-/*
-If you wish to use the auditory
-version of the task and need to
-preload the stimuli, use this
-function in the main html file 
-to name the preload folder -
-e.g., var bds_sounds = return_bds_adaptive_folder();
-*/
-
-var aud_digits = ['digits/one.wav', 'digits/two.wav', 'digits/three.wav', 'digits/four.wav', 'digits/five.wav', 'digits/six.wav', 'digits/seven.wav', 'digits/eight.wav', 'digits/nine.wav'];
-function return_bds_adaptive_folder(){
-		return aud_digits;
-};
-
-
