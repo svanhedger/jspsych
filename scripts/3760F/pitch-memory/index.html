@@ -236,88 +236,44 @@ var judgment_trial2 = {
 	};
 
 
-// dummy trial that will represent the important variables on a single row (to help with analysis)
-var tally_resp = {
-		type: "html-keyboard-response",
-		stimulus: '',
-		choices: jsPsych.NO_KEYS,
-        trial_duration: 250,
-		on_finish: function(){
-
-		// gather relevant variables from the loop
-		var last_trial_correct = jsPsych.data.get().last(2).values()[0].correct;
-		var last_trial_fam = jsPsych.data.get().last(1).values()[0].recognize_stim;
-		var last_button_pressed = jsPsych.data.get().last(1).values()[0].button_pressed;
-		var firststimulus = jsPsych.data.get().last(6).values()[0].stimulus;
-		var secondstimulus = jsPsych.data.get().last(3).values()[0].stimulus;
-		var judgmentRT = jsPsych.data.get().last(2).values()[0].rt;
-
-		var recoded_fam_rtg = Number(last_button_pressed) + 1; // because jsPsych starts at 0 instead of 1
-
-		if (last_trial_correct == 1 && last_trial_fam == 0) {
-		adjustFactor = adjustFactor + 1;
-		} else {
-		adjustFactor = adjustFactor + 0;
-
-		}
-
-		//what is actually being added to the data file
-		jsPsych.data.addDataToLastTrial({
-			  designation: "trial_summary", // label for sorting
-			  trial_counter: totalNum, // trial counter
-			  first_stimulus: firststimulus, // what recording was heard first
-			  second_stimulus: secondstimulus, // what recording was heard second
-			  was_correct: last_trial_correct, // correct? (1: 0)
-			  judgment_rt: judgmentRT, // response time for making pitch judment
-			  was_recognized: recoded_fam_rtg, // was the recording at all familiar? (1:0)
-			  familiar_rtg: last_button_pressed, // actual familiarity rating
-			  correct_tally: totalCorrect, // total number of correct trials thus far
-			  correct_tally_adj: totalCorrect - adjustFactor, // total number of correct for recognized recordings
-			  total_recognized: totalRECOG // total number of recognized recordings (use this in conjunction w/'correct_tally_adj' to calculate a modified accuracy score)
-
-            });
-
-	}
-	};
-
 /*********************************/
 /** DEFINE MAIN BLOCK STRUCTURE **/
 /*********************************/
 
 // flat/in-tune trials
 var procedure_flatfirst1 = {
-      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2],
       timeline_variables: sounds1
     };
 
 
 var procedure_flatfirst2 = {
-      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2],
       timeline_variables: sounds2
     };
 
 
 // sharp/in-tune trials
 var procedure_sharpfirst1 = {
-      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2],
       timeline_variables: sounds6
     };
 
 
 var procedure_sharpfirst2 = {
-      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2],
       timeline_variables: sounds7
     };
 
 
 // in-tune/flat trials
 var procedure_flatsecond1 = {
-      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1, tally_resp],
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1],
       timeline_variables: sounds11
     };
 
 var procedure_flatsecond2 = {
-      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1, tally_resp],
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1],
       timeline_variables: sounds12
     };
 
@@ -325,12 +281,12 @@ var procedure_flatsecond2 = {
 
 // in-tune/sharp trials
 var procedure_sharpsecond1 = {
-      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp, judgment_trial1, tally_resp],
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp, judgment_trial1],
       timeline_variables: sounds16
     };
 
 var procedure_sharpsecond2 = {
-      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp,  judgment_trial1, tally_resp],
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp,  judgment_trial1],
       timeline_variables: sounds17
     };
 
