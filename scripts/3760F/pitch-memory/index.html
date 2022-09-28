@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Memory for Popular Music</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="jspsych-6.0/jspsych.js"></script>
+	<link href="jspsych-6.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+
+
+  <script src="jspsych-6.0/plugins/jspsych-audio-keyboard-response.js"></script>
+	<script src="jspsych-6.0/plugins/jspsych-audio-button-response.js"></script>
+  <script src="jspsych-6.0/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="jspsych-6.0/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="jspsych-6.0/plugins/jspsych-html-button-response.js"></script>
+
+
+  </head>
+  <body>
+
+
+<script>
+
+
+
+
+/** Add random subject ID to script **/
+var identifier = Math.random().toString(36).substring(7);
+jsPsych.data.addProperties({subject: identifier});
+
+
+/** define the timeline variable **/
+var timeline = [];
+
+
+/** Initialize the connection with Pavlovia **/
+
+/** Define some initial variables for tallying performance **/
+var totalCorrect = 0; // used for tallying the total number of correct trials
+var adjustFactor = 0; // used for an adjusted correct trial value (throwing out trials in which no familiarity was reported)
+var totalNum = 0; // used to count total number of trials
+
+var recruitment; // to record whether participants come from mturk, SONA, or somewhere else (e.g., stumbling on our webpage)
+
+
+// main instruction pages
+
+var instructions = {
+  type: "html-keyboard-response",
+  stimulus: "<p>In this experiment, you will listen to popular music recordings (e.g., 'Top 40' pop songs).</p><p>" +
+      "On each trial, you will hear two short (5-second) versions of a popular melody. One of the recordings will be <b>correct</b>, meaning it will use the same pitches <br>" +
+	  "as the version you would hear outside of this study (e.g., on the radio).<p>The other recording will be <b>incorrect</b>, meaning it will sound 'too high' or 'too low' relative to the correct version.</p>" +
+	  "<p>Your job is to determine which version is correct.</p><p></p>(Press SPACEBAR to continue)",
+  choices: [' '],
+  post_trial_gap: 250
+};
+
+var instructions2 = {
+  type: "html-keyboard-response",
+  stimulus: "<p>If you are unsure of which version is correct, please make your best guess.</p><p>(Press SPACEBAR to begin)</p>",
+  choices: [' '],
+  post_trial_gap: 250
+};
+// push the main instructions to the timeline
+
+timeline.push(instructions);
+timeline.push(instructions2);
+
+/*********************************/
+/** STIMULI/VARIABLE DEFINITION **/
+/*********************************/
+
+// list all audio files associated with the study (for preloading)
+
+var audio = [
+"recordings/01_0.mp3", "recordings/01_1.mp3", "recordings/01_-1.mp3", "recordings/02_0.mp3", "recordings/02_1.mp3", "recordings/02_-1.mp3",
+"recordings/03_0.mp3", "recordings/03_1.mp3", "recordings/03_-1.mp3", "recordings/06_0.mp3", "recordings/06_1.mp3", "recordings/06_-1.mp3",
+"recordings/07_0.mp3", "recordings/07_1.mp3", "recordings/07_-1.mp3", "recordings/09_0.mp3", "recordings/09_1.mp3", "recordings/09_-1.mp3",
+"recordings/15_0.mp3", "recordings/15_1.mp3", "recordings/15_-1.mp3", "recordings/17_0.mp3", "recordings/17_1.mp3", "recordings/17_-1.mp3",
+"recordings/23_0.mp3", "recordings/23_1.mp3", "recordings/23_-1.mp3", "recordings/24_0.mp3", "recordings/24_1.mp3", "recordings/24_-1.mp3",
+"recordings/29_0.mp3", "recordings/29_1.mp3", "recordings/29_-1.mp3", "recordings/30_0.mp3", "recordings/30_1.mp3", "recordings/30_-1.mp3",
+"recordings/32_0.mp3", "recordings/32_1.mp3", "recordings/32_-1.mp3", "recordings/33_0.mp3", "recordings/33_1.mp3", "recordings/33_-1.mp3",
+"recordings/35_0.mp3", "recordings/35_1.mp3", "recordings/35_-1.mp3", "recordings/36_0.mp3", "recordings/36_1.mp3", "recordings/36_-1.mp3",
+"recordings/37_0.mp3", "recordings/37_1.mp3", "recordings/37_-1.mp3", "recordings/40_0.mp3", "recordings/40_1.mp3", "recordings/40_-1.mp3",
+"recordings/100_0.mp3", "recordings/100_1.mp3", "recordings/100_-1.mp3", "recordings/101_0.mp3", "recordings/101_1.mp3", "recordings/101_-1.mp3",
+"audCalib/volumetest.mp3", "audCalib/t1_1.mp3", "audCalib/t1_2.mp3", "audCalib/t2_1.mp3", "audCalib/t2_2.mp3", "audCalib/t3_1.mp3", "audCalib/t3_2.mp3",
+"attnCheck/attn1.mp3", "attnCheck/attn2.mp3"];
+
+// define the variables for the main procedure's timeline...this is similar to what would be entered in a 'list' in e-prime
+
+var sounds = [
+{intune: "recordings/01_0.mp3", sharp: "recordings/01_1.mp3", flat: "recordings/01_-1.mp3", name: "Britney Spears' 'Baby One More Time'"},
+{intune: "recordings/02_0.mp3", sharp: "recordings/02_1.mp3", flat: "recordings/02_-1.mp3", name: "Katy Perry's 'California Gurls'"},
+{intune: "recordings/03_0.mp3", sharp: "recordings/03_1.mp3", flat: "recordings/03_-1.mp3", name: "Carly Rae Jepsen's 'Call Me Maybe'"},
+{intune: "recordings/06_0.mp3", sharp: "recordings/06_1.mp3", flat: "recordings/06_-1.mp3", name: "Katy Perry's 'Firework'"},
+{intune: "recordings/07_0.mp3", sharp: "recordings/07_1.mp3", flat: "recordings/07_-1.mp3", name: "Daft Punk's 'Get Lucky'"},
+{intune: "recordings/09_0.mp3", sharp: "recordings/09_1.mp3", flat: "recordings/09_-1.mp3", name: "The Beatles' 'Hey Jude'"},
+{intune: "recordings/15_0.mp3", sharp: "recordings/15_1.mp3", flat: "recordings/15_-1.mp3", name: "Britney Spears' 'Oops I Did It Again'"},
+{intune: "recordings/17_0.mp3", sharp: "recordings/17_1.mp3", flat: "recordings/17_-1.mp3", name: "Lady Gaga's 'Poker Face'"},
+{intune: "recordings/23_0.mp3", sharp: "recordings/23_1.mp3", flat: "recordings/23_-1.mp3", name: "Gotye's 'Somebody That I Used To Know'"},
+{intune: "recordings/24_0.mp3", sharp: "recordings/24_1.mp3", flat: "recordings/24_-1.mp3", name: "Star Wars (Main Theme)"},
+{intune: "recordings/29_0.mp3", sharp: "recordings/29_1.mp3", flat: "recordings/29_-1.mp3", name: "Queen's 'We Are the Champions'"},
+{intune: "recordings/30_0.mp3", sharp: "recordings/30_1.mp3", flat: "recordings/30_-1.mp3", name: "Queen's 'We Will Rock You'"},
+{intune: "recordings/32_0.mp3", sharp: "recordings/32_1.mp3", flat: "recordings/32_-1.mp3", name: "Katy Perry's 'Teenage Dream'"},
+{intune: "recordings/33_0.mp3", sharp: "recordings/33_1.mp3", flat: "recordings/33_-1.mp3", name: "Lady Gaga's 'Telephone'"},
+{intune: "recordings/35_0.mp3", sharp: "recordings/35_1.mp3", flat: "recordings/35_-1.mp3", name: "2001: A Space Odyssey (Main Theme)"},
+{intune: "recordings/36_0.mp3", sharp: "recordings/36_1.mp3", flat: "recordings/36_-1.mp3", name: "Harry Potter (Theme)"},
+{intune: "recordings/37_0.mp3", sharp: "recordings/37_1.mp3", flat: "recordings/37_-1.mp3", name: "Mario Brothers (Theme)"},
+{intune: "recordings/40_0.mp3", sharp: "recordings/40_1.mp3", flat: "recordings/40_-1.mp3", name: "Queen's 'Bohemian Rhapsody'"},
+{intune: "recordings/100_0.mp3", sharp: "recordings/100_1.mp3", flat: "recordings/100_-1.mp3", name: "Psy's 'Gangnam Style'"},
+{intune: "recordings/101_0.mp3", sharp: "recordings/101_1.mp3", flat: "recordings/101_-1.mp3", name: "Billy Joel's 'Piano Man'"}
+];
+
+/* RANDOMIZE the variable sounds. Then, assign each recording to its own variable. This will then be used for each of the 20 trials
+  (NOTE: This is very clunky but will ensure that each of the four trial types will be heard exactly 5 times, and that no stimulus will repeat) */
+
+var soundsrandom = jsPsych.randomization.repeat(sounds, 1);
+
+var sounds1 = soundsrandom.slice(0, 1);
+var sounds2 = soundsrandom.slice(1, 2);
+var sounds3 = soundsrandom.slice(2, 3);
+var sounds4 = soundsrandom.slice(3, 4);
+var sounds5 = soundsrandom.slice(4, 5);
+var sounds6 = soundsrandom.slice(5, 6);
+var sounds7 = soundsrandom.slice(6, 7);
+var sounds8 = soundsrandom.slice(7, 8);
+var sounds9 = soundsrandom.slice(8, 9);
+var sounds10 = soundsrandom.slice(9, 10);
+var sounds11 = soundsrandom.slice(10, 11);
+var sounds12 = soundsrandom.slice(11, 12);
+var sounds13 = soundsrandom.slice(12, 13);
+var sounds14 = soundsrandom.slice(13, 14);
+var sounds15 = soundsrandom.slice(14, 15);
+var sounds16 = soundsrandom.slice(15, 16);
+var sounds17 = soundsrandom.slice(16, 17);
+var sounds18 = soundsrandom.slice(17, 18);
+var sounds19 = soundsrandom.slice(18, 19);
+var sounds20 = soundsrandom.slice(19, 20);
+
+/***************************************/
+/** DEFINE TRIALS FOR MAIN PROCEDURE ***/
+/***************************************/
+
+// fixation (1000ms)
+var fixation = {
+      type: 'html-keyboard-response',
+      stimulus: '<div style="font-size:60px;">+</div>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 1000
+    };
+
+// trial to display song name
+var songname = {
+          type: 'html-keyboard-response',
+		  prompt: "<p></p><p></p>(Press SPACEBAR to continue)",
+          stimulus: function(){ return "<p>You will now hear two versions of </p> "+jsPsych.timelineVariable('name', true); },
+          choices: [' '],
+		  post_trial_gap: 500
+    };
+
+// display '1' to alert participants that the first thin slice is about to play
+var disp1 = {
+      type: 'html-keyboard-response',
+      stimulus: '<div style="font-size:80px;">1</div>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 1000
+    };
+
+// display '2' to alert participants that the second thin slice is about to play
+var disp2 = {
+      type: 'html-keyboard-response',
+      stimulus: '<div style="font-size:80px;">2</div>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 1000
+    };
+
+// trial that plays the correct version
+var aud_intune = {
+      type: 'audio-keyboard-response',
+      stimulus: jsPsych.timelineVariable('intune'),
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 5000
+    };
+
+// trial that plays the incorrect (flat) version
+var aud_flat = {
+          type: 'audio-keyboard-response',
+          stimulus: jsPsych.timelineVariable('flat'),
+          choices: jsPsych.NO_KEYS,
+          trial_duration: 5000
+    };
+
+// trial that plays the incorrect (sharp) version
+var aud_sharp = {
+          type: 'audio-keyboard-response',
+          stimulus: jsPsych.timelineVariable('sharp'),
+          choices: jsPsych.NO_KEYS,
+          trial_duration: 5000
+    };
+
+
+// judgment trial -- when first version is correct
+var judgment_trial1 = {
+		type: "html-button-response",
+		stimulus: '',
+		choices: ['First', 'Second'],
+		prompt: '<p>Which version did you think was correct?</p>',
+    on_finish: function(data){
+    if(data.button_pressed == 0){
+      data.correct = 1;
+	  totalCorrect += 1;
+    } else {
+      data.correct = 0;
+    }
+	jsPsych.data.addDataToLastTrial({
+              total_correct: totalCorrect
+            });
+  }
+	};
+
+// judgment trial -- when first version is correct
+var judgment_trial2 = {
+		type: "html-button-response",
+		stimulus: '',
+		choices: ['First', 'Second'],
+		prompt: '<p>Which version did you think was correct?</p>',
+    on_finish: function(data){
+    if(data.button_pressed == 1){
+      data.correct = 1;
+	  totalCorrect += 1;
+    } else {
+      data.correct = 0;
+    }
+	jsPsych.data.addDataToLastTrial({
+              total_correct: totalCorrect
+            });
+  }
+	};
+
+
+// dummy trial that will represent the important variables on a single row (to help with analysis)
+var tally_resp = {
+		type: "html-keyboard-response",
+		stimulus: '',
+		choices: jsPsych.NO_KEYS,
+        trial_duration: 250,
+		on_finish: function(){
+
+		// gather relevant variables from the loop
+		var last_trial_correct = jsPsych.data.get().last(2).values()[0].correct;
+		var last_trial_fam = jsPsych.data.get().last(1).values()[0].recognize_stim;
+		var last_button_pressed = jsPsych.data.get().last(1).values()[0].button_pressed;
+		var firststimulus = jsPsych.data.get().last(6).values()[0].stimulus;
+		var secondstimulus = jsPsych.data.get().last(3).values()[0].stimulus;
+		var judgmentRT = jsPsych.data.get().last(2).values()[0].rt;
+
+		var recoded_fam_rtg = Number(last_button_pressed) + 1; // because jsPsych starts at 0 instead of 1
+
+		if (last_trial_correct == 1 && last_trial_fam == 0) {
+		adjustFactor = adjustFactor + 1;
+		} else {
+		adjustFactor = adjustFactor + 0;
+
+		}
+
+		//what is actually being added to the data file
+		jsPsych.data.addDataToLastTrial({
+			  designation: "trial_summary", // label for sorting
+			  trial_counter: totalNum, // trial counter
+			  first_stimulus: firststimulus, // what recording was heard first
+			  second_stimulus: secondstimulus, // what recording was heard second
+			  was_correct: last_trial_correct, // correct? (1: 0)
+			  judgment_rt: judgmentRT, // response time for making pitch judment
+			  was_recognized: recoded_fam_rtg, // was the recording at all familiar? (1:0)
+			  familiar_rtg: last_button_pressed, // actual familiarity rating
+			  correct_tally: totalCorrect, // total number of correct trials thus far
+			  correct_tally_adj: totalCorrect - adjustFactor, // total number of correct for recognized recordings
+			  total_recognized: totalRECOG // total number of recognized recordings (use this in conjunction w/'correct_tally_adj' to calculate a modified accuracy score)
+
+            });
+
+	}
+	};
+
+/*********************************/
+/** DEFINE MAIN BLOCK STRUCTURE **/
+/*********************************/
+
+// flat/in-tune trials
+var procedure_flatfirst1 = {
+      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline_variables: sounds1
+    };
+
+
+var procedure_flatfirst2 = {
+      timeline: [fixation, songname, disp1, aud_flat, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline_variables: sounds2
+    };
+
+
+// sharp/in-tune trials
+var procedure_sharpfirst1 = {
+      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline_variables: sounds6
+    };
+
+
+var procedure_sharpfirst2 = {
+      timeline: [fixation, songname, disp1, aud_sharp, fixation, disp2, aud_intune, judgment_trial2, tally_resp],
+      timeline_variables: sounds7
+    };
+
+
+// in-tune/flat trials
+var procedure_flatsecond1 = {
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1, tally_resp],
+      timeline_variables: sounds11
+    };
+
+var procedure_flatsecond2 = {
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_flat, judgment_trial1, tally_resp],
+      timeline_variables: sounds12
+    };
+
+
+
+// in-tune/sharp trials
+var procedure_sharpsecond1 = {
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp, judgment_trial1, tally_resp],
+      timeline_variables: sounds16
+    };
+
+var procedure_sharpsecond2 = {
+      timeline: [fixation, songname, disp1, aud_intune, fixation, disp2, aud_sharp,  judgment_trial1, tally_resp],
+      timeline_variables: sounds17
+    };
+
+
+// combine the separate loops into a single block
+// put all loops into a single array and then shuffle it
+
+var trials = [procedure_flatfirst1,
+				procedure_flatfirst2,
+				procedure_sharpfirst1,
+				procedure_sharpfirst2,
+				procedure_flatsecond1,
+				procedure_flatsecond2,
+				procedure_sharpsecond1,
+				procedure_sharpsecond2
+      ];
+
+var shuffled_trials = jsPsych.randomization.shuffle(trials);
+
+// define the block
+var block_structure = {
+  timeline: shuffled_trials
+};
+
+timeline.push(block_structure);
+
+
+
+// feedback screen
+var feedback = {
+  type: "html-button-response",
+  choices: ['Complete'],
+  stimulus: function () {
+          var pageFeedback = '<p> You correctly identified ' + totalCorrect + ' of ' + totalNum + ' recordings</p>'
+          return [pageFeedback];
+        },
+
+};
+
+// conditional statement for displaying feedback
+var if_feedback = {
+	timeline: [feedback]
+}
+
+// put this giant conditional mess together and push it
+var conditional_ending = {
+	timeline: [if_feedback] };
+
+timeline.push(conditional_ending);
+
+/**********************************************/
+/** Initialize the jsPsych Timeline Variable **/
+/**********************************************/
+
+	jsPsych.init({
+        timeline: timeline,
+		preload_audio: audio,
+        on_finish: function(){ saveData('subj_'+identifier+'.csv', jsPsych.data.get().csv()); }
+
+});
+
+		</script>
+	</body>
+</html>
