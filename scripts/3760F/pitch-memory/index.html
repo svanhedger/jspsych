@@ -204,6 +204,7 @@ var judgment_trial1 = {
 		choices: ['First', 'Second'],
 		prompt: '<p>Which version did you think was correct?</p>',
     on_finish: function(data){
+      console.log("correct answer was first!");
     if(data.button_pressed == 0){
       data.correct = 1;
 	  totalCorrect += 1;
@@ -223,6 +224,7 @@ var judgment_trial2 = {
 		choices: ['First', 'Second'],
 		prompt: '<p>Which version did you think was correct?</p>',
     on_finish: function(data){
+      console.log("correct answer was second!");
     if(data.button_pressed == 1){
       data.correct = 1;
 	  totalCorrect += 1;
@@ -320,7 +322,7 @@ var feedback = {
   type: "html-button-response",
   choices: ['Complete'],
   stimulus: function () {
-          var pageFeedback = '<p> You correctly identified ' + totalCorrect + ' of ' + totalNum + ' recordings</p>'
+          var pageFeedback = '<p> You correctly identified ' + totalCorrect + ' of 8 recordings</p>'
           return [pageFeedback];
         },
 
@@ -344,8 +346,7 @@ timeline.push(conditional_ending);
 	jsPsych.init({
         timeline: timeline,
 		preload_audio: audio,
-        on_finish: function(){ saveData('subj_'+identifier+'.csv', jsPsych.data.get().csv()); }
-
+        on_finish: function(){jsPsych.data.get().localSave('csv','pitch-mem-data.csv');}
 });
 
 		</script>
