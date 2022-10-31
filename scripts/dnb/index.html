@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dual N-Back</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-5.0.2/jspsych.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-text.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-multi-stim-multi-response.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-single-stim.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-call-function.js"></script>
+    <link href="jspsych-5.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
+    <style>
+      #image-grid {
+        width: 450px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #image-grid td {
+        width: 150px;
+        height 150px;
+      }
+
+      #image-grid tr {
+        height: 150px;
+      }
+
+      #image-grid img {
+        width: 100%;
+        height: auto;
+      }
+
+      #trial-audio {
+        display: none;
+      }
+
+      body {
+        color: white;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="jspsych-target"></div>
+    <script>
+      var userip;
+    </script>
+    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
+    <script>
+      /*
+       * This uses jsPsych 5, so there are some differences from the older experiments.
+       * See the online documentation for details: http://docs.jspsych.org
+       */
+
+      var folder = "dual_n_back_stimuli/";
+      var defaultITI = 500;
+      var NUM_NON_TARGETS = 10;
+      var NUM_TARGETS_SINGLE = 4;
+      var NUM_TARGETS_BOTH = 2;
+
+      var TOTAL_PER_BLOCK = NUM_NON_TARGETS + 2 * NUM_TARGETS_SINGLE + NUM_TARGETS_BOTH;
+      var subjectID;
+      var timeline = [];
+
+      var timestamp = Date.now();
+      var inherited_id = jsPsych.data.getURLVariable('id');
+      if (inherited_id == undefined) {
+        inherited_id = timestamp;
+      }
+
+      jsPsych.data.addProperties({subject: inherited_id, timestamp: timestamp});
+
+      var audioFilenames = ['1.wav', '2.wav', '3.wav', '4.wav', '5.wav', '6.wav', '7.wav', '8.wav'];
+      var audioFilepaths = [];
+      for (var i = 0; i < audioFilenames.length; i++) {
+        audioFilepaths.push(folder + audioFilenames[i]);
+      }
+
+      var gridTemplate = [];
+      for (var i = 0; i < 9; i++) {
+        gridTemplate.push('<td></td>');
+      }
+      gridTemplate[4] = '<td><img src="' + folder + 'FixationPoint.gif' + '"></td>';
+      var grids = [];
+      var idx;
+      var grid;
+      for (var i = 0; i < 8; i++) {
+        idx = i;
+        if (idx >= 4) {
+          idx += 1;
+        }
+        grid = gridTemplate.slice();
+        grid[idx] = '<td><img src="' + folder + 'square.gif' + '"></td>';
+        grids.push('<table id="image-grid"><tr>' + grid.slice(0, 3).join('') + '</tr><tr>' + grid.slice(3, 6).join('') + '</tr><tr>' + grid.slice(6, 9).join('') + '</tr></table>');
+      }
+
+
+      /*
+       * Randomly determines whether or not to use targets based on an array
+       * of counters.
+       * Returns true or false.
+       */
+      function targetType(counters) {
+        var maxInt;
+        var cumulative = [];
+        var curr;
+        var prev = 0;
+        for (var i = 0; i < counters.length; i++) {
+          curr = counters[i] + prev;
+          cumulative.push(curr);
+          prev = curr;
+        }
+        maxInt = curr;
+        var randInt = Math.floor(Math.random() * maxInt);
+        for (var i = 0; i < cumulative.length; i++) {
+          if (randInt < cumulative[i]) {
+            return i;
+          }
+        }
+      }
+
+
+      /*
+       * Returns one random stimulus with replacement.
+       */
+      function getSample(stimList) {
+        return jsPsych.randomization.sample(stimList, 1, true)[0];
+      }
+
+
+      /*
+       * Returns an array of stimuli based on load factor n.
+       */
+      function generateStimuli(n) {
+        var audioStimuli = [];
+        var visualStimuli = [];
+        var category;
+        var counters = [NUM_NON_TARGETS, NUM_TARGETS_SINGLE, NUM_TARGETS_SINGLE, NUM_TARGETS_BOTH];  // [neither, audio, visual, both]
+        var audioTarget;
+        var visualTarget;
+        var audioSample;
+        var visualSample;
+
+        for (var i = 0; i < TOTAL_PER_BLOCK; i++) {  //
+          if (i < n) {
+            audioStimuli.push(getSample(audioFilepaths));
+            visualStimuli.push(getSample(grids));
+            counters[0] -= 1;
+          } else {
+            audioTarget = audioStimuli[i-n];
+            audioSample = audioTarget;
+            visualTarget = visualStimuli[i-n];
+            visualSample = visualTarget;
+            category = targetType(counters);
+            if (category === 0 || category === 2) {
+              while (audioSample === audioTarget) {
+                audioSample = getSample(audioFilepaths);
+              }
+            }
+            if (category === 0 || category === 1) {
+              while (visualSample === visualTarget) {
+                visualSample = getSample(grids);
+              }
+            }
+            audioStimuli.push(audioSample);
+            visualStimuli.push(visualSample);
+            counters[category] -= 1;
+          }
+        }
+
+        return {audio: audioStimuli, visual: visualStimuli};
+      }
+
+
+      /*
+       * Appends a number of audio trials equal to TOTAL_PER_BLOCK based on
+       * load factor n.
+       */
+      function addTrials(n) {
+        var trialLength = 3500;
+
+        var stimuli = generateStimuli(n);
+        var audioStimulus;
+        var visualStimulus;
+        var trialStimuli;
+        var nBeforeAudio;
+        var hasTargetAudio;
+        var nBeforeVisual;
+        var hasTargetVisual;
+
+        for (var i = 0; i < TOTAL_PER_BLOCK; i++) {
+          audioStimulus = stimuli.audio[i];
+          visualStimulus = stimuli.visual[i];
+          trialStimuli = visualStimulus + '<audio id="trial-audio" autoplay="true" src="' + audioStimulus + '">';
+          nBeforeAudio = stimuli.audio[i-n];
+          hasTargetAudio = (audioStimulus === nBeforeAudio) ? 1 : 0;
+          nBeforeVisual = stimuli.visual[i-n];
+          hasTargetVisual = (visualStimulus === nBeforeVisual) ? 1 : 0;
+
+          var trial = {
+            type: "multi-stim-multi-response",
+            stimuli: [trialStimuli],
+            is_html: true,
+            timing_stim: trialLength,
+            timing_response: trialLength,
+            choices: [["a"], ["l"]],  // keycodes
+            response_ends_trial: false,
+            timing_post_trial: 0,
+            data: {
+              n: n,
+              has_target_audio: hasTargetAudio,
+              has_target_visual: hasTargetVisual
+            },
+            on_finish: function (trialData) {
+              var rts = JSON.parse(trialData.rt);
+              var rtAudio = rts[0];
+              var rtVisual = rts[1];
+              var extraData = {
+                rt_audio: rtAudio,
+                rt_visual: rtVisual,
+                responded_to_audio: (rtAudio > -1 ? 1 : 0),
+                responded_to_visual: (rtVisual > -1 ? 1 : 0)
+              };
+              jsPsych.data.addDataToLastTrial(extraData);
+            }
+          };
+
+          timeline.push(trial);
+        }
+      }
+
+
+      /*
+       * Add experiment blocks as needed here
+       */
+
+       var instr1Back = {
+         type: "text",
+         text: '<p>You will now complete a <b>1-back</b> as practice</p><p>Press "A" on the keyboard whenever the current sound matches the one presented one position previously - i.e., an exact repeat of the previous sound.</p>'+
+               '<p>Press "L" on the keyboard whenever the location of the blue square matches the location presented one position previously - i.e., an exact repeat of the previous location.</p>'+
+               '<p>If both match, press both "A" and "L".</p>'+
+               '<p>If neither match, do not press anything.</p>'+
+               '<p>(press any key to begin!)</p>',
+         timing_post_trial: defaultITI,
+         choices: [['a'], ['l']]
+       };
+       timeline.push(instr1Back);
+       addTrials(1);
+
+/*
+      var instr2Back = {
+        type: "text",
+        text: '<p>You will now complete a <b>2-back</b></p><p>Press "A" on the keyboard whenever the current sound matches the one two positions previously.</p>'+
+              '<p>Press "L" on the keyboard whenever the location of the blue square matches the location two positions previously.</p>'+
+              '<p>If both match, press both "A" and "L".</p>'+
+              '<p>If neither match, do not press anything.</p>'+
+              '<p>(press any key to begin!)</p>',
+        timing_post_trial: defaultITI
+      };
+      timeline.push(instr2Back);
+      addTrials(2);
+*/
+
+
+      var dataBlock = {
+        type: "call-function",
+        func: function () {
+          var csvData = jsPsych.data.dataAsCSV();
+          console.log(csvData);
+          var formData = {
+            exp: "NAT_EVO",
+            subj: subjectID,
+            results: csvData
+          };
+          $.post(
+            "http://svanhedger.pythonanywhere.com/data",
+            formData
+          );
+        },
+        timing_post_trial: 0
+      };
+
+      timeline.push(dataBlock);
+
+      var dnb_goodbye = {
+        type: "single-stim",
+        stimulus: "<p>This concludes the memory task.</p><p>Thank you for your responses!</p><div id='dnbsummary' style='color:black;'>12345</div>",
+        is_html: true,
+        response_ends_trial: false
+      };
+
+      timeline.push(dnb_goodbye);
+
+      jsPsych.pluginAPI.preloadAudioFiles(audioFilepaths, function () {
+        jsPsych.pluginAPI.preloadImages([folder + "FixationPoint.gif", folder + "square.gif"], function () {
+          jsPsych.init({
+            timeline: timeline,
+            display_element: $("#jspsych-target")
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
