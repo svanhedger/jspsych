@@ -15,7 +15,7 @@ jsPsych.plugins.instructions = (function() {
 
   plugin.trial = function(display_element, trial) {
 
-    trial.key_forward = trial.key_forward || 'rightarrow';
+    trial.key_forward = trial.key_forward || 'spacebar';
     trial.key_backward = trial.key_backward || 'leftarrow';
     trial.allow_backward = (typeof trial.allow_backward === 'undefined') ? true : trial.allow_backward;
     trial.allow_keys = (typeof trial.allow_keys === 'undefined') ? true : trial.allow_keys;

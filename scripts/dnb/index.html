@@ -8,6 +8,7 @@
     <script src="jspsych-5.0.2/plugins/jspsych-multi-stim-multi-response.js"></script>
     <script src="jspsych-5.0.2/plugins/jspsych-single-stim.js"></script>
     <script src="jspsych-5.0.2/plugins/jspsych-call-function.js"></script>
+    <script src="jspsych-5.0.2/plugins/jspsych-instructions.js"></script>
     <link href="jspsych-5.0.2/css/jspsych.css" rel="stylesheet" type="text/css">
     <style>
       #image-grid {
@@ -18,7 +19,7 @@
 
       #image-grid td {
         width: 150px;
-        height 150px;
+        height: 150px;
       }
 
       #image-grid tr {
@@ -43,10 +44,6 @@
   <body>
     <div id="jspsych-target"></div>
     <script>
-      var userip;
-    </script>
-    <script type="text/javascript" src="https://l2.io/ip.js?var=userip"></script>
-    <script>
       /*
        * This uses jsPsych 5, so there are some differences from the older experiments.
        * See the online documentation for details: http://docs.jspsych.org
@@ -58,17 +55,24 @@
       var NUM_TARGETS_SINGLE = 4;
       var NUM_TARGETS_BOTH = 2;
 
+      var audio_h_tally = 0; //for final tally of auditory hits
+      var visual_h_tally = 0; //for final tally of visual hits
+      var audio_fa_tally = 0; //for final tally of auditory false alarms
+      var visual_fa_tally = 0; //for final tally of visual false alarms
+
       var TOTAL_PER_BLOCK = NUM_NON_TARGETS + 2 * NUM_TARGETS_SINGLE + NUM_TARGETS_BOTH;
       var subjectID;
       var timeline = [];
 
       var timestamp = Date.now();
       var inherited_id = jsPsych.data.getURLVariable('id');
+      var session = jsPsych.data.getURLVariable('session');
       if (inherited_id == undefined) {
         inherited_id = timestamp;
       }
 
-      jsPsych.data.addProperties({subject: inherited_id, timestamp: timestamp});
+
+      jsPsych.data.addProperties({subject: inherited_id, timestamp: timestamp, session: session});
 
       var audioFilenames = ['1.wav', '2.wav', '3.wav', '4.wav', '5.wav', '6.wav', '7.wav', '8.wav'];
       var audioFilepaths = [];
@@ -176,6 +180,7 @@
        * Appends a number of audio trials equal to TOTAL_PER_BLOCK based on
        * load factor n.
        */
+
       function addTrials(n) {
         var trialLength = 3500;
 
@@ -203,7 +208,7 @@
             is_html: true,
             timing_stim: trialLength,
             timing_response: trialLength,
-            choices: [["a"], ["l"]],  // keycodes
+            choices: [["l"], ["a"]],  // keycodes
             response_ends_trial: false,
             timing_post_trial: 0,
             data: {
@@ -215,13 +220,29 @@
               var rts = JSON.parse(trialData.rt);
               var rtAudio = rts[0];
               var rtVisual = rts[1];
+              var audio_hit = (rtAudio > -1 && trialData.has_target_audio == 1 ? 1 : 0);
+              var visual_hit = (rtVisual > -1 && trialData.has_target_visual == 1 ? 1 : 0);
+              var audio_fa = (rtAudio > -1 && trialData.has_target_audio == 0 ? 1 : 0);
+              var visual_fa = (rtVisual > -1 && trialData.has_target_visual == 0 ? 1 : 0);
+              if(trialData.n > 1){
+                audio_h_tally += audio_hit;
+                visual_h_tally += visual_hit;
+                audio_fa_tally += audio_fa;
+                visual_fa_tally += visual_fa;
+              }
+
               var extraData = {
                 rt_audio: rtAudio,
                 rt_visual: rtVisual,
                 responded_to_audio: (rtAudio > -1 ? 1 : 0),
-                responded_to_visual: (rtVisual > -1 ? 1 : 0)
+                responded_to_visual: (rtVisual > -1 ? 1 : 0),
+                audio_hit: audio_hit,
+                visual_hit: visual_hit,
+                audio_fa: audio_fa,
+                visual_fa: visual_fa
               };
               jsPsych.data.addDataToLastTrial(extraData);
+
             }
           };
 
@@ -234,32 +255,83 @@
        * Add experiment blocks as needed here
        */
 
+       var instruct_gen = {
+        type: "instructions",
+        pages:[
+          "<img src='dual_n_back_stimuli/001.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/002.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/003.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/004.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/005.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/006.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/007.png' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/begin_practice.png' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/instruct_n1.gif' style='height:600px;'/>"
+        ],
+        allow_backward: false,
+        timing_post_trial: defaultITI,
+       }
+       
        var instr1Back = {
          type: "text",
-         text: '<p>You will now complete a <b>1-back</b> as practice</p><p>Press "A" on the keyboard whenever the current sound matches the one presented one position previously - i.e., an exact repeat of the previous sound.</p>'+
-               '<p>Press "L" on the keyboard whenever the location of the blue square matches the location presented one position previously - i.e., an exact repeat of the previous location.</p>'+
+         text: '<p>On the next screen you will complete the <b>1-back</b> practice task</p><p>Remember to press "A" on the keyboard whenever the current square location matches the one presented one position previously - i.e., an exact repeat of the previous location.</p>'+
+               '<p>Press "L" on the keyboard whenever the current spoken letter matches the letter spoken one position previously - i.e., an exact repeat of the previous letter.</p>'+
                '<p>If both match, press both "A" and "L".</p>'+
                '<p>If neither match, do not press anything.</p>'+
-               '<p>(press any key to begin!)</p>',
+               '<p>(press spacebar to begin!)</p>',
          timing_post_trial: defaultITI,
-         choices: [['a'], ['l']]
+         cont_key: ['spacebar']
        };
-       timeline.push(instr1Back);
-       addTrials(1);
 
-/*
+
+
+
+       var instruct_gen2 = {
+        type: "instructions",
+        pages:[
+          "<img src='dual_n_back_stimuli/end_practice.png' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/pre_instruct.gif' style='height:600px;'/>",
+          "<img src='dual_n_back_stimuli/instruct_n2.gif' style='height:600px;'/>"
+        ],
+        allow_backward: false,
+        timing_post_trial: defaultITI,
+       };
+
+
       var instr2Back = {
         type: "text",
-        text: '<p>You will now complete a <b>2-back</b></p><p>Press "A" on the keyboard whenever the current sound matches the one two positions previously.</p>'+
-              '<p>Press "L" on the keyboard whenever the location of the blue square matches the location two positions previously.</p>'+
-              '<p>If both match, press both "A" and "L".</p>'+
-              '<p>If neither match, do not press anything.</p>'+
-              '<p>(press any key to begin!)</p>',
-        timing_post_trial: defaultITI
+        text: '<p>On the next screen you will ccomplete a <b>2-back</b> main task</p>p>Remember to press "A" on the keyboard whenever the current square location matches the one presented two positions previously.</p>'+
+               '<p>Press "L" on the keyboard whenever the current spoken letter matches the letter spoken two positions previously.</p>'+
+               '<p>If both match, press both "A" and "L".</p>'+
+               '<p>If neither match, do not press anything.</p>'+
+                '<p>(press spacebar to begin!)</p>',
+        timing_post_trial: defaultITI,
+        cont_key: ['spacebar']
       };
-      timeline.push(instr2Back);
-      addTrials(2);
-*/
+
+      var takeabreak = {
+        type: "text",
+        text: "<p>You may take a short break if you wish.</p><p>When you are ready to continue with the <b>2-back</b> task, press spacebar!</p>",
+        timing_post_trial: defaultITI,
+        cont_key: ['spacebar']
+      };
+
+      var savesummarydata = {
+        type: "text",
+        text:"<p>You may take a short break if you wish.</p><p>When you are ready to continue, press spacebar!</p>",
+        timing_post_trial: defaultITI,
+        cont_key: ['spacebar'],
+        on_finish: function(trialData){
+          var extraData = {
+                designation: 'DNB-SUMMARY',
+                total_audio_hits: audio_h_tally,
+                total_visual_hit: visual_h_tally,
+                total_audio_fa: audio_fa_tally,
+                total_visual_fa: visual_fa_tally
+              };
+              jsPsych.data.addDataToLastTrial(extraData);
+        }
+      };
 
 
       var dataBlock = {
@@ -269,7 +341,7 @@
           console.log(csvData);
           var formData = {
             exp: "NAT_EVO",
-            subj: subjectID,
+            subj: inherited_id,
             results: csvData
           };
           $.post(
@@ -280,22 +352,39 @@
         timing_post_trial: 0
       };
 
-      timeline.push(dataBlock);
 
       var dnb_goodbye = {
         type: "single-stim",
-        stimulus: "<p>This concludes the memory task.</p><p>Thank you for your responses!</p><div id='dnbsummary' style='color:black;'>12345</div>",
+        stimulus: "<p>This concludes the memory task.</p><p>Thank you for your responses!</p><p>Please notify the experimenter that you have completed the task.</p>",
         is_html: true,
-        response_ends_trial: false
+        response_ends_trial: true,
+        choices: ['q']
       };
 
+      //Push everything to timeline!
+      timeline.push(instruct_gen);
+      timeline.push(instr1Back);
+      addTrials(1);
+      timeline.push(instruct_gen2);
+      timeline.push(instr2Back);
+      addTrials(2);
+      timeline.push(takeabreak);
+      addTrials(2);
+      timeline.push(takeabreak);
+      addTrials(2);
+      timeline.push(takeabreak);
+      addTrials(2);
+      timeline.push(savesummarydata);
+
+      timeline.push(dataBlock);
       timeline.push(dnb_goodbye);
 
       jsPsych.pluginAPI.preloadAudioFiles(audioFilepaths, function () {
-        jsPsych.pluginAPI.preloadImages([folder + "FixationPoint.gif", folder + "square.gif"], function () {
+        jsPsych.pluginAPI.preloadImages([folder + "FixationPoint.gif", folder + "square.gif", folder + "001.gif", folder + "002.gif", folder + "003.gif", folder + "004.gif", folder + "005.gif", folder + "006.gif", folder + "007.png", folder + "begin_practice.png", folder + "end_practice.png", folder + "instruct_n1.gif", folder + "instruct_n2.gif", folder + "pre_instruct.gif"], function () {
           jsPsych.init({
             timeline: timeline,
-            display_element: $("#jspsych-target")
+            display_element: $("#jspsych-target"),
+            on_finish: function(){var filename = `DNB_${inherited_id}_${session}.csv`; jsPsych.data.localSave(filename, 'csv');}
           });
         });
       });
