@@ -1,0 +1,12 @@
+Dual N-Back README
+Description
+Participants complete five blocks of a “dual n-back” task. The dual n-back essentially combines two simultaneous n-back tasks – one presented in the auditory modality (spoken letters) and the other presented in the visual modality (spatial location of blue squares). The n-back is a common assessment of working memory, in which one must respond if the current stimulus matches the one presented “n” positions previously.
+Each block contains 20 letter/square events. Each block contains 8 auditory targets and 8 visual targets (with 4 of these occurring on the same event). Participants are instructed to press the key “A” if the square matches the position of the one presented n position(s) previously. Participants are instructed to press the key “L” if the spoken letter matches the one presented n position(s) previously. If both the square and the letter match, participants are instructed to press both “A” and “L”. If neither match, participants are instructed not to press anything.
+Participants complete a “1-back” (monitoring the visual and auditory modalities for direct repeats) as a practice task, to familiarize themselves with the general task flow. Then, participants complete four blocks of a “2-back” (monitoring the visual and auditory modalities for repeats from two positions previously) as their main assessment. At the beginning and end of the task, participants self-rate how fatigued they are feeling in the present moment (1: not at all, 5: extremely). 
+Using the Script
+URL Variables
+The script allows URL variables, which are highly recommended. Specifically, one is able to specify the participant identifier and the session in the URL of the task. For example, if you accessed the task using the following link:
+https://svanhedger.github.io/jspsych/scripts/dnb?id=001&session=pre
+the data would automatically log the participant identifier (001) and the session (pre). These values can be set however the user prefers (any string will be accepted).
+Wrapping Up the Task
+On the final screen of the task (in which the screen says for the participant to notify the experimenter that the task is complete), you should exit out of the script by pressing “Q” on the keyboard. This will save the data locally to your computer. Do not exit out of the browser until you have pressed “Q” and saved the data. Although there is a backup data server implemented in the code, this is not always reliable.
