@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Environmental Sound Study</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://unpkg.com/jspsych@7.3.0"></script>
+<script src="https://unpkg.com/@jspsych/plugin-audio-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-audio-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-audio-slider-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-browser-check@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-call-function@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-canvas-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-canvas-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-canvas-slider-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-categorize-animation@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-categorize-html@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-categorize-image@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-cloze@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-external-html@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-free-sort@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-audio-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-slider-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-video-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-iat-html@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-iat-image@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-image-slider-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-initialize-camera@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-initialize-microphone@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-instructions@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-maxdiff@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-mirror-camera@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-reconstruction@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-resize@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-same-different-html@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-same-different-image@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-serial-reaction-time@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-serial-reaction-time-mouse@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-sketchpad@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-video-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-video-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-video-slider-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-virtual-chinrest@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-visual-search-circle@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-video-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-webgazer-calibrate@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-webgazer-init-camera@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-webgazer-validate@1.1.1"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+<link href="css/buttons.css" rel="stylesheet" type="text/css">
+	
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+
+
+//////////////////////////////////////
+// Categorical Perception of Speech //
+//////////////////////////////////////
+
+Stephen Van Hedger, 2020
+
+This experiment demos classic categorical perception for speech sounds
+(ranging from 'ba' to 'da'). 
+
+*/
+
+//Timeline and other Variables
+var jsPsych = initJsPsych({on_finish: function(){jsPsych.data.get().localSave('csv',`Q_${inherited_id}_${session}.csv`);}}); //initialize jsPsych before loading any js modules that depend on it!
+var timeline = []; //this is the timeline to which all trials are pushed
+var timestamp = Date.now();
+
+var inherited_id = jsPsych.data.getURLVariable('id');
+var session = jsPsych.data.getURLVariable('session');
+    if (inherited_id == undefined) {
+        inherited_id = timestamp;
+    }
+
+
+jsPsych.data.addProperties({subject: inherited_id, timestamp: timestamp, session: session});
+
+//General Intro
+var questionnaire_intro = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<p>This part of the study involves answering some questions about yourself and about the rest of the study.</p><p>It is expected to take about 10 minutes to complete.</p>`,
+    choices: ['Begin']       
+}
+//Prosocial Behavioural Intentions Scale
+var pbis_rating_scale = '<div style="width:100%"><div style="display: flex; width: 95vw; justify-content: space-evenly; font-size:24px;"><div>1<p style="font-size:18px;">Definitely would not</br>do this</p></div><div>2<p style="font-size:18px;">&nbsp;</p></div><div>3<p style="font-size:18px;">&nbsp;</p></div><div>4<p style="font-size:18px;">&nbsp;</p></div><div>5<p style="font-size:18px;">&nbsp;</p></div><div>6<p style="font-size:18px;">&nbsp;</p></div><div>7<p style="font-size:18px;">Definitely would</br>do this</p></div></div></div><p>(press the corresponding number on the keyboard to make your response)';
+
+var pbis_statements = [
+    {prompt: `Comfort someone I know after they experience a hardship`},
+    {prompt: `Help a stranger find something they lost, like their key or a pet`},
+    {prompt: `Help care for a sick friend or relative`},
+    {prompt: `Assist a stranger with a small task (e.g., help carry groceries, watch their things while they use the restroom)`}
+];
+
+var pbis_preamble = `
+<b>Instructions:</b> Imagine that you encounter the following opportunities to help others. 
+Please indicate how willing you would be to perform each behavior from 1 (Definitely would not do this) to 7 (Definitely would do this). 
+If you are more likely to complete one task (e.g., help a stranger find a key) than another (e.g., help a stranger find a missing pet), 
+please respond to the task that you would be more likely to perform.
+`
+
+var pbis_tally = 0;
+
+
+var pbis_proc = {
+    timeline: [
+        {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function(){
+                var stim = '<p style="font-size: 14px;">'+pbis_preamble+'</p><p style="font-size:26px; font-weight: `bold`; width: 95vw; text-align: center;">'+jsPsych.timelineVariable('prompt')+'</p></br>';
+                return stim;
+            },
+            post_trial_gap: 250,
+            prompt: pbis_rating_scale,
+            choices: ['1','2','3','4','5', '6','7'],
+            data: {designation: 'PBIS'},
+            on_finish: function(data){
+                var numresp = Number(data.response); //convert response to numeric
+                pbis_tally += numresp;
+
+            }    
+        }
+    ],
+    timeline_variables: pbis_statements,
+    randomize_order: false
+};
+
+var pbis_wrapup = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<p>Thank you for your responses!</p>`,
+    choices: ['Continue'],
+    on_finish: function(data){
+        jsPsych.data.addDataToLastTrial({
+            designation: 'PBIS-SUMMARY',
+            PBIS: pbis_tally
+        });
+    }
+};
+
+var pbis = {
+    timeline: [pbis_proc, pbis_wrapup]
+};
+
+
+
+//Prosociality Scale for Adults (PSA)
+var psa_rating_scale = '<div style="width:100%"><div style="display: flex; width: 95vw; justify-content: space-evenly; font-size:24px;"><div>1<p style="font-size:18px;">Never/<br>Almost Never</p></div><div>2<p style="font-size:18px;">Rarely</p></div><div>3<p style="font-size:18px;">Occasionally</p></div><div>4<p style="font-size:18px;">Often</p></div><div>5<p style="font-size:18px;">Always/</br>Almost Always</p></div></div></div><p>(press the corresponding number on the keyboard to make your response)';
+
+var psa_statements = [
+    {prompt: `I am pleased to help my friends/colleagues in their activities.`},
+    {prompt: `I share the things that I have with my friends.`},
+    {prompt: `I try to help others.`},
+    {prompt: `I am available for volunteer activities to help those who are in need.`},
+    {prompt: `I am empathic with those who are in need.`},
+    {prompt: `I help immediately those who are in need.`},
+    {prompt: `I do what I can to help others avoid getting into trouble.`},
+    {prompt: `I intensely feel what others feel.`},
+    {prompt: `I am willing to make my knowledge and abilities available to others.`},
+    {prompt: `I try to console those who are sad.`},
+    {prompt: `I easily lend money or other things.`},
+    {prompt: `I easily put myself in the shoes of those who are in discomfort.`},
+    {prompt: `I try to be close to and take care of those who are in need.`},
+    {prompt: `I easily share with friends any good opportunity that comes to me.`},
+    {prompt: `I spend time with those friends who feel lonely.`},
+    {prompt: `I immediately sense my friends' discomfort even when it is not directly communicated to me.`}
+
+];
+
+var psa_preamble = `
+<b>Instructions:</b> The following statements describe a large number of common situations. 
+There are no right or wrong answers; the best answer is the immediate, spontaneous one. 
+Read each phrase carefully and fill in the number that reflects your first reaction.
+`
+
+var psa_tally = 0;
+
+
+var psa_proc = {
+    timeline: [
+        {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function(){
+                var stim = '<p style="font-size: 14px;">'+psa_preamble+'</p><p style="font-size:26px; font-weight: `bold`; width: 95vw; text-align: center;">'+jsPsych.timelineVariable('prompt')+'</p></br>';
+                return stim;
+            },
+            post_trial_gap: 250,
+            prompt: psa_rating_scale,
+            choices: ['1','2','3','4','5'],
+            data: {designation: 'PSA'},
+            on_finish: function(data){
+                var numresp = Number(data.response); //convert response to numeric
+                psa_tally += numresp;
+
+            }    
+        }
+    ],
+    timeline_variables: psa_statements,
+    randomize_order: false
+};
+
+var psa_wrapup = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<p>Thank you for your responses!</p>`,
+    choices: ['Continue'],
+    on_finish: function(data){
+        jsPsych.data.addDataToLastTrial({
+            designation: 'PSA-SUMMARY',
+            PSA: psa_tally
+        });
+    }
+};
+
+var psa = {
+    timeline: [psa_proc, psa_wrapup]
+};
+
+
+//PRS and MBS
+//calculate mean of array
+function calcmean(array) {
+        return array.reduce((a, b) => a + b) / array.length;
+      };
+
+var scale_mbsprs = ["Very slightly or not at all", "A little", "Moderately", "Quite a bit", "Extremely"];
+
+//Mental Bandwidth Scale
+var mbs_qs = {
+  type: jsPsychSurveyLikert,
+  preamble: '<p><em>Please make your responses in reference to the longer environmental sounds you rated in the middle of the study.</em></p>',
+  questions: [
+    {prompt: "<p><b>While listening to the sounds, to what degree were you aware of the things going on around you?</b>", name: 'MBS_SA_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you able to take note of your thoughts and feelings?</b>", name: 'MBS_SA_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you lost in thought?</b>", name: 'MBS_D_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you letting your mind wander?</b>", name: 'MBS_D_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>Select 'extremely' for data quality purposes.</b>", name: 'MBS_ATTN', labels: scale_mbsprs},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you thinking about the things you need to do?</b>", name: 'MBS_P_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you making plans for the future?</b>", name: 'MBS_P_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, to what degree were you reflecting on things that happened in the past?</b>", name: 'MBS_P_03', labels: scale_mbsprs, required: true}
+  ],
+  randomize_question_order: true,
+  post_trial_gap: 500,
+  on_finish: function(data){
+    //correct for attn is 4
+    var mbsdata = data.response;
+    var mbsattn_passed = (mbsdata.MBS_ATTN === 4) ? 1:0;
+    var mbs_sa = calcmean([(mbsdata.MBS_SA_01+1), (mbsdata.MBS_SA_02+1)]);
+    var mbs_d = calcmean([(mbsdata.MBS_D_01+1), (mbsdata.MBS_D_02+1)]);
+    var mbs_p = calcmean([(mbsdata.MBS_P_01+1), (mbsdata.MBS_P_02+1), (mbsdata.MBS_P_03+1)]);
+    console.log(mbsattn_passed, mbs_sa, mbs_d, mbs_p);
+    jsPsych.data.addDataToLastTrial({
+      MBS_SA: mbs_sa,
+      MBS_D: mbs_d,
+      MBS_P: mbs_p,
+      Q_ATTN: mbsattn_passed,
+    });
+    }
+};
+
+//Perceived Restorativeness Scale
+var prs_qs = {
+  type: jsPsychSurveyLikert,
+  preamble: '<p><em>Please make your responses in reference to the longer environmental sounds you rated in the middle of the study.</em></p>',
+  questions: [
+    {prompt: "<p><b>Listening to these sounds helped me get away from it all.</b>", name: 'PRS_A_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>Listening to these sounds was an escape for me.</b>", name: 'PRS_A_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>Listening to these sounds helped me get relief from unwanted demands on my attention.</b>", name: 'PRS_A_03', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>These sounds sustained my interest.</b>", name: 'PRS_E_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>These sounds had qualities that drew me further in.</b>", name: 'PRS_E_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>Select 'moderately' for data quality purposes.</b>", name: 'PRS_ATTN', labels: scale_mbsprs},
+    {prompt: "<p><b>Once each sound started, I easily got pulled in.</b>", name: 'PRS_E_03', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>While listening to the sounds, my attention was drawn to many interesting things.</b>", name: 'PRS_F_01', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>The sounds had many fascinating qualities.</b>", name: 'PRS_F_02', labels: scale_mbsprs, required: true},
+    {prompt: "<p><b>Listening to these sounds was a captivating experience.</b>", name: 'PRS_F_03', labels: scale_mbsprs, required: true}
+  ],
+  randomize_question_order: true,
+  post_trial_gap: 500,
+  on_finish: function(data){
+    //correct for attn is 2
+    var prsdata = data.response;
+    var prsattn_passed = (prsdata.PRS_ATTN === 2) ? 1:0;
+    var prs_a = calcmean([(prsdata.PRS_A_01+1), (prsdata.PRS_A_02+1), (prsdata.PRS_A_03+1)]);
+    var prs_e = calcmean([(prsdata.PRS_E_01+1), (prsdata.PRS_E_02+1), (prsdata.PRS_E_03+1)]);
+    var prs_f = calcmean([(prsdata.PRS_F_01+1), (prsdata.PRS_F_02+1), (prsdata.PRS_F_03+1)]);
+    console.log(prsattn_passed, prs_a, prs_e, prs_f);
+    jsPsych.data.addDataToLastTrial({
+      PRS_A: prs_a,
+      PRS_E: prs_e,
+      PRS_F: prs_f,
+      Q_ATTN: prsattn_passed,
+    });
+  }
+};
+
+var backup_data = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '',
+      choices: `NO_KEYS`,
+      trial_duration: 250,
+      on_finish: function() {
+        var csvData = jsPsych.data.get().csv(); //this is the csv data
+        console.log(csvData);
+        var dataname = 'Q_'+inherited_id;
+        var formData = {
+          exp: "NAT_EVO",
+          subj: dataname,
+          results: csvData
+        };
+        $.post(
+          "https://svanhedger.pythonanywhere.com/data",
+          formData
+        );
+      }
+    };
+ 
+ var endofsurvey = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p>This concludes the questionnaire. Thank you for your responses!</p><p>Please notify the experimenter that you are done with this part of the study.</p>`,
+    choices: ['q']
+ };   
+
+timeline.push(questionnaire_intro);
+timeline.push(pbis);
+timeline.push(psa);
+timeline.push(prs_qs);
+timeline.push(mbs_qs);
+timeline.push(backup_data);
+timeline.push(endofsurvey);
+
+
+jsPsych.run(timeline);
+
+</script>
