@@ -271,7 +271,7 @@
         allow_backward: false,
         timing_post_trial: defaultITI,
        }
-       
+
        var instr1Back = {
          type: "text",
          text: '<p>On the next screen you will complete the <b>1-back</b> practice task</p><p>Remember to press "A" on the keyboard whenever the current square location matches the one presented one position previously - i.e., an exact repeat of the previous location.</p>'+
@@ -300,7 +300,7 @@
 
       var instr2Back = {
         type: "text",
-        text: '<p>On the next screen you will ccomplete a <b>2-back</b> main task</p>p>Remember to press "A" on the keyboard whenever the current square location matches the one presented two positions previously.</p>'+
+        text: '<p>On the next screen you will ccomplete a <b>2-back</b> main task</p><p>Remember to press "A" on the keyboard whenever the current square location matches the one presented two positions previously.</p>'+
                '<p>Press "L" on the keyboard whenever the current spoken letter matches the letter spoken two positions previously.</p>'+
                '<p>If both match, press both "A" and "L".</p>'+
                '<p>If neither match, do not press anything.</p>'+
@@ -314,6 +314,14 @@
         text: "<p>You may take a short break if you wish.</p><p>When you are ready to continue with the <b>2-back</b> task, press spacebar!</p>",
         timing_post_trial: defaultITI,
         cont_key: ['spacebar']
+      };
+
+      var fatigue_rtg = {
+        type: "text",
+        text: `<p style="font-size:28px;"><b>How fatigued are you feeling in the present moment?</b></br></p><p>(Make your response by pressing the corresponding key on the keyboard)</p><p>&nbsp;</p>
+        <div style="display: flex; width: 50vw; justify-content: space-between; font-size:30px;"><div>1<p style="font-size:22px;">Very slightly or</br>not at all</p></div><div>2<p style="font-size:22px;">A little</p></div><div>3<p style="font-size:22px;">Moderately</p></div><div>4<p style="font-size:22px;">Quite a bit</p></div><div>5<p style="font-size:22px;">Extremely</p></div></div>`,
+        timing_post_trial: defaultITI,
+        cont_key: ['1', '2', '3', '4', '5']
       };
 
       var savesummarydata = {
@@ -362,6 +370,7 @@
       };
 
       //Push everything to timeline!
+      timeline.push(fatigue_rtg);
       timeline.push(instruct_gen);
       timeline.push(instr1Back);
       addTrials(1);
@@ -375,6 +384,7 @@
       timeline.push(takeabreak);
       addTrials(2);
       timeline.push(savesummarydata);
+      timeline.push(fatigue_rtg);
 
       timeline.push(dataBlock);
       timeline.push(dnb_goodbye);
