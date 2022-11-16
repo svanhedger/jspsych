@@ -41,7 +41,8 @@ var hsvid = (condition == 1) ? `hs-adagio.mp4` : `hs-allegro.mp4`;
 var preload_video = {
     type: jsPsychPreload,
     video: [hsvid],
-    message: `Loading the materials...thank you for your patience!`
+    message: `Loading the materials...thank you for your patience!`,
+    show_progress_bar: false
 };
 
 timeline.push(preload_video);
