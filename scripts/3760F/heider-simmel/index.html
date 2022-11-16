@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Animation Perception Demo</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://unpkg.com/jspsych@7.3.0"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+<script src="https://unpkg.com/@jspsych/plugin-video-keyboard-response@1.1.1"></script>
+
+<link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+
+
+</head>
+
+<body>
+
+<script>
+
+/* 
+Simple demonstration of the Heider-Simmel (1944) animation
+played with different soundtracks (replicating the materials
+of Marshall & Cohen, 1988)
+
+S. Van Hedger, 2022
+*/
+
+
+var jsPsych = initJsPsych(); //no need to touch this line - this initializes jsPsych and tells it to save your data at the end of the experiment!
+var timeline = []; //no need to touch this line either - jsPsych works by adding trials or blocks of trials to a "timeline" - as you can see, at the moment this is an empty array
+
+var condition = jsPsych.data.getURLVariable('c');
+
+var hsvid = (condition == 1) ? `hs-adagio.mp4` : `hs-allegro.mp4`;
+
+var preload_video = {
+    type: jsPsychPreload,
+    video: [hsvid],
+    message: `Loading the materials...thank you for your patience!`
+};
+
+timeline.push(preload_video);
+
+//Instructions
+var instructions_01 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus:`<p>Welcome to this short demonstration!</p><p>You will be shown a short (~90-second) video of some shapes. This video will be accompanied by a musical soundtrack.</p>
+              <p>Your job is to watch the video closely. At the end, you should write down, in a sentence or two, what you think happened in the video.</p>
+              <p>Please bring your written observations to class, as this will be an important part of our discussion.</p>
+              <p>Thanks!!</p>`,
+    choices: ['Begin the Video!']
+};
+
+timeline.push(instructions_01);
+
+//Yanny-Laurel Specific Instructions
+var hs_animation= {
+    type: jsPsychVideoKeyboardResponse,
+    stimulus: function(){
+        var selected_vid = [hsvid];
+        return selected_vid
+    },  
+  choices: `NO_KEYS`,
+  trial_ends_after_video: true
+};
+
+timeline.push(hs_animation);
+
+
+//Concluding Screen
+var endofexpt = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: "<p>Thank you for watching!</p><p>At this point, please write down your intepretation of what happened in the video.</p><p>Please bring your observations to class.</p><p>You may close this tab at this time</p>"
+};
+
+timeline.push(endofexpt);
+
+
+
+jsPsych.run(timeline);
+
+</script>
