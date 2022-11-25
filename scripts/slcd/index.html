@@ -449,7 +449,7 @@ var tload_trial = 1; //update this after each trial in the main task
 var tload_correct_tally = 0; //for adaptively updating the response time based on performance
 var tload_base_rt = 3000; //this is the default presentation rate for stimuli
 var cur_tload_rt = 3000; //set the adaptive presentation rate to the default, initially
-
+var timestart;
 
 
 var tload_lettertargets = Array(10).fill(1);
@@ -811,7 +811,10 @@ var tload_instruct_04 = {
         `<p>On the next screen, you will begin the main task.</p><p><b>Please try to respond as quickly and accurately as possible.</b></p><p>Press 'Next' to begin!</p>`,
     ],
     show_clickable_nav: true,
-    post_trial_gap: 250
+    post_trial_gap: 250,
+    on_finish: function(){
+        timestart = Date.now();
+    }
 };
 
 
@@ -856,12 +859,16 @@ var conditional_break = {
     }
 };
 
+var timenow;
+var exit_tload = false;
+var tidx=0;
+
 var tload_maintask_proc = {
     timeline: [
             {
                 type: jsPsychHtmlKeyboardResponse,
                 stimulus: function(){
-                    var stim = `<p style="font-size: 50px;">${jsPsych.timelineVariable('stim')}</p>`
+                    var stim = `<p style="font-size: 50px;">${tload_maintask_vars[tidx].stim}</p>`
                     return stim
                 },
                 trial_duration: function(){
@@ -873,15 +880,17 @@ var tload_maintask_proc = {
                 },
                 choices: [` `, `1`, `2`],
                 response_ends_trial: false,
-                data: {designation: 'TLOAD-MAIN', cresp: jsPsych.timelineVariable('cresp'), type: jsPsych.timelineVariable('stimtype')},
+                data: {designation: 'TLOAD-MAIN'},
                 on_finish: function(data){
-                    if(data.cresp == data.response){
+                    var cresp = tload_maintask_vars[tidx].cresp;
+                    var tloadtype = tload_maintask_vars[tidx].stimtype;
+                    if(cresp == data.response){
                         var gotitright = 1;
                         tload_correct_tally += 1;
-                    } else if(data.rt == data.cresp) {
+                    } else if(data.rt == cresp) {
                         var gotitright = 1;
                         tload_correct_tally += 1;
-                    } else if(data.rt == null && data.type == "Number") {
+                    } else if(data.rt == null && tloadtype == "Number") {
                         var gotitright = 0;
                         tload_correct_tally = 0;
                     } else {
@@ -890,6 +899,8 @@ var tload_maintask_proc = {
                     }
 
                     jsPsych.data.get().addToLast({
+                        tload_cresp: cresp,
+                        tload_type: tloadtype,    
                         tload_correct: gotitright,
                         tload_trialnum: tload_trial,
                         tload_presRate: cur_tload_rt
@@ -906,17 +917,25 @@ var tload_maintask_proc = {
                     }
                 }
                     tload_trial += 1; //update the trial number
+                    tidx += 1; //update index counter
+                    timenow = Date.now();
+                    if((timenow - timestart) > (tload_maintask_duration*60000)){
+                        exit_tload = true;
+                        console.log("exiting tload...")
+                    }
                 }
             },
             conditional_break
     ],
-    timeline_variables: tload_maintask_vars,
-    on_start: function(){
-		setTimeout(function(){
-		jsPsych.endCurrentTimeline();
-		}, (tload_maintask_duration*60000));
-	}
+  loop_function: function(){
+      if(exit_tload == false){
+        return true;
+      } else {
+        return false
+      }
+  }
 };
+
 
 
 //Pre-post-measure fatigue rating
@@ -955,10 +974,10 @@ var tload_maintask_final = {
 };
 
 var tload = {
-    timeline: [tload_fatigue_pre, tload_practice_final, tload_fatigue_post]
+    timeline: [tload_fatigue_pre, tload_practice_final, tload_maintask_final, tload_fatigue_post]
 };
 
-//tload_maintask_final, 
+
 
 
 
