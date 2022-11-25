@@ -155,6 +155,14 @@ for(var i=0; i<cur_tload_letters.length; i++){
     final_block_stim.push(cur_tload_numbers[i]);
 }
 
+if(piloting){
+    var tload_length_01 = ``
+    var tload_length_02 = ``
+} else {
+    var tload_length_01 = `<p>In total, this part of the study is expected to take about 25 minutes</p>`;
+    var tload_length_02 = `<p>Short breaks are provided approximately every five minutes.</p>`
+}
+
 
 
 //////////////////////////////////////
@@ -163,11 +171,11 @@ var tload_instruct_01 = {
     pages: [
         `<p>Welcome.</p><p>In this part of the study, you will be making decisions about letters and numbers that appear on the screen.</p>`,
         `<p>Letters and numbers will appear on the screen one at a time, in an alternating fashion.</p>`,
-        `<p>You will be making different responses depending on whether a letter or number is presented</p><p>If a letter is presented, you must press the spacebar if the letter is a repeat of the previous letter. If it is not a repeat, do not press anything.</p>
+        `<p>You will be making different responses depending on whether a letter or number is presented</p><p>If a letter is presented, you must press the spacebar if the letter is a repeat of the previous letter.</p><p>If it is not a repeat, do not press anything.</p>
          <p>If a number is presented, you must press "1" if the number is odd or "2" if the number is even.</p>`,
-        `<p>Thus, you should be responding to <em>every</em> number you see by pressing either 1 or 2.</p><p>In contrast, you will only be pressing the spacebar to letters if the letter is a repeat from the previous letter.</p>`,
-        `<p>This task is organized into four parts:</p><p>1. Practice the number task by itself</br>2.Practice the letter task by itself</br>3.Practice both tasks together</br>4.Complete the main task.</p><p>In total, this part of the study is expected to take about 25 minutes.</p>`,
-        `<p>On the next screen, you will practice the number task.</p><p>Remember, you should press 1 if the number on the screen is odd and 2 if the number on the screen is even.</p><p>You will receive feedback after each response.</p><p>You must make your response within four seconds - otherwise, your answer will be marked as incorrect</p><p>Press 'Next' to begin!</p>`
+        `<p>Thus, you should be responding to <em>every</em> number you see by pressing either 1 or 2.</p><p>In contrast, you will only be pressing the spacebar to letters</br>if the letter is a repeat from the previous letter.</p>`,
+        `<p>This task is organized into four parts:</p><p>1. Practice the number task by itself</br>2.Practice the letter task by itself</br>3.Practice both tasks together</br>4.Complete the main task.</p>${tload_length_01}`,
+        `<p>On the next screen, you will practice the number task.</p><p>Remember, you should press 1 if the number on the screen is odd</br>and 2 if the number on the screen is even.</p><p>You will receive feedback after each response.</p><p>You must make your response within three seconds, </br>otherwise, your answer will be marked as incorrect</p><p>Press 'Next' to begin!</p>`
     ],
     show_clickable_nav: true,
     post_trial_gap: 250
@@ -236,9 +244,9 @@ var tload_instruct_02 = {
     type: jsPsychInstructions,
     pages: [
         `<p>This concludes the number practice task.</p>`,
-        `<p>You will now complete the letter practice task.</p><p>As a reminder, you should press the spacebar whenever the letter on the screen is a repeat of the previous letter.</p>`,
+        `<p>You will now complete the letter practice task.</p><p>As a reminder, you should press the spacebar</br>whenever the letter on the screen is a repeat of the previous letter.</p>`,
         `<p>For example, if you saw the letters:</p><p style="font-size:36px;">A &#8594; L &#8594; <b style="color:blue;">L</b> &#8594; F &#8594; W &#8594; <b style="color:blue;">W</b></p><p>you would press spacebar for the letters printed in blue, as these are repeats of the previous letter.</p>`,
-        `<p>On the next screen, you will practice the letter task.</p><p>Remember, you should press spacebar if the letter on the screen is a repeat of the previous letter.</p><p>If the letter is not a repeat, do not press anything.</p><p>If the letter is a repeat, you must press spacebar within four seconds - otherwise, your answer will be marked as incorrect</p><p>You will receive feedback after each response.</p><p>Press 'Next' to begin!</p>`
+        `<p>On the next screen, you will practice the letter task.</p><p>Remember, you should press spacebar if the letter on the screen is a repeat of the previous letter.</p><p>If the letter is not a repeat, do not press anything.</p><p>If the letter is a repeat, you must press spacebar within three seconds,</br>otherwise, your answer will be marked as incorrect</p><p>You will receive feedback after each response.</p><p>Press 'Next' to begin!</p>`
     ],
     show_clickable_nav: true,
     post_trial_gap: 250
@@ -318,8 +326,8 @@ var tload_instruct_03 = {
         `<p>This concludes the letter practice task.</p>`,
         `<p>Now, you will have the opportunity to try both tasks together</p>`,
         `<p>You will see a letter, followed by a number, followed by a letter, followed by a number and so on.</p>`,
-        `<p>If the letter is the same as the previous letter, you should press spacebar. Otherwise, you should press nothing.</p><p>If the number is odd, press "1". If the number is even, press "2".</p>`,
-        `<p>As mentioned earlier, you should therefore be reponding to <em>every</em> number that is presented. In contrast, you will only be responding to some of the letters, depending on whether the letter is a repeat.</p>`,
+        `<p>If the letter is the same as the previous letter, you should press spacebar.</p><p>Otherwise, you should press nothing.</p><p>If the number is odd, press "1". If the number is even, press "2".</p>`,
+        `<p>As mentioned earlier, you should therefore be reponding to <em>every</em> number that is presented.</p><p>In contrast, you will only be responding to some of the letters, depending on whether the letter is a repeat.</p>`,
         `<p>On the next screen, you will practice the letter + number task.</p><p>You will receive feedback after each response.</p><p>Press 'Next' to begin!</p>`,
     ],
     show_clickable_nav: true,
@@ -424,11 +432,13 @@ if(tload_condition == 1){
     adaptive_inst = ``;
 }
 
+
+
 var tload_instruct_04 = {
     type: jsPsychInstructions,
     pages: [
         `<p>This concludes the letter + number practice task.</p><p>You are now ready to begin the main task.</p>`,
-        `<p>The main task is nearly identical to the practice you just completed.</p><p>The main differences are that:</p><p>1. You will not be told whether each answer was right or wrong</br>2. The duration is ${tload_maintask_duration} minutes</br>${adaptive_inst}</p>Short breaks are provided approximately every 5 minutes.</p>`,
+        `<p>The main task is nearly identical to the practice you just completed.</p><p>The main differences are that:</p><p>1. You will not be told whether each answer was right or wrong</br>2. The duration is ${tload_maintask_duration} minutes</br>${adaptive_inst}</p>${tload_length_02}`,
         `<p>As a reminder...</p><p>You will see a letter, followed by a number, followed by a letter, followed by a number and so on.</p>`,
         `<p>If the letter is the same as the previous letter, you should press spacebar. Otherwise, you should press nothing.</p><p>If the number is odd, press "1". If the number is even, press "2".</p>`,
         `<p>You should therefore be reponding to <em>every</em> number that is presented. In contrast, you will only be responding to some of the letters, depending on whether the letter is a repeat.</p>`,

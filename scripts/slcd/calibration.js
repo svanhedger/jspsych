@@ -107,7 +107,10 @@ var hp_intro = {
     <p>Click the blue button below to play an example. The beep is hidden inside the <b>second</b> noise, so the answer is <b>2</b>. You can play the example as many times as you like.
     <p><input class='jspsych-btn' style='background-color:lightblue;' type='button' value='PLAY' onclick='playHP()'><audio id='playerHP' src=''></audio></input></p>
     <p>Make sure you are ready before continuing! You will not be able to replay any of the noises in the mini-task.</p>`,
-    choices: ['I am ready to begin!']
+    choices: ['I am ready to begin!'],
+    on_finish: function(){
+      allSounds.pause(); //pause the sample noise in case participants proceed while it is still playing
+    }
 };
 
 var hp_allvar = [
