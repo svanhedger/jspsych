@@ -815,8 +815,6 @@ var tload_instruct_04 = {
 };
 
 
-
-
 //This generates 720 trials for the dual task - this is almost certainly overkill, but we will set the main task to exit after X minutes
 var tload_maintask_vars = [];
 for(var i=0; i<12; i++){
@@ -957,10 +955,10 @@ var tload_maintask_final = {
 };
 
 var tload = {
-    timeline: [tload_fatigue_pre, tload_practice_final, tload_maintask_final, tload_fatigue_post]
+    timeline: [tload_fatigue_pre, tload_practice_final, tload_fatigue_post]
 };
 
-
+//tload_maintask_final, 
 
 
 
@@ -1558,11 +1556,6 @@ for(var i=0; i<TD_VAR_FINAL.length; i++){
 	TD_AUD.push(TD_VAR_FINAL[i].file);
 }
 
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
-//ADD THE GOOD STUFF//
-
 ///////////////////////
 // DEFINE THE TRIALS //
 ///////////////////////
@@ -1745,14 +1738,6 @@ var td_trials_final = {
 var td_final = {
 	timeline: [TD_Intro_01, TD_Intro_02, td_trials_final]
 }
-
-
-
-//////////////////////////////////////
-//////////////////////////////////////
-/////////////////////////////////////
-//////////////////////////////////////
-
 
 
 
