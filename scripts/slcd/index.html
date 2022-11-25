@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Perception Study</title>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="jspsych/jspsych.js"></script>
+
+
+
+ <script src="jspsych/plugin-audio-button-response.js"></script>
+ <script src="jspsych/plugin-audio-keyboard-response.js"></script>
+ <script src="jspsych/plugin-browser-check.js"></script>
+ <script src="jspsych/plugin-call-function.js"></script>
+ <script src="jspsych/plugin-external-html.js"></script>
+ <script src="jspsych/plugin-fullscreen.js"></script>
+ <script src="jspsych/plugin-html-button-response.js"></script>
+ <script src="jspsych/plugin-html-keyboard-response.js"></script>
+ <script src="jspsych/plugin-instructions.js"></script>
+ <script src="jspsych/plugin-preload.js"></script>
+ <script src="jspsych/plugin-survey-html-form.js"></script>
+ <script src="jspsych/plugin-survey-likert.js"></script>
+ <script src="jspsych/plugin-survey-multi-choice.js"></script>
+ <script src="jspsych/plugin-survey-multi-select.js"></script>
+ <script src="jspsych/plugin-survey-text.js"></script>
+
+
+ <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+
+
+//////////////////////////////////////////////////
+// Cognitive Depletion and Statistical Learning //
+//////////////////////////////////////////////////
+
+Mark Dunlop & Stephen Van Hedger, 2022
+
+This project aims to conceptually replicate:
+
+Smalle et al. (2022) PNAS 
+https://doi.org/10.1073/pnas.2026011119
+
+This prior work found that a cognitively depleting task
+led to enhanced statistical learning of syllable sequences.
+The present approach uses a modified dual-task to elicit
+cognitive depletion (comparing this to a control condition,
+in which participants complete the same task but not under
+the same time pressures). The script then assesses implicit 
+learning of syllable sequences via a syllable target detection
+task and an explicit forced-choice paradigm.
+
+Finally, the present work expands upon the original study by
+assessing, in exploratory fashion, how Need for Cognition (NFC)
+and age relate to performance.
+
+
+During the TloadDback task, digits (1 to 4 and 6 to 9) and letters (A, C, T, L, N, E, U,
+and P) were presented in alternation on the screen. Participants were
+instructed to press the space bar with their left hand every time the displayed
+letter was the same as the last-seen letter and to indicate with their right
+hand whether the subsequently displayed digit was odd (pressing “1” on the
+numeric keypad) or even (pressing “2”). Different levels of cognitive load
+were created by presenting the two tasks at different paces based on our participant’s
+pretested maximum processing speed capacities (no a priori group
+differences; Table 1). This is defined as the fastest stimulus time duration (STD)
+allowing an accuracy performance of at least 85%. Under HCL conditions, the
+task was performed for 16 min at the subject’s max. STD while under LCL conditions,
+the presentation rate was made one-third slower (
+
+*/
+
+//Timeline and other Variables
+var jsPsych = initJsPsych();
+var timeline = []; //this is the timeline to which all trials are pushed
+var piloting = true; //if set to true, this will shorten the length of the experiment
+var subject_id = jsPsych.randomization.randomID(8); //arbitrary subject identifier
+jsPsych.data.addProperties({participant: subject_id});
+
+//load other modules that will depend on the jsPsych components
+</script>
+<script src="calibration.js"></script>
+<script src="TloadDback.js"></script>
+<script src="sl.js"></script>
+<script>
+
+
+//Pavlovia Commands
+/* Server Commands */ 
+//Initiate server connection
+/*
+var pavlovia_init = {
+			type: jsPsychPavlovia,
+			command: "init"
+		};
+
+//Wrap up server connection
+  var pavlovia_finish= {
+			type: jsPsychPavlovia,
+			command: "finish"
+		};   
+*/
+
+//LOI and Consent
+var LOI = {
+      type: jsPsychInstructions,
+      pages: [
+        'Welcome to the study. On the next page, you will see the <b>Letter of Information</b>. Please read this document carefully before agreeing to participate in the study.',
+        '<p>Please read this Letter of Information. You may download this letter for your records. When you are ready to continue, scroll to the bottom of the page and click "Next".</p><embed src="consent/LOI.pdf" width="800px" height="800px" />'
+      ],
+      show_clickable_nav: true,
+      allow_backward: false
+    };
+
+//function to make sure consent box is clicked before proceeding
+var check_consent = function(elem) {
+      if ($('#consent_checkbox').is(':checked')) {
+        return true;
+      } else {
+        alert("If you wish to participate, you must check 'YES' to 'I agree to participate in the study'");
+        return false;
+      }
+      return false;
+    };
+
+
+//consent html should be in subfolder labeled 'consent'
+    var consent_trial = {
+      type: jsPsychExternalHtml,
+      url: "consent/consent.html",
+      cont_btn: "start",
+      check_fn: check_consent
+    };
+
+
+//Final Screen and Custom Qualtrics Link
+var redirect_link = `https://uwo.eu.qualtrics.com/jfe/form/SV_9WZzW4QPggarFCm?jsid=${subject_id}&c=${tload_condition}&sl=${sl_counterbalance}`  
+console.log(redirect_link);
+
+var final_screen_redirect = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p>Thank you for your responses.</p>" +
+          "<p>Click on the button below to be redirected to a short survey.</p><p><b>This is the final component of the study</b></p>",
+  choices: ['Start Survey'],
+  on_finish: function(){
+      window.location.href = redirect_link
+  }
+};
+
+var sl_preload = {
+    type: jsPsychPreload,
+    audio: [...TD_AUD, ...AFC_AUD, ...CALIB_AUD],
+    message: `<p>Loading the materials for the study...</p><p>Thank you for your patience!</p>`,
+    continue_after_error: true
+}
+
+
+//timeline.push(pavlovia_init); //open the server connection
+timeline.push(sl_preload); //preload the materials
+timeline.push(sl); //loaded from the sl.js file
+timeline.push(LOI, consent_trial); //letter of information and consent
+timeline.push(calibration); //auditory calibration
+timeline.push(tload); //loaded from the TloadDback.js file
+
+//timeline.push(pavlovia_finish); //close the server connection
+timeline.push(final_screen_redirect); //redirect to the survey
+
+jsPsych.run(timeline);
+
+</script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+
+<html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+body{
+  background-color: #ffffff;
+}
+</style>
+<script>
+
+$("#LOI").click(function(){
+    $(this).data('clicked', true);
+	console.log("clicked!");
+});
+
+</script>
+
+<div id="consent">
+
+	<img src="consent/huc.jpg" style="height:100px;">
+
+	<p>
+		<h3> <center> <b> Consent Form </b> </center> </h3>
+	</p>
+
+<center> <b>Project Title:</b> Effects of Age, Personality, and Cognition on Learning </br>
+<b>Protocol Number:</b> #XXS_2022XX</br>
+<b>Principal Investigators:</b> Mark Dunlop (mdunlo25@uwo.ca) & Dr. Stephen Van Hedger (svanhedg@uwo.ca)</center> </p>
+
+</p>
+<p align="left">
+
+<center><br>I have read the <a href="#" id="LOI" onclick="window.open('consent/LOI.pdf', '_blank', 'fullscreen=no'); return false;">Letter of Information</a>, and I agree to participate. All questions have been answered to my satisfaction.
+</center>
+</p>
+
+ <p> <center> I agree to take part in this study. </center> </p>
+
+
+
+  <div style="width: 100%; text-align: center;">
+    <input type="checkbox" id="consent_checkbox">
+    YES
+	</input>
+	</br>
+	<input type="checkbox" id="noconsent_checkbox">
+    NO
+	</input>
+  </p></div>
+
+
+  <button type="button" id="start">Start Experiment</button></br></br>
+</div>
+</html>

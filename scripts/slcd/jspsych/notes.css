@@ -1,0 +1,1390 @@
+
+
+
+.buttonC_e {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	cursor: pointer;
+	top: 22.5%;
+	left:47%;
+	position: absolute;
+	}
+
+.buttonCs_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	pointer-events: none;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+	top: 26.2%;
+	left:54.81%;
+	position: absolute;
+	}
+
+.buttonD_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 36.39%;
+	left:60.54%;
+	position: absolute;
+	}
+
+.buttonDs_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 50.28%;
+	left:62.53%;
+	position: absolute;
+	}	
+	
+.buttonE_e {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	cursor: pointer;
+	top: 64.17%;
+	left:60.54%;
+	position: absolute;
+	}	
+
+.buttonF_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 74.35%;
+	left:54.81%;
+	position: absolute;
+	}		
+
+.buttonFs_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 78.06%;
+	left:47%;
+	position: absolute;
+	}	
+	
+.buttonG_e {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	cursor: pointer;
+	top: 74.35%;
+	left:39.19%;
+	position: absolute;
+	}	
+
+.buttonGs_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 64.17%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonA_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 50.23%;
+	left:31.38%;
+	position: absolute;
+	}	
+
+.buttonAs_e {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	cursor: pointer;
+	top: 36.39%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonB_e {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 26.20%;
+	left:39.19%;
+	position: absolute;
+	}
+	
+	.buttonC_e:hover,
+	.buttonC_e:focus {
+	background-color: rgba(255, 0, 0, 0.314); 
+	color: black;	
+	}
+	
+	.buttonE_e:hover,
+	.buttonE_e:focus {
+	background-color: #00ff0050; 
+	color: black;	
+	}
+
+
+	.buttonG_e:hover,
+	.buttonG_e:focus {
+	background-color: #0080ff50; 
+	color: black;	
+	}
+
+	.buttonAs_e:hover,
+	.buttonAs_e:focus {
+	background-color: #ff00ff50; 
+	color: black;	
+	}
+
+	/* Medium CSS */
+
+	.buttonC_m {
+		background-color: #ffffff;	 
+		border: 2px solid #000000;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		cursor: pointer;
+		top: 22.5%;
+		left:47%;
+		position: absolute;
+		}
+	
+	.buttonCs_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;	
+		pointer-events: none;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 1em;
+		top: 26.2%;
+		left:54.81%;
+		position: absolute;
+		}
+	
+	.buttonD_m {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		cursor: pointer;
+		display: block;
+		font-size: 1em;
+		top: 36.39%;
+		left:60.54%;
+		position: absolute;
+		}
+	
+	.buttonDs_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 50.28%;
+		left:62.53%;
+		position: absolute;
+		}	
+		
+	.buttonE_m {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		cursor: pointer;
+		top: 64.17%;
+		left:60.54%;
+		position: absolute;
+		}	
+	
+	.buttonF_m {
+		background-color: #FFF;	 
+		border: 2px solid black;	
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		cursor: pointer;
+		display: block;
+		font-size: 1em;
+		top: 74.35%;
+		left:54.81%;
+		position: absolute;
+		}		
+	
+	.buttonFs_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;	
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 78.06%;
+		left:47%;
+		position: absolute;
+		}	
+		
+	.buttonG_m {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		cursor: pointer;
+		top: 74.35%;
+		left:39.19%;
+		position: absolute;
+		}	
+	
+	.buttonGs_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 64.17%;
+		left:33.46%;
+		position: absolute;
+		}	
+		
+	.buttonA_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 50.23%;
+		left:31.38%;
+		position: absolute;
+		}	
+	
+	.buttonAs_m {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		cursor: pointer;
+		top: 36.39%;
+		left:33.46%;
+		position: absolute;
+		}	
+		
+	.buttonB_m {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 26.20%;
+		left:39.19%;
+		position: absolute;
+		}
+		
+		.buttonC_m:hover,
+		.buttonC_m:focus {
+		background-color: #ff000050; 
+		color: black;	
+		}
+
+		.buttonD_m:hover,
+		.buttonD_m:focus {
+		background-color: #ffFF0050; 
+		color: black;	
+		}
+		
+		.buttonE_m:hover,
+		.buttonE_m:focus {
+		background-color: #00ff0050; 
+		color: black;	
+		}
+
+		.buttonF_m:hover,
+		.buttonF_m:focus {
+		background-color: #00ff8050; 
+		color: black;	
+		}
+	
+	
+		.buttonG_m:hover,
+		.buttonG_m:focus {
+		background-color: #0080ff50; 
+		color: black;	
+		}
+
+	
+		.buttonAs_m:hover,
+		.buttonAs_m:focus {
+		background-color: #ff00ff50; 
+		color: black;	
+		}
+	
+		/* Hard CSS */
+
+		.buttonC_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			cursor: pointer;
+			top: 22.5%;
+			left:47%;
+			position: absolute;
+			}
+		
+		.buttonCs_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: inline-block;
+			cursor: pointer;
+			font-size: 1em;
+			top: 26.2%;
+			left:54.81%;
+			position: absolute;
+			}
+		
+		.buttonD_h {
+			background-color: #FFF;	 
+			border: 2px solid black;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			cursor: pointer;
+			display: block;
+			font-size: 1em;
+			top: 36.39%;
+			left:60.54%;
+			position: absolute;
+			}
+		
+		.buttonDs_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;	
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			cursor: pointer;
+			display: block;
+			font-size: 1em;
+			top: 50.28%;
+			left:62.53%;
+			position: absolute;
+			}	
+			
+		.buttonE_h {
+			background-color: #FFF;	 
+			border: 2px solid black;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			cursor: pointer;
+			top: 64.17%;
+			left:60.54%;
+			position: absolute;
+			}	
+		
+		.buttonF_h {
+			background-color: #FFF;	 
+			border: 2px solid black;	
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			cursor: pointer;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			top: 74.35%;
+			left:54.81%;
+			position: absolute;
+			}		
+		
+		.buttonFs_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			cursor: pointer;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			top: 78.06%;
+			left:47%;
+			position: absolute;
+			}	
+			
+		.buttonG_h {
+			background-color: #FFF;	 
+			border: 2px solid black;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			cursor: pointer;
+			top: 74.35%;
+			left:39.19%;
+			position: absolute;
+			}	
+		
+		.buttonGs_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;	
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			cursor: pointer;
+			display: block;
+			font-size: 1em;
+			top: 64.17%;
+			left:33.46%;
+			position: absolute;
+			}	
+			
+		.buttonA_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			cursor: pointer;
+			display: block;
+			font-size: 1em;
+			top: 50.23%;
+			left:31.38%;
+			position: absolute;
+			}	
+		
+		.buttonAs_h {
+			background-color: #FFF;	 
+			border: 2px solid black;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			display: block;
+			font-size: 1em;
+			cursor: pointer;
+			top: 36.39%;
+			left:33.46%;
+			position: absolute;
+			}	
+			
+		.buttonB_h {
+			background-color: #ffffff;	 
+			border: 2px solid #000000;
+			color: black;
+			padding: 5px 5px;
+			text-align: center;
+			width: 6vw;
+			height: 9vh;
+			text-decoration: none;
+			cursor: pointer;
+			display: block;
+			font-size: 1em;
+			top: 26.20%;
+			left:39.19%;
+			position: absolute;
+			}
+			
+			.buttonC_h:hover,
+			.buttonC_h:focus {
+			background-color: #ff000050; 
+			color: black;	
+			}
+
+			.buttonCs_h:hover,
+			.buttonCs_h:focus {
+			background-color: #ff800050; 
+			color: black;	
+			}
+	
+			.buttonD_h:hover,
+			.buttonD_h:focus {
+			background-color: #ffFF0050; 
+			color: black;	
+			}
+
+			.buttonDs_h:hover,
+			.buttonDs_h:focus {
+			background-color: #80ff0050; 
+			color: black;	
+			}
+			
+			.buttonE_h:hover,
+			.buttonE_h:focus {
+			background-color: #00ff0050; 
+			color: black;	
+			}
+	
+			.buttonF_h:hover,
+			.buttonF_h:focus {
+			background-color: #00ff8050; 
+			color: black;	
+			}
+
+			.buttonFs_h:hover,
+			.buttonFs_h:focus {
+			background-color: #00ffff50; 
+			color: black;	
+			}
+		
+		
+			.buttonG_h:hover,
+			.buttonG_h:focus {
+			background-color: #0080ff50; 
+			color: black;	
+			}
+
+			.buttonGs_h:hover,
+			.buttonGs_h:focus {
+			background-color: #0000ff50; 
+			color: black;	
+			}
+
+			.buttonA_h:hover,
+			.buttonA_h:focus {
+			background-color: #8000ff50; 
+			color: black;	
+			}
+	
+			.buttonAs_h:hover,
+			.buttonAs_h:focus {
+			background-color: #ff00ff50; 
+			color: black;	
+			}
+
+			.buttonB_h:hover,
+			.buttonB_h:focus {
+			background-color: #ff008050; 
+			color: black;	
+			}
+
+
+/* Feedback Screen CSS */
+
+.buttonC_ef {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 22.5%;
+	left:47%;
+	position: absolute;
+	}
+
+.buttonCs_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	pointer-events: none;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+	top: 26.2%;
+	left:54.81%;
+	position: absolute;
+	}
+
+.buttonD_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 36.39%;
+	left:60.54%;
+	position: absolute;
+	}
+
+.buttonDs_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 50.28%;
+	left:62.53%;
+	position: absolute;
+	}	
+	
+.buttonE_ef {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 64.17%;
+	left:60.54%;
+	position: absolute;
+	}	
+
+.buttonF_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 74.35%;
+	left:54.81%;
+	position: absolute;
+	}		
+
+.buttonFs_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 78.06%;
+	left:47%;
+	position: absolute;
+	}	
+	
+.buttonG_ef {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 74.35%;
+	left:39.19%;
+	position: absolute;
+	}	
+
+.buttonGs_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;		
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 64.17%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonA_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 50.23%;
+	left:31.38%;
+	position: absolute;
+	}	
+
+.buttonAs_ef {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 36.39%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonB_ef {
+	background-color: #e9eaea;	 
+	border: 2px solid #cdcdcd;	
+	color: black;
+	pointer-events: none;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 26.20%;
+	left:39.19%;
+	position: absolute;
+	}
+
+	/* Medium Feedback CSS */
+	.buttonC_mf {
+		background-color: #ffffff;	 
+		border: 2px solid #000000;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		pointer-events: none;
+		top: 22.5%;
+		left:47%;
+		position: absolute;
+		}
+	
+	.buttonCs_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;	
+		pointer-events: none;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 1em;
+		top: 26.2%;
+		left:54.81%;
+		position: absolute;
+		}
+	
+	.buttonD_mf {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		pointer-events: none;
+		display: block;
+		font-size: 1em;
+		top: 36.39%;
+		left:60.54%;
+		position: absolute;
+		}
+	
+	.buttonDs_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 50.28%;
+		left:62.53%;
+		position: absolute;
+		}	
+		
+	.buttonE_mf {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		pointer-events: none;
+		top: 64.17%;
+		left:60.54%;
+		position: absolute;
+		}	
+	
+	.buttonF_mf {
+		background-color: #FFF;	 
+		border: 2px solid black;	
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		pointer-events: none;
+		display: block;
+		font-size: 1em;
+		top: 74.35%;
+		left:54.81%;
+		position: absolute;
+		}		
+	
+	.buttonFs_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;	
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 78.06%;
+		left:47%;
+		position: absolute;
+		}	
+		
+	.buttonG_mf {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		pointer-events: none;
+		top: 74.35%;
+		left:39.19%;
+		position: absolute;
+		}	
+	
+	.buttonGs_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 64.17%;
+		left:33.46%;
+		position: absolute;
+		}	
+		
+	.buttonA_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 50.23%;
+		left:31.38%;
+		position: absolute;
+		}	
+	
+	.buttonAs_mf {
+		background-color: #FFF;	 
+		border: 2px solid black;
+		color: black;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		pointer-events: none;
+		top: 36.39%;
+		left:33.46%;
+		position: absolute;
+		}	
+		
+	.buttonB_mf {
+		background-color: #e9eaea;	 
+		border: 2px solid #cdcdcd;		
+		color: black;
+		pointer-events: none;
+		padding: 5px 5px;
+		text-align: center;
+		width: 6vw;
+		height: 9vh;
+		text-decoration: none;
+		display: block;
+		font-size: 1em;
+		top: 26.20%;
+		left:39.19%;
+		position: absolute;
+		}
+	
+
+/* Hard Feedback CSS */
+.buttonC_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 22.5%;
+	left:47%;
+	position: absolute;
+	}
+
+.buttonCs_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: inline-block;
+	pointer-events: none;
+	font-size: 1em;
+	top: 26.2%;
+	left:54.81%;
+	position: absolute;
+	}
+
+.buttonD_hf {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	pointer-events: none;
+	display: block;
+	font-size: 1em;
+	top: 36.39%;
+	left:60.54%;
+	position: absolute;
+	}
+
+.buttonDs_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;	
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	pointer-events: none;
+	display: block;
+	font-size: 1em;
+	top: 50.28%;
+	left:62.53%;
+	position: absolute;
+	}	
+	
+.buttonE_hf {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 64.17%;
+	left:60.54%;
+	position: absolute;
+	}	
+
+.buttonF_hf {
+	background-color: #FFF;	 
+	border: 2px solid black;	
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	pointer-events: none;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 74.35%;
+	left:54.81%;
+	position: absolute;
+	}		
+
+.buttonFs_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	pointer-events: none;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	top: 78.06%;
+	left:47%;
+	position: absolute;
+	}	
+	
+.buttonG_hf {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 74.35%;
+	left:39.19%;
+	position: absolute;
+	}	
+
+.buttonGs_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;	
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	pointer-events: none;
+	display: block;
+	font-size: 1em;
+	top: 64.17%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonA_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	pointer-events: none;
+	display: block;
+	font-size: 1em;
+	top: 50.23%;
+	left:31.38%;
+	position: absolute;
+	}	
+
+.buttonAs_hf {
+	background-color: #FFF;	 
+	border: 2px solid black;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
+	pointer-events: none;
+	top: 36.39%;
+	left:33.46%;
+	position: absolute;
+	}	
+	
+.buttonB_hf {
+	background-color: #ffffff;	 
+	border: 2px solid #000000;
+	color: black;
+	padding: 5px 5px;
+	text-align: center;
+	width: 6vw;
+	height: 9vh;
+	text-decoration: none;
+	pointer-events: none;
+	display: block;
+	font-size: 1em;
+	top: 26.20%;
+	left:39.19%;
+	position: absolute;
+	}
+
+	.buttonStyle {
+	background-color: #555555; 
+	border: 2px solid black;
+	color: white;
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+	cursor: pointer;
+	}
+	
+	.buttonStyle:hover,
+	.buttonStyle:focus {
+	background-color: #808080; 
+	color: white;	
+	}
+
+
