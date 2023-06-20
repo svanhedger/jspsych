@@ -1,0 +1,58 @@
+html {background-color: rgb(128, 128, 128)}
+
+#square1 {
+    position: absolute;
+}
+#square2 {
+    position: absolute;
+}
+#square3 {
+    position: absolute;
+}
+#square4 {
+    position: absolute;
+}
+#square5 {
+    position: absolute;
+}
+#square6 {
+    position: absolute;
+}
+#square7 {
+    position: absolute;
+}
+#square8 {
+    position: absolute;
+}
+
+#fix{
+    position: absolute;
+	text-align: left;
+	font-size: 40px;
+	margin-left: -15px;
+	margin-top: -25px;
+}​
+
+	.buttonStyle {
+	background-color: #555555; 
+	border: 2px solid black;
+	color: white;
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+	cursor: pointer;
+	}
+	
+	.buttonStyle:hover,
+	.buttonStyle:focus {
+	background-color: #808080; 
+	color: white;	
+	}
+
+	#test {
+		color:limegreen
+	}
+
+

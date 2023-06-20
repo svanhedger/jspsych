@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Visual Memory Study</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="js/jspsych/jspsych.js"></script>
+
+  <script src="js/jspsych/plugin-html-keyboard-response.js"></script>
+  <script src="js/jspsych/plugin-image-keyboard-response.js"></script>
+  <script src="js/jspsych/plugin-fullscreen.js"></script>
+
+  <link href="css/jspsych.css" rel="stylesheet" type="text/css" />
+  <link href="css/grid.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+  <script>
+
+    /*
+    
+    /////////////////////////////////////////////////////////
+    //  Awh & Vogel Colored Square Working Memory Paradigm //
+    /////////////////////////////////////////////////////////
+    
+    Description will go here.
+
+    //Thought - do we want to just fix the screen height/width to something like 800? Let's 
+    
+    */
+
+    ////////////////////////////////
+    //Timeline and other Variables//
+    ////////////////////////////////
+
+    /* General Variables */
+
+    var jsPsych = initJsPsych(); //this initializes jsPych
+    var timeline = []; //this is the timeline to which all trials are pushed
+    var piloting = true; //if set to true, this will shorten the length of the experiment
+    var subject_id = jsPsych.randomization.randomID(10); //arbitrary subject identifier
+    var date = Date.now(); //get today's date for data logging
+    var idx = 0; //for updating the trial index
+    var blocknum = 1; //for updating which block the experiment is in
+    var keysame = `q`; //what key should participants press when the squares match?
+    var keydifferent = `p`; //what key should participants press when the squares do not match?
+
+    /* Experiment-Revelant Variables */
+
+    var sqsize = 130; //size (pixels) of the to-be-generated squares
+    var mindist = sqsize * 1.25; //what is the minimum distance between squares in same quadrant (ensure no overlap)
+    var sqcols = ["black", "white", "yellow", "cyan", "limegreen", "magenta", "blue", "red", "orange"]; //nine possible colors (same as Awh & Vogel)
+    var sqpresent = 250; //how long should we present the encoding screen (in milliseconds)?
+    var sqretention = 1000; //how long should we chill out between encoding and the memory test (in milliseconds)?
+    var sqiti = 1000; //how long should the intertrial interval (i.e., after response, before the next encode screen) be (also in milliseconds)?
+
+    var h = screen.height; //this will get the screen resolution (height)
+    var w = screen.width; //this will get the screen resolution (width)
+
+    //Create a x/y range in pixels that creates a rectangle (1h x 1.5w) in the center of the screen where squares can appear.
+    var h_range = [Math.round(h * 0.15), Math.round(h * 0.85)]; //10% buffer of height
+    var w_range = [Math.round((w / 2) - (h_range[1] - h_range[0])/(4/3)), Math.round((w / 2) + (h_range[1] - h_range[0])/(4/3))] //creates square grid for squares to appear in
+
+
+    //Now, let's determine the pixel ranges for the four quadrants
+    var left_w = [Math.round(w_range[0] + (sqsize / 2)), Math.round(((w_range[0] + w_range[1]) / 2) - (sqsize / 1.5))];
+    var top_h = [Math.round(h_range[0] - (sqsize / 1.5)), Math.round(((h_range[0] + h_range[1]) / 2) - (sqsize / 1.5))];
+    var right_w = [Math.round(((w_range[0] + w_range[1]) / 2)), Math.round(w_range[1] - (sqsize * 1.2))];
+    var bottom_h = [Math.round(((h_range[0] + h_range[1]) / 2)), Math.round(h_range[1])];
+
+    //Add various properties to the data output
+    jsPsych.data.addProperties({
+      participant: subject_id,
+      date: date,
+      screen_height: h,
+      screen_width: w,
+      grid_height: h_range,
+      grid_width: w_range
+    });
+
+    //////////////////////
+    /* Custom Functions */
+    //////////////////////
+
+    //Function to rnadomly select a value between a range (inclusive)
+    /*
+    This is what we will use to randomly determine the x/y coordinates
+    
+    */
+    function randBetween(min, max) { // min and max included 
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
+    /////////////////////////////////////////////
+    /* Main Function for Generating the Trials */
+    /////////////////////////////////////////////
+
+    var tempvars = []; //from the function genSquares, we will push to this array temporarily
+
+    function genSquares(numtrials, n, match) {
+      for (var t = 0; t < numtrials; t++) {
+        var current_params = {}; //add things to this (e.g., square 1 x/y coordinates, color, etc.)
+        //this calculates all potential x/y coordinates of up to eight squares
+        var pos1x = randBetween(left_w[0], left_w[1]);
+        var pos1y = randBetween(top_h[0], top_h[1]);
+        var pos2x = randBetween(right_w[0], right_w[1]);
+        var pos2y = randBetween(top_h[0], top_h[1]);
+        var pos3x = randBetween(left_w[0], left_w[1]);
+        var pos3y = randBetween(bottom_h[0], bottom_h[1]);
+        var pos4x = randBetween(right_w[0], right_w[1]);
+        var pos4y = randBetween(bottom_h[0], bottom_h[1]);
+        var pos5x = randBetween(left_w[0], left_w[1]);
+        var pos5y = randBetween(top_h[0], top_h[1]);
+        var pos6x = randBetween(right_w[0], right_w[1]);
+        var pos6y = randBetween(top_h[0], top_h[1]);
+        var pos7x = randBetween(left_w[0], left_w[1]);
+        var pos7y = randBetween(bottom_h[0], bottom_h[1]);
+        var pos8x = randBetween(right_w[0], right_w[1]);
+        var pos8y = randBetween(bottom_h[0], bottom_h[1]);
+
+        //now we can check whether squares in the same quadrant satisfy minimum distance requirements
+
+        while (Math.sqrt(Math.abs(pos1x - pos5x) ** 2 + Math.abs(pos1y - pos5y) ** 2) < mindist) {
+          var pos5x = randBetween(left_w[0], left_w[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+          var pos5y = randBetween(top_h[0], top_h[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+        }
+
+        while (Math.sqrt(Math.abs(pos2x - pos6x) ** 2 + Math.abs(pos2y - pos6y) ** 2) < mindist) {
+          var pos6x = randBetween(right_w[0], right_w[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+          var pos6y = randBetween(top_h[0], top_h[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+        }
+
+        while (Math.sqrt(Math.abs(pos3x - pos7x) ** 2 + Math.abs(pos3y - pos7y) ** 2) < mindist) {
+          var pos7x = randBetween(left_w[0], left_w[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+          var pos7y = randBetween(bottom_h[0], bottom_h[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+        }
+
+        while (Math.sqrt(Math.abs(pos4x - pos8x) ** 2 + Math.abs(pos4y - pos8y) ** 2) < mindist) {
+          var pos8x = randBetween(right_w[0], right_w[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+          var pos8y = randBetween(bottom_h[0], bottom_h[1]); //reshuffle the newcomer in the quadrant until it satisfies min dist
+        }
+
+
+        //STILL need to add these 8 xy params to the object, also shuffle color and add that, ALSO if match then randomly select one of the squares with same color
+
+        var quadpositions1 = [[pos1x, pos1y], [pos2x, pos2y], [pos3x, pos3y], [pos4x, pos4y]]; //for storing whether to put circle in topleft, topright, bottomleft, bottomright
+        var quadpositions2 = [[pos5x, pos5y], [pos6x, pos6y], [pos7x, pos7y], [pos8x, pos8y]]; //for storing whether to put circle in topleft, topright, bottomleft, bottomright
+
+        quadpositions1 = jsPsych.randomization.repeat(quadpositions1, 1); //shuffled array
+        quadpositions2 = jsPsych.randomization.repeat(quadpositions2, 1); //shuffled array
+        var quadpositions_final = (quadpositions1.concat(quadpositions2)) //this combines all eight potential squares, from which we will subset n
+        var randcols = jsPsych.randomization.repeat(sqcols, 1); //shuffled the color array
+
+        current_params.n = n;
+        current_params.x1 = quadpositions_final[0][0];
+        current_params.y1 = quadpositions_final[0][1];
+        current_params.x2 = quadpositions_final[1][0];
+        current_params.y2 = quadpositions_final[1][1];
+        current_params.x3 = quadpositions_final[2][0];
+        current_params.y3 = quadpositions_final[2][1];
+        current_params.x4 = quadpositions_final[3][0];
+        current_params.y4 = quadpositions_final[3][1];
+        current_params.x5 = quadpositions_final[4][0];
+        current_params.y5 = quadpositions_final[4][1];
+        current_params.x6 = quadpositions_final[5][0];
+        current_params.y6 = quadpositions_final[5][1];
+        current_params.x7 = quadpositions_final[6][0];
+        current_params.y7 = quadpositions_final[6][1];
+        current_params.x8 = quadpositions_final[7][0];
+        current_params.y8 = quadpositions_final[7][1];
+        current_params.col1 = randcols[0];
+        current_params.col2 = randcols[1];
+        current_params.col3 = randcols[2];
+        current_params.col4 = randcols[3];
+        current_params.col5 = randcols[4];
+        current_params.col6 = randcols[5];
+        current_params.col7 = randcols[6];
+        current_params.col8 = randcols[7];
+
+        //NOW let's select a random square to show for the recognition screen
+        var testsquare = randBetween(1, n); //can't choose a location that doesn't exist in the trial
+        current_params.TESTLOC = testsquare;
+        current_params.testx = quadpositions_final[testsquare - 1][0];
+        current_params.testy = quadpositions_final[testsquare - 1][1];
+
+        if (match) {
+          current_params.testcol = randcols[testsquare - 1]
+          current_params.cresp = keysame; //this is the key for when the two colors are the same
+        } else {
+          var updatedcols = randcols.splice(testsquare - 1, 1);
+          current_params.testcol = updatedcols[0] //these are already shuffled so no need to redo it.
+          current_params.cresp = keydifferent; //this is the key for when the two colors are different
+        }
+
+        tempvars.push(current_params);
+      }
+
+    }
+
+    var blocklen = 48; //how long should the blocks be
+    var num_trialtype_block = 8; //ohw many of each trial type per block (keep in mind there are six trial types)
+
+    /* Use the above function to create desired trials from this list */
+    var blockstructure = [
+      { trials: num_trialtype_block, squares: 4, match: true },
+      { trials: num_trialtype_block, squares: 6, match: true },
+      { trials: num_trialtype_block, squares: 8, match: true },
+      { trials: num_trialtype_block, squares: 4, match: false },
+      { trials: num_trialtype_block, squares: 6, match: false },
+      { trials: num_trialtype_block, squares: 8, match: false },
+      { trials: num_trialtype_block, squares: 4, match: true },
+      { trials: num_trialtype_block, squares: 6, match: true },
+      { trials: num_trialtype_block, squares: 8, match: true },
+      { trials: num_trialtype_block, squares: 4, match: false },
+      { trials: num_trialtype_block, squares: 6, match: false },
+      { trials: num_trialtype_block, squares: 8, match: false },
+      { trials: num_trialtype_block, squares: 4, match: true },
+      { trials: num_trialtype_block, squares: 6, match: true },
+      { trials: num_trialtype_block, squares: 8, match: true },
+      { trials: num_trialtype_block, squares: 4, match: false },
+      { trials: num_trialtype_block, squares: 6, match: false },
+      { trials: num_trialtype_block, squares: 8, match: false },
+      { trials: num_trialtype_block, squares: 4, match: true },
+      { trials: num_trialtype_block, squares: 6, match: true },
+      { trials: num_trialtype_block, squares: 8, match: true },
+      { trials: num_trialtype_block, squares: 4, match: false },
+      { trials: num_trialtype_block, squares: 6, match: false },
+      { trials: num_trialtype_block, squares: 8, match: false },
+    ];
+
+    //This runs the custom function for each of the rows in the above array
+    for (var i = 0; i < blockstructure.length; i++) {
+      genSquares(blockstructure[i].trials, blockstructure[i].squares, blockstructure[i].match);
+    }
+
+    //Now we need to pseudo-randomize (blocks are 48 trials long, so we need to randomize the trial types within 48 trial segments)
+    var block1 = tempvars.slice(num_trialtype_block * 0, num_trialtype_block * 6);
+    var block2 = tempvars.slice(num_trialtype_block * 6, num_trialtype_block * 12);
+    var block3 = tempvars.slice(num_trialtype_block * 12, num_trialtype_block * 18);
+    var block4 = tempvars.slice(num_trialtype_block * 18, num_trialtype_block * 24);
+
+    block1 = jsPsych.randomization.repeat(block1, 1); //shuffle the array
+    block2 = jsPsych.randomization.repeat(block1, 1); //shuffle the array
+    block3 = jsPsych.randomization.repeat(block1, 1); //shuffle the array
+    block4 = jsPsych.randomization.repeat(block1, 1); //shuffle the array
+
+    var trialvars = block1.concat(block2, block3, block4); //this is the final array for all trials!
+    if (piloting) {
+      trialvars = trialvars.slice(0, 5); //just present five trials if piloting
+    }
+
+
+    ////////////////////////
+    /**** Trial Screens ***/
+    ////////////////////////
+
+    /*
+    Here is where we define the
+    specific screens of the task.
+    These take advantage of 
+    jsPsych plugins.
+    */
+
+    ////////////////////
+    /** Instructions **/
+    ////////////////////
+
+    var instruct = {
+      type: jsPsychImageKeyboardResponse,
+      stimulus: `img/Instructions_CD.png`,
+      prompt: `
+
+      <p><b>Remember the colors!</b></p>
+      <div style="width: 35%; left: 40%; margin:0 auto; text-align:left;">
+      <ol style="padding-left:0; list-style-position:inside;">
+        <li>Wait for the squares to appear.</li>
+        <li>See the squares.</li>
+        <li>Remember the squares.</li>
+        <li>Same or different?</li>
+      </ol>
+    </div>
+      <p>If the color is the <b>same</b>, press <b>${keysame}</b>.</br>
+        If the color is <b>different</b>, press <b>${keydifferent}</b>.</p>
+        <p>Press <b>${keysame}</b> or <b>${keydifferent}</b> to begin!</p>
+
+        `,
+      choices: [keysame, keydifferent],
+      post_trial_gap: 500  
+    };
+
+    //////////////////
+    /* Final Screen */
+    //////////////////
+
+    var goodbye = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<p>This concludes the task.</p><p>Thank you for your participation!</p><p>(press any key to exit the program)</p>`,
+      on_finish: function(data){
+        jsPsych.data.get().localSave(`csv`,`mem_${subject_id}.csv`); //this saves a local csv for inspection - should be commented out if testing online
+      }
+    };
+
+
+
+
+    ////////////////
+    /* Fullscreen */
+    ////////////////
+
+    /*
+    For the best viewing experience,
+    remaining in fullscreen is highly
+    recommended. Otherwise, the spacing 
+    of the squares might be altered 
+    and/or the available windowing for
+    the squares to appear might be too
+    small.
+    */
+
+    var enter_fullscreen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: true,
+      message: `<p><b>It is very important that you complete this task in fullscreen mode.</b></p><p>The study will automatically exit fullscreen mode once this task is complete.</p><p>Click on the button below to enter fullscreen mode.</p>`,
+      button_label: `Enter fullscreen`
+    }
+
+    /* Exit Fullscreen Mode (for when the task completes) */
+
+        var exit_fullscreen = {
+          type: jsPsychFullscreen,
+          fullscreen_mode: false,
+          delay_after: 0
+        }
+
+    ////////////////////
+    /* Square Screens */
+    ////////////////////
+
+    //1. ITI ("Get-Ready" screen with central fixation dot)
+
+    var square_iti = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<p style="font-size:40px;">&#9679;</p>`,
+      trial_duration: sqiti,
+      choices: `NO_KEYS`,
+      data: { designation: 'RETENTION' }
+    };
+
+    //2. Encode (Presents the squares (anywhere from 1-8, defined earlier with the genSquares function) for a specified period of time)
+
+    var square_encode = {
+      type: jsPsychHtmlKeyboardResponse,
+      choices: `NO_KEYS`,
+      stimulus: function () {
+        var html = `
+    <p style="font-size:40px;">&#9679;</p>
+    <div id="square1"></div>
+    <div id="square2"></div>
+    <div id="square3"></div>
+    <div id="square4"></div>
+    <div id="square5"></div>
+    <div id="square6"></div>
+    <div id="square7"></div>
+    <div id="square8"></div>
+    `
+
+        function updateSquares() {
+          if (trialvars[idx].n > 0) {
+            document.getElementById("square1").innerHTML = "&#9632;";
+            document.getElementById("square1").style.left = trialvars[idx].x1 + "px";
+            document.getElementById("square1").style.top = trialvars[idx].y1 + "px";
+            document.getElementById("square1").style.fontSize = sqsize + "px";
+            document.getElementById("square1").style.color = trialvars[idx].col1;
+          }
+          if (trialvars[idx].n > 1) {
+            document.getElementById("square2").innerHTML = "&#9632;";
+            document.getElementById("square2").style.left = trialvars[idx].x2 + "px";
+            document.getElementById("square2").style.top = trialvars[idx].y2 + "px";
+            document.getElementById("square2").style.fontSize = sqsize + "px";
+            document.getElementById("square2").style.color = trialvars[idx].col2;
+          }
+          if (trialvars[idx].n > 2) {
+            document.getElementById("square3").innerHTML = "&#9632;";
+            document.getElementById("square3").style.left = trialvars[idx].x3 + "px";
+            document.getElementById("square3").style.top = trialvars[idx].y3 + "px";
+            document.getElementById("square3").style.fontSize = sqsize + "px";
+            document.getElementById("square3").style.color = trialvars[idx].col3;
+          }
+          if (trialvars[idx].n > 3) {
+            document.getElementById("square4").innerHTML = "&#9632;";
+            document.getElementById("square4").style.left = trialvars[idx].x4 + "px";
+            document.getElementById("square4").style.top = trialvars[idx].y4 + "px";
+            document.getElementById("square4").style.fontSize = sqsize + "px";
+            document.getElementById("square4").style.color = trialvars[idx].col4;
+          }
+          if (trialvars[idx].n > 4) {
+            document.getElementById("square5").innerHTML = "&#9632;";
+            document.getElementById("square5").style.left = trialvars[idx].x5 + "px";
+            document.getElementById("square5").style.top = trialvars[idx].y5 + "px";
+            document.getElementById("square5").style.fontSize = sqsize + "px";
+            document.getElementById("square5").style.color = trialvars[idx].col5;
+          }
+          if (trialvars[idx].n > 5) {
+            document.getElementById("square6").innerHTML = "&#9632;";
+            document.getElementById("square6").style.left = trialvars[idx].x6 + "px";
+            document.getElementById("square6").style.top = trialvars[idx].y6 + "px";
+            document.getElementById("square6").style.fontSize = sqsize + "px";
+            document.getElementById("square6").style.color = trialvars[idx].col6;
+          }
+          if (trialvars[idx].n > 6) {
+            document.getElementById("square7").innerHTML = "&#9632;";
+            document.getElementById("square7").style.left = trialvars[idx].x7 + "px";
+            document.getElementById("square7").style.top = trialvars[idx].y7 + "px";
+            document.getElementById("square7").style.fontSize = sqsize + "px";
+            document.getElementById("square7").style.color = trialvars[idx].col7;
+          }
+          if (trialvars[idx].n > 7) {
+            document.getElementById("square8").innerHTML = "&#9632;";
+            document.getElementById("square8").style.left = trialvars[idx].x8 + "px";
+            document.getElementById("square8").style.top = trialvars[idx].y8 + "px";
+            document.getElementById("square8").style.fontSize = sqsize + "px";
+            document.getElementById("square8").style.color = trialvars[idx].col8;
+          }
+
+        };
+        setTimeout(updateSquares, 0);
+
+        return html;
+
+      },
+      trial_duration: sqpresent,
+      data: { designation: 'ENCODE' }
+    };
+
+    var square_retention = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<p style="font-size:40px;">&#9679;</p>`,
+      trial_duration: sqretention,
+      choices: `NO_KEYS`,
+      data: { designation: 'RETENTION' }
+    };
+
+
+    //3. Square Test (randomly presents one of the squares, in either the correct or incorrect color)
+
+    var square_test = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        var html =
+          `<p style="font-size:40px;">&#9679;</p>
+    <div id="square1"></div>
+    <div id="square2"></div>
+    <div id="square3"></div>
+    <div id="square4"></div>
+    <div id="square5"></div>
+    <div id="square6"></div>
+    <div id="square7"></div>
+    <div id="square8"></div>
+    `
+        function updateTestSquares() {
+          if (trialvars[idx].TESTLOC === 1) {
+            document.getElementById("square1").innerHTML = "&#9632;";
+            document.getElementById("square1").style.left = trialvars[idx].x1 + "px";
+            document.getElementById("square1").style.top = trialvars[idx].y1 + "px";
+            document.getElementById("square1").style.fontSize = sqsize + "px";
+            document.getElementById("square1").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 2) {
+            document.getElementById("square2").innerHTML = "&#9632;";
+            document.getElementById("square2").style.left = trialvars[idx].x2 + "px";
+            document.getElementById("square2").style.top = trialvars[idx].y2 + "px";
+            document.getElementById("square2").style.fontSize = sqsize + "px";
+            document.getElementById("square2").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 3) {
+            document.getElementById("square3").innerHTML = "&#9632;";
+            document.getElementById("square3").style.left = trialvars[idx].x3 + "px";
+            document.getElementById("square3").style.top = trialvars[idx].y3 + "px";
+            document.getElementById("square3").style.fontSize = sqsize + "px";
+            document.getElementById("square3").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 4) {
+            document.getElementById("square4").innerHTML = "&#9632;";
+            document.getElementById("square4").style.left = trialvars[idx].x4 + "px";
+            document.getElementById("square4").style.top = trialvars[idx].y4 + "px";
+            document.getElementById("square4").style.fontSize = sqsize + "px";
+            document.getElementById("square4").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 5) {
+            document.getElementById("square5").innerHTML = "&#9632;";
+            document.getElementById("square5").style.left = trialvars[idx].x5 + "px";
+            document.getElementById("square5").style.top = trialvars[idx].y5 + "px";
+            document.getElementById("square5").style.fontSize = sqsize + "px";
+            document.getElementById("square5").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 6) {
+            document.getElementById("square6").innerHTML = "&#9632;";
+            document.getElementById("square6").style.left = trialvars[idx].x6 + "px";
+            document.getElementById("square6").style.top = trialvars[idx].y6 + "px";
+            document.getElementById("square6").style.fontSize = sqsize + "px";
+            document.getElementById("square6").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 7) {
+            document.getElementById("square7").innerHTML = "&#9632;";
+            document.getElementById("square7").style.left = trialvars[idx].x7 + "px";
+            document.getElementById("square7").style.top = trialvars[idx].y7 + "px";
+            document.getElementById("square7").style.fontSize = sqsize + "px";
+            document.getElementById("square7").style.color = trialvars[idx].testcol;
+          }
+          if (trialvars[idx].TESTLOC === 8) {
+            document.getElementById("square8").innerHTML = "&#9632;";
+            document.getElementById("square8").style.left = trialvars[idx].x8 + "px";
+            document.getElementById("square8").style.top = trialvars[idx].y8 + "px";
+            document.getElementById("square8").style.fontSize = sqsize + "px";
+            document.getElementById("square8").style.color = trialvars[idx].testcol;
+          }
+
+        };
+        setTimeout(updateTestSquares, 0);
+
+        return html;
+
+      },
+      choices: [keysame, keydifferent],
+      data: function () {
+        var showx1 = (trialvars[idx].n > 0) ? trialvars[idx].x1 : "";
+        var showy1 = (trialvars[idx].n > 0) ? trialvars[idx].y1 : "";
+        var showx2 = (trialvars[idx].n > 1) ? trialvars[idx].x2 : "";
+        var showy2 = (trialvars[idx].n > 1) ? trialvars[idx].y2 : "";
+        var showx3 = (trialvars[idx].n > 2) ? trialvars[idx].x3 : "";
+        var showy3 = (trialvars[idx].n > 2) ? trialvars[idx].y3 : "";
+        var showx4 = (trialvars[idx].n > 3) ? trialvars[idx].x4 : "";
+        var showy4 = (trialvars[idx].n > 3) ? trialvars[idx].y4 : "";
+        var showx5 = (trialvars[idx].n > 4) ? trialvars[idx].x5 : "";
+        var showy5 = (trialvars[idx].n > 4) ? trialvars[idx].y5 : "";
+        var showx6 = (trialvars[idx].n > 5) ? trialvars[idx].x6 : "";
+        var showy6 = (trialvars[idx].n > 5) ? trialvars[idx].y6 : "";
+        var showx7 = (trialvars[idx].n > 6) ? trialvars[idx].x7 : "";
+        var showy7 = (trialvars[idx].n > 6) ? trialvars[idx].y7 : "";
+        var showx8 = (trialvars[idx].n > 7) ? trialvars[idx].x8 : "";
+        var showy8 = (trialvars[idx].n > 7) ? trialvars[idx].y8 : "";
+        var showcol1 = (trialvars[idx].n > 0) ? trialvars[idx].col1 : "";
+        var showcol2 = (trialvars[idx].n > 1) ? trialvars[idx].col2 : "";
+        var showcol3 = (trialvars[idx].n > 2) ? trialvars[idx].col3 : "";
+        var showcol4 = (trialvars[idx].n > 3) ? trialvars[idx].col4 : "";
+        var showcol5 = (trialvars[idx].n > 4) ? trialvars[idx].col5 : "";
+        var showcol6 = (trialvars[idx].n > 5) ? trialvars[idx].col6 : "";
+        var showcol7 = (trialvars[idx].n > 6) ? trialvars[idx].col7 : "";
+        var showcol8 = (trialvars[idx].n > 7) ? trialvars[idx].col8 : "";
+
+        var addtl_data = {
+          block: blocknum,
+          designation: `TEST`,
+          numSquares: trialvars[idx].n,
+          correct_resp: trialvars[idx].cresp,
+          test_square: trialvars[idx].TESTLOC,
+          test_square_col: trialvars[idx].testcol,
+          sq1_x: showx1,
+          sq1_y: showy1,
+          sq2_x: showx2,
+          sq2_y: showy2,
+          sq3_x: showx3,
+          sq3_y: showy3,
+          sq4_x: showx4,
+          sq4_y: showy4,
+          sq5_x: showx5,
+          sq5_y: showy5,
+          sq6_x: showx6,
+          sq6_y: showy6,
+          sq7_x: showx7,
+          sq7_y: showy7,
+          sq8_x: showx8,
+          sq8_y: showy8,
+          sq_col1: showcol1,
+          sq_col2: showcol2,
+          sq_col3: showcol3,
+          sq_col4: showcol4,
+          sq_col5: showcol5,
+          sq_col6: showcol6,
+          sq_col7: showcol7,
+          sq_col8: showcol8
+        };
+        return addtl_data;
+      },
+      on_finish: function (data) {
+        var gotitright = (data.response === data.correct_resp) ? 1 : 0;
+        jsPsych.data.get().addToLast({ correct: gotitright });
+        idx += 1; //CRITICAL - this will update the array and select the next trial! 
+      }
+    };
+
+    /* Break Screen */
+
+    var takeabreak = {
+      timeline: [
+        {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: function () {
+            var html = `<p>Block ${blocknum} of 4 complete!</p><p style="color:yellow;">The next block will begin in:</p><div style="color:yellow;" id="countdown">00:30</div>`;
+
+            var time_limit = 30;
+            var time_out = setInterval(() => {
+              if (time_limit == 0) {
+                clearInterval(time_out);
+              } else {
+                if (time_limit < 10) {
+                  time_limit = 0 + '' + time_limit;
+                }
+                $('#countdown').html('00:' + time_limit);
+                time_limit -= 1;
+              }
+            }, 1000);
+            return html;
+          },
+          trial_duration: 30000,
+          choices: `NO_KEYS`,
+          on_finish: function () { blocknum += 1; } //update blocknumber
+        }
+      ],
+      conditional_function: function () {
+        if (idx % 48 === 0 && idx != trialvars.length + 1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+
+
+
+    //To-DO....expand main function to add specified number of trials, then shuffle array? then create a loop function with timeline to go through each trial? build in breaks as well?
+
+    var mainproc = {
+      timeline: [square_iti, square_encode, square_retention, square_test, takeabreak],
+      loop_function: function () {
+        if (idx < trialvars.length) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    timeline.push(enter_fullscreen);
+    timeline.push(instruct);
+    timeline.push(mainproc);
+    timeline.push(exit_fullscreen);
+    timeline.push(goodbye);
+
+    jsPsych.run(timeline);
+
+  </script>
