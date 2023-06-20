@@ -64,7 +64,7 @@
     var w = screen.width; //this will get the screen resolution (width)
 
     //Create a x/y range in pixels that creates a rectangle (1h x 1.5w) in the center of the screen where squares can appear.
-    var h_range = [Math.round(h * 0.15), Math.round(h * 0.85)]; //10% buffer of height
+    var h_range = [Math.round(h * 0.20), Math.round(h * 0.80)]; //20% buffer of height
     var w_range = [Math.round((w / 2) - (h_range[1] - h_range[0])/(4/3)), Math.round((w / 2) + (h_range[1] - h_range[0])/(4/3))] //creates square grid for squares to appear in
 
 
@@ -618,13 +618,13 @@
             }, 1000);
             return html;
           },
-          trial_duration: 30000,
+          trial_duration: 31000,
           choices: `NO_KEYS`,
           on_finish: function () { blocknum += 1; } //update blocknumber
         }
       ],
       conditional_function: function () {
-        if (idx % 48 === 0 && idx != trialvars.length + 1) {
+        if (idx % 48 === 0 && idx != trialvars.length - 1) {
           return true;
         } else {
           return false;
