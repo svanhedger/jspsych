@@ -43,13 +43,13 @@
 
     var jsPsych = initJsPsych(); //this initializes jsPych
     var timeline = []; //this is the timeline to which all trials are pushed
-    var piloting = true; //if set to true, this will shorten the length of the experiment
+    var piloting = false; //if set to true, this will shorten the length of the experiment
     var subject_id = jsPsych.randomization.randomID(10); //arbitrary subject identifier
     var date = Date.now(); //get today's date for data logging
     var idx = 0; //for updating the trial index
     var blocknum = 1; //for updating which block the experiment is in
-    var keysame = `q`; //what key should participants press when the squares match?
-    var keydifferent = `p`; //what key should participants press when the squares do not match?
+    var keysame = `s`; //what key should participants press when the squares match?
+    var keydifferent = `d`; //what key should participants press when the squares do not match?
 
     /* Experiment-Revelant Variables */
 
