@@ -194,7 +194,7 @@
           current_params.cresp = keysame; //this is the key for when the two colors are the same
         } else {
           var updatedcols = randcols.splice(testsquare - 1, 1);
-          current_params.testcol = updatedcols[0] //these are already shuffled so no need to redo it.
+          current_params.testcol = updatedcols[0] //these are already shuffled so no need to redo it. Plus, this ensures that the lure color actually was present on the trial
           current_params.cresp = keydifferent; //this is the key for when the two colors are different
         }
 
@@ -624,7 +624,7 @@
         }
       ],
       conditional_function: function () {
-        if (idx % 48 === 0 && idx != trialvars.length - 1) {
+        if (idx % 48 === 0 && idx != trialvars.length) { //don't show break screen if this was the final trial
           return true;
         } else {
           return false;
