@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html>
+<link rel="shortcut icon" href="img/favicon.ico">
+<head>
+<meta charset="UTF-8">
+<title>Statistical Learning Demo (Speech)</title>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="jspsych/jspsych.js"></script>
+
+
+ <script src="jspsych/plugin-audio-button-response.js"></script>
+ <script src="jspsych/plugin-audio-keyboard-response.js"></script>
+ <script src="jspsych/plugin-html-button-response.js"></script>
+ <script src="jspsych/plugin-html-keyboard-response.js"></script>
+ <script src="jspsych/plugin-instructions.js"></script>
+ <script src="jspsych/plugin-preload.js"></script>
+ 
+ <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+
+
+</head>
+
+<body>
+
+<script>
+
+/*
+
+
+////////////////////////////////////////
+// Statistical Learning Demonstration //
+////////////////////////////////////////
+
+Stephen Van Hedger, 2024
+
+This is a short demonstration of the statistical learning of speech
+(cf. Saffran et al., 1996). The script plays just under one minute
+of a speech stream, consisting of 64 trisyllabic "words" (e.g., go-la-bu).
+Following this short exposure, the script plays two tokens and participants
+must make a forced-choice response as to which sounds more correct.
+
+
+*/
+
+//Timeline and other Variables
+var jsPsych = initJsPsych();
+var timeline = []; //this is the timeline to which all trials are pushed
+var subject_id = jsPsych.randomization.randomID(8); //arbitrary subject identifier
+jsPsych.data.addProperties({participant: subject_id});
+
+
+var instruct = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<div style="width: 65vw;">
+                    <p><b style="color:blue;">Statistical Learning of Speech Demo</b></p>
+                    <p>You will listen to a rapid stream of spoken syllabes. The stream of syllables will last about one minute. Your job is to simply listen to the stream.</p>
+               </div>`,
+    choices: ['Begin Listening!']
+};
+
+var sl_exposure = {
+    type: jsPsychAudioKeyboardResponse,
+    stimulus: `sounds/train.mp3`,
+    prompt: `<p style="font-size: 50px;">+</p>`,
+    choices: `NO_KEYS`,
+    trial_ends_after_audio: true
+};
+
+
+/*  Forced-Choice Task */
+var slafc_tlinevars_01 = [
+    {aud01: `sounds/W001.wav`, aud02: `sounds/N001.wav`, afc_cresp: 0, afc_word: 1},
+    {aud01: `sounds/N003.wav`, aud02: `sounds/W001.wav`, afc_cresp: 1, afc_word: 1},
+    {aud01: `sounds/N002.wav`, aud02: `sounds/W002.wav`, afc_cresp: 1, afc_word: 2},
+    {aud01: `sounds/W002.wav`, aud02: `sounds/N004.wav`, afc_cresp: 0, afc_word: 2},
+    {aud01: `sounds/W003.wav`, aud02: `sounds/N002.wav`, afc_cresp: 0, afc_word: 3},
+    {aud01: `sounds/N004.wav`, aud02: `sounds/W003.wav`, afc_cresp: 1, afc_word: 3},
+    {aud01: `sounds/N001.wav`, aud02: `sounds/W004.wav`, afc_cresp: 1, afc_word: 4},
+    {aud01: `sounds/W004.wav`, aud02: `sounds/N003.wav`, afc_cresp: 0, afc_word: 4}
+];
+
+
+
+var slafc_instruct = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus:
+        `<div style="width: 65vw;">
+            <p>Pretty fun, eh?</p>
+            <p>You will now make judgments about shorter syllable streams.</p><p>On each trial, you will hear two sounds. Each sound is short and only consists of three syllables.</p>
+            <p>One of the two sounds might sound more familiar to you, as it was heard as a part of the longer syllable stream you just heard.</p><p>The other sound will contain a sequence of syllables that was did not occur together in the stream you just heard, and thus might sound unfamiliar.</p>
+            <p>Your job is to determine which sound (1 or 2) is more familiar to you.</p>
+            <p>There are 8 judgments in total.</p><p>Click on the button below to begin!</p>
+        </div>`
+        ,
+    choices: [`Begin!`]    
+};
+
+var afc_count = 1;
+
+var slafc_proc = {
+    timeline: [
+        {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: function(){return `<p>Judgment ${afc_count} of ${slafc_tlinevars_01.length}</p>`},
+            choices: ['Listen!'],
+            on_finish: function(){
+                afc_count +=1;
+            }
+        },
+        {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `<p style="font-size:40px;">+</p>`,
+            choices: `NO_KEYS`,
+            trial_duration: 1000,
+        },
+        {
+            type: jsPsychAudioKeyboardResponse,
+            stimulus: jsPsych.timelineVariable('aud01'),
+            choices: `NO_KEYS`,
+            trial_ends_after_audio: true,
+            prompt: `<p style="font-size:60px">1</p>`,
+            post_trial_gap: 1500
+        },
+        {
+            type: jsPsychAudioKeyboardResponse,
+            stimulus: jsPsych.timelineVariable('aud02'),
+            choices: `NO_KEYS`,
+            trial_ends_after_audio: true,
+            prompt: `<p style="font-size:60px">2</p>`,
+            post_trial_gap: 250
+        },
+        {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `<p>Write down your response down now!</p>`,
+            choices: [` `]
+        }
+           ],
+    timeline_variables: slafc_tlinevars_01,
+    randomize_order: true
+};
+
+
+var afc_final = {
+    timeline: [slafc_instruct, slafc_proc]
+};
+
+//Add some generic preloading here? Or should you place that in the beginning of the script?
+var AFC_AUD = [];
+for(var i=0; i<slafc_tlinevars_01.length; i++){
+    AFC_AUD.push(slafc_tlinevars_01[i].aud01);
+    AFC_AUD.push(slafc_tlinevars_01[i].aud02);
+}
+
+
+var sl_preload = {
+    type: jsPsychPreload,
+    audio: [AFC_AUD],
+    message: ``,
+    continue_after_error: true
+};
+
+
+
+var gbye= {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: "<p>Thank you for your responses!</p>",
+  choices: `NO_KEYS`
+};
+
+timeline.push(sl_preload); //preload the materials
+timeline.push(instruct);
+timeline.push(sl_exposure);
+timeline.push(afc_final);
+
+timeline.push(gbye); //redirect to the survey
+
+jsPsych.run(timeline);
+
+</script>
