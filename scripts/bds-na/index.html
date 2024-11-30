@@ -3,22 +3,32 @@
 <head>
 <title>Digit Span</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="jspsych-6.3.0/jspsych.js"></script>
-<script src="jspsych-6.3.0/plugins/jspsych-audio-keyboard-response.js"></script>
-<script src="jspsych-6.3.0/plugins/jspsych-html-button-response.js"></script>
-<script src="jspsych-6.3.0/plugins/jspsych-html-keyboard-response.js"></script>
-<script src="jspsych-6.3.0/plugins/jspsych-preload.js"></script>
-<script src="jspsych-6.3.0/plugins/jspsych-fullscreen.js"></script>
+<script src="js/jspsych/jspsych.js"></script>
+<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+<script src="js/jspsych/plugin-audio-keyboard-response.js"></script>
+<script src="js/jspsych/plugin-html-button-response.js"></script>
+<script src="js/jspsych/plugin-html-keyboard-response.js"></script>
+<script src="js/jspsych/plugin-preload.js"></script>
+<script src="js/jspsych/plugin-fullscreen.js"></script>
+<script src="js/jspsych/plugin-instructions.js"></script>
 
 
-<link href="jspsych-6.3.0/css/jspsych.css" rel="stylesheet" type="text/css">
-<link href="jspsych-6.3.0/css/bds-style.css" rel="stylesheet" type="text/css">
+<link href="css/jspsych.css" rel="stylesheet" type="text/css" />
+<link href="css/bds-style.css" rel="stylesheet" type="text/css">
+
+
 
 </head>
 <body>
 <script>
 
 //Define Timeline
+
+/*******/
+/* BDS */
+/*******/
+
+var jsPsych = initJsPsych(); //this initializes jsPych
 var timeline = [];
 
 var useAudio = true; // change to false if you want this to be a visual task!
@@ -29,11 +39,11 @@ var totalCorrect = 0; //counter for total correct
 var totalTrials = 0; //counter for total trials
 var folder = "digits/"; //folder name for storing the audio files
 var bdsTrialNum = 1; //counter for trials
-var bdsTotalTrials = 14; //total number of desired trials
+var bdsTotalTrials = 10; //total number of desired trials
 var response = []; //for storing partcipants' responses
 var bds_correct_ans; //for storing the correct answer on a given trial
 var digit_list = [1,2,3,4,5,6,7,8,9]; //digits to be used (unlikely you will want to change this)
-var trial_seq = [3,3,4,4,5,5,6,6,7,7,8,8,9,9]//this is the span, to be used in order
+var trial_seq = [4,4,5,5,6,6,7,7,8,8]//this is the span, to be used in order
 var trial_idx = 0; //to be updated after each run
 var spanHistory = []; //easy logging of the participant's trajectory
 var stimList; //this is going to house the ordering of the stimuli for each trial
@@ -44,10 +54,29 @@ const arrSum = arr => arr.reduce((a,b) => a + b, 0) //simple variable for calcul
 
 //add to the dataframe whether the BDS was auditory or visual
 
-var identifier = jsPsych.randomization.randomID(15); //random alphanumeric string for ID
+var subject_id = jsPsych.data.getURLVariable('id'); //counterbalance version
+if(subject_id === undefined){
+	console.log("Subject ID not inherited! Assigning now...")
+	subject_id = jsPsych.randomization.randomID(6)
+	console.log("Subject ID is "+subject_id)
+};
+
+
+const inherited_id = `x`;
+const filename = `${subject_id}.csv`;
+
+var currentdate = new Date(); 
+var datetime =   currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
 jsPsych.data.addProperties({
-	participant: identifier,
-	expt: 'ANT',
+	participant: subject_id,
+	qualtrics: inherited_id,
+	time: datetime,
 	BDS_modality: (useAudio ? 'auditory' : 'visual')
 }); //add participant ID to data output
 
@@ -150,7 +179,7 @@ var response_grid =
 '<button id = button_8 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>8</div></div></button>' +
 '<button id = button_9 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>9</div></div></button>' +
 '<button class = clear_button id = "ClearButton" onclick = "clearResponse()">Backspace</button>'+
-'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:blue;"><b> </b></div></div>'
+'<p><u><b>Current Answer:</b></u></p><div id=echoed_txt style="font-size: 30px; color:yellow;"><b> </b></div></div>'
 
 
 
@@ -158,16 +187,16 @@ var response_grid =
 var instructions;
 if (useAudio) {
 	instructions = '<p>On each trial, you will hear a sequence of digits and be asked to type them back in reverse order.</p>'+
-				   '<p>For example, if you heard the digits <b style="color:blue;">one</b>, <b style="color:blue;">two</b>, '+
-				   '<b style="color:blue;">three</b>, you would respond with <b style="color:blue;">3</b>, <b style="color:blue;">2</b>, <b style="color:blue;">1</b></p>';
+				   '<p>For example, if you heard the digits <b style="color:yellow;">one</b>, <b style="color:yellow;">two</b>, '+
+				   '<b style="color:yellow;">three</b>, you would respond with <b style="color:yellow;">3</b>, <b style="color:yellow;">2</b>, <b style="color:yellow;">1</b></p>';
 } else {
 	instructions = '<p>On each trial, you will see a sequence of digits and be asked to type them back in reverse order.</p>'+
-				   '<p>For example, if you saw the digits <b style="color:blue;">1</b>, <b style="color:blue;">2</b>, '+
-				   '<b style="color:blue;">3</b>, you would respond with <b style="color:blue;">3</b>, <b style="color:blue;">2</b>, <b style="color:blue;">1</b></p>';
+				   '<p>For example, if you saw the digits <b style="color:yellow;">1</b>, <b style="color:yellow;">2</b>, '+
+				   '<b style="color:yellow;">3</b>, you would respond with <b style="color:yellow;">3</b>, <b style="color:yellow;">2</b>, <b style="color:yellow;">1</b></p>';
 }
 
 var bds_welcome = {
-type: "html-button-response",
+type: jsPsychHtmlButtonResponse,
 stimulus: '<p>Welcome to the <b>digit span task.</b></p>' +instructions +
 	'<p>To ensure high quality data, it is very important that you do not use any memory aid (e.g., pen and paper).<br>Please do the task solely in your head.</p>' +
 	'<p>There will be '+bdsTotalTrials+' total trials. Participation takes around 10 minutes.</p>',
@@ -177,7 +206,7 @@ choices: ['Continue']
 
 //set-up screen
 var setup_bds = {
-type: 'html-button-response',
+type: jsPsychHtmlButtonResponse,
 stimulus: function(){return '<p>Trial '+bdsTrialNum+' of '+bdsTotalTrials+'</p>';},
 choices: ['Begin'],
 	post_trial_gap: 500,
@@ -193,9 +222,9 @@ choices: ['Begin'],
 
 //letter presentation
 var letter_bds = {
-	type: 'audio-keyboard-response',
+	type: jsPsychAudioKeyboardResponse,
 	stimulus: function(){return stimList[idx];},
-	choices: jsPsych.NO_KEYS,
+	choices: `NO_KEYS`,
 	post_trial_gap: 250,
 	trial_ends_after_audio: true,
 	on_finish: function(){
@@ -211,9 +240,9 @@ var letter_bds = {
 
 //visual letter presentation
 var letter_bds_vis = {
-	type: 'html-keyboard-response',
+	type: jsPsychHtmlKeyboardResponse,
 	stimulus: function(){return stimList[idx];},
-	choices: jsPsych.NO_KEYS,
+	choices: `NO_KEYS`,
 	trial_duration: 500,
 	post_trial_gap: 250,
 	on_finish: function(){
@@ -254,7 +283,7 @@ if(useAudio){
 
 //response screen
 var bds_response_screen = {
-type: 'html-keyboard-response',
+type: jsPsychHtmlKeyboardResponse,
 stimulus: response_grid,
 choices: ['Enter'],
 	on_finish: function(data){
@@ -307,7 +336,7 @@ var bds_mainproc = {
 /*************/
 
 var bds_wrapup = {
-type: 'html-button-response',
+type: jsPsychHtmlButtonResponse,
 stimulus: '<p>Thank you for your participation. This concludes the digit span.</p>',
 choices: ['Exit']
 };
@@ -320,7 +349,7 @@ choices: ['Exit']
 var aud_digits = ['digits/one.wav', 'digits/two.wav', 'digits/three.wav', 'digits/four.wav', 'digits/five.wav', 'digits/six.wav', 'digits/seven.wav', 'digits/eight.wav', 'digits/nine.wav'];
 
 var preload_bds = {
-	type: 'preload',
+	type: jsPsychPreload,
 	audio: aud_digits
 };
 
@@ -330,12 +359,12 @@ var preload_bds = {
 ////////////////////////
 
 var bds_fullscreen_enter = {
-	type: 'fullscreen',
+	type: jsPsychFullscreen,
 	fullscreen_mode: true,
 };
 
 var bds_fullscreen_exit = {
-	type: 'fullscreen',
+	type: jsPsychFullscreen,
 	fullscreen_mode: false,
 };
 
@@ -346,19 +375,118 @@ var bds_fullscreen_exit = {
 
 
 var bds_adaptive = {
-	timeline: [preload_bds, bds_fullscreen_enter, bds_welcome, bds_mainproc, bds_fullscreen_exit, bds_wrapup]
+	timeline: [preload_bds, bds_fullscreen_enter, bds_welcome, bds_mainproc, bds_wrapup],
+	data: {task: `BDS`}
 };
 
 timeline.push(bds_adaptive);
 
+/**********/
+/* Stroop */
+/**********/
+
+// the colours are also the words ....
+var colours = ['red', 'green', 'blue', 'yellow'];
+
+var n_trials = 15;
+
+// returns a JavaScript object with { text: ...., colour: .... }
+// using a random colour (text is the same as colour)
+function congruent() {
+    // pick a colour ....
+    // (when we're only picking one, with/without replacement doesn't matter)
+    var colour_list = jsPsych.randomization.sampleWithReplacement(colours,1);
+    // this returns a list with one item, so we select the first (only) item
+    return { text: colour_list[0], colour: colour_list[0], condition: 'congruent' };
+}
+
+// returns a JavaScript object with { text: ...., colour: .... }
+// using a random colour (text is different to colour)
+function incongruent() {
+    // pick two colours without replacement (i.e. they will be different)
+    var colour_list = jsPsych.randomization.sampleWithoutReplacement(colours,2);
+    // this returns a list with two item, we select these out
+    return { text: colour_list[0], colour: colour_list[1], condition: 'incongruent' };
+}
+
+// these are in HTML, so <br> means "line break"
+var instructions = {
+    type: jsPsychInstructions,
+    pages: [
+      "You will now complete a short reading task.<br>Press Space to continue.",
+      "In this part of the study, you will be presented with the words blue, red, yellow and green.<br>Press Space to continue.",
+      "As soon as you see a new word, press the key corresponding to its first letter.<br>For example, press the B key for blue.<br>Press Space to continue.",
+      "Try to answer as quickly as you can!<br>Press Space to start the experiment.",
+    ],
+    key_forward: ' '
+}
+
+var fixation = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="font-size:60px">+</p>',
+    trial_duration: 500,
+    response_ends_trial: false
+};
+
+// blank (ITI stands for "inter trial interval")
+var iti = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: '',
+  trial_duration: 250,
+  response_ends_trial: false
+}
+
+
+timeline.push(instructions);
+
+// repeat this code n_trials times
+for (var i=0; i<n_trials; i++) {
+    var values;
+    // Math.random returns a random number between 0 and 1. Use this to decide
+    // whether the current trial is congruent or incongruent.
+    if (Math.random() < 0.5) {
+        values = congruent();
+    } else {
+        values = incongruent();
+    }
+    var trial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '<p style="font-size:60px;color: '+values.colour+'">'+values.text+'</p>',
+        // 'choices' restricts the available responses for the participant
+        choices: ['r','g','b','y'],
+        data: values
+    };
+    timeline.push(iti);
+    timeline.push(fixation);
+    timeline.push(trial);
+}
+
+
+timeline.push(bds_fullscreen_exit);
+
+
+const save_data = {
+  type: jsPsychPipe,
+  action: "save",
+  experiment_id: "gXCWDavwhN7S",
+  filename: filename,
+  data_string: ()=>jsPsych.data.get().csv()
+};
+
+timeline.push(save_data);
+
+
+var goodbye = {
+	type: jsPsychHtmlKeyboardResponse,
+	stimulus: `<p>This concludes the study. Thank you for your responses!</p>`,
+	choices: `NO_KEYS`
+};
+
+timeline.push(goodbye);
+
 //Initialize the Experiment
-jsPsych.init({
-	timeline: timeline,
-	on_finish: function() {
-		var csvname = identifier + '.csv';
-		jsPsych.data.get().localSave('csv', csvname);
-	}
-});
+jsPsych.run(timeline);
+
 
 </script>
 </body>
