@@ -475,9 +475,12 @@ timeline.push(save_data);
 
 
 var goodbye = {
-	type: jsPsychHtmlKeyboardResponse,
-	stimulus: `<p>This concludes the study. Thank you for your responses!</p>`,
-	choices: `NO_KEYS`
+	type: jsPsychHtmlButtonResponse,
+	stimulus: `<p>This concludes the study. Thank you for your responses!</p><p>To read more about the purpose of the study, press the button below.</p>`,
+	choices: [`Read about the study`],
+	on_finish: function(data){
+          window.location.replace("https://uelpsych.eu.qualtrics.com/jfe/preview/previewId/e418564c-c240-470f-933e-5ac82715d12f/SV_37qx3yWOPru4cOa?Q_CHL=preview&Q_SurveyVersionID=current");
+        }         
 };
 
 timeline.push(goodbye);
