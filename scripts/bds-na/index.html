@@ -54,7 +54,7 @@ const arrSum = arr => arr.reduce((a,b) => a + b, 0) //simple variable for calcul
 
 //add to the dataframe whether the BDS was auditory or visual
 
-var subject_id = jsPsych.data.getURLVariable('id'); //counterbalance version
+var subject_id = jsPsych.data.getURLVariable('RID'); //counterbalance version
 if(subject_id === undefined){
 	console.log("Subject ID not inherited! Assigning now...")
 	subject_id = jsPsych.randomization.randomID(6)
@@ -62,7 +62,6 @@ if(subject_id === undefined){
 };
 
 
-const inherited_id = `x`;
 const filename = `${subject_id}.csv`;
 
 var currentdate = new Date(); 
@@ -75,7 +74,6 @@ var datetime =   currentdate.getDate() + "/"
 
 jsPsych.data.addProperties({
 	participant: subject_id,
-	qualtrics: inherited_id,
 	time: datetime,
 	BDS_modality: (useAudio ? 'auditory' : 'visual')
 }); //add participant ID to data output
