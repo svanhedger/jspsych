@@ -434,13 +434,14 @@ var fds_adaptive = {
 
 //Final screen
 var save_data = {
-	type: 'html-keyboard-response',
-	stimulus: '<p>This concludes the task. Please notify the experimenter that you have finished.</p>',
-	choices: ['q'],
+	type: 'html-button-response',
+	stimulus: `<p>This concludes the task. The final part of the study is a questionnaire.</p><p>Press the button below to be redirected to the questionnaire page.</p>`,
+	choices: ['Begin Questionnaire!'],
 	on_finish: function(data){
 		var identifier = data.participant;
 		var filename = identifier+'.csv'
 		jsPsych.data.get().localSave('csv', filename);
+		window.location.href = `https://uwo.eu.qualtrics.com/jfe/form/SV_bxCxbygJmp04Kou?pid=${identifier}`;
 	}
 };
 
